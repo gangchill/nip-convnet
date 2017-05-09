@@ -13,3 +13,6 @@ Other Relevant Papers:
 
 Datesets:
 * http://www.pitt.edu/~emotion/ck-spread.htm
+
+Tutorials: 
+* https://www.tensorflow.org/tutorials/
