@@ -11,7 +11,7 @@ Other Relevant Papers:
 
 * D. Hamester, P. Barros and S. Wermter, Face expression recognition with a 2-channel Convolutional Neural Network, 2015 International Joint Conference on Neural Networks (IJCNN), Killarney, 2015, pp. 1-8.
 
-Datesets:
+Datasets:
 * http://www.pitt.edu/~emotion/ck-spread.htm
 
 Tutorials: 
