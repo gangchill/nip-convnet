@@ -1,4 +1,6 @@
-./digit_reconstructions
-./logs
-./models
-./MNIST_data 
+digit_reconstructions/*
+logs/*
+models/*
+MNIST_data/*
+
+.directory
