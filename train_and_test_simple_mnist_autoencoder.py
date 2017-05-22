@@ -44,8 +44,8 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 100
-	chk_iterations  = 100
+	max_iterations 	= 1000
+	chk_iterations  = 1000
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
