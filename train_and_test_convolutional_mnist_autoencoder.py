@@ -5,6 +5,7 @@
 import tensorflow as tf 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import os
 
 # import the simple autoencoder class from SAE.py
@@ -33,9 +34,9 @@ def main():
 	# reshape the input to NHWD format
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-	filter_height 	= 5
-	filter_width 	= 5
-	num_feature_maps= 5
+	filter_height 	= 7
+	filter_width 	= 7
+	num_feature_maps= 20
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_height, filter_width, num_feature_maps)
@@ -49,8 +50,8 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 2000
-	chk_iterations  = 500
+	max_iterations 	= 1000
+	chk_iterations  = 100
 
 	weight_file_name = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
 
@@ -151,7 +152,7 @@ def visualize_cae_filters(sess, autoencoder):
 	plt.close(fig)
 
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num_images = 100):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num_images = 100, use_training_set = False, common_scaling = False):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
@@ -167,7 +168,12 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	num_filters = cae_filters.shape[3]
 
-	encoding, reconst = sess.run([autoencoder.encoding, autoencoder.reconstruction], feed_dict={input_placeholder: mnist.test.images[0:100].reshape(100, 28, 28, 1)})
+	if use_training_set:
+		dataset = mnist.train.images
+	else:
+		dataset = mnist.test.images
+
+	encoding, reconst = sess.run([autoencoder.encoding, autoencoder.reconstruction], feed_dict={input_placeholder: dataset[0:100].reshape(100, 28, 28, 1)})
 
 	code_dimx = 28
 
@@ -179,19 +185,34 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		plt.subplot(4,1,1)
 		# plt.title('input image', fontsize=fontsize)
-		plt.imshow(mnist.test.images[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
 		plt.axis('off')
+
+		max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
+		max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))
+
+		norm_filters 	= mpl.colors.Normalize(vmin=-max_abs_filters,vmax=max_abs_filters) 
+		norm_encodings 	= mpl.colors.Normalize(vmin=-max_abs_encodings,vmax=max_abs_encodings) 
+
 
 		for f in range(num_filters):
 
 			plt.subplot(4,num_filters, num_filters + f + 1)
-			# plt.title('filter', fontsize=fontsize)
-			plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None')
+
+			if common_scaling:
+				plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None', norm=norm_filters)
+			else:
+				plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None')
+
 			plt.axis('off')
 
 			plt.subplot(4,num_filters, 2 * num_filters + f + 1)
-			# plt.title('feature map', fontsize=fontsize)
-			plt.imshow(encoding[i,:,:,f].reshape(28, 28), cmap='gray', interpolation='None')
+
+			if common_scaling:
+				plt.imshow(encoding[i,:,:,f].reshape(28, 28), cmap='gray', interpolation='None', norm=norm_encodings)
+			else:
+				plt.imshow(encoding[i,:,:,f].reshape(28, 28), cmap='gray', interpolation='None')
+
 			plt.axis('off')
 
 		plt.subplot(4,1,4)

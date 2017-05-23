@@ -47,7 +47,8 @@ class CAE:
 
 				# hidden layer representation:
 				# TODO: check relu function, how would we invert it for the reconstruction? Do we nee to?
-				self._encoding = tf.nn.tanh( tf.nn.conv2d(self.data, self.W, strides = self.strides, padding='SAME') + b)
+				# TODO: tanh / sigmoid??
+				self._encoding = tf.nn.sigmoid( tf.nn.conv2d(self.data, self.W, strides = self.strides, padding='SAME') + b)
 
 		return self._encoding
 
@@ -87,6 +88,9 @@ class CAE:
 			print 'initialize reconstruction'
 
 			conv2d_output_shape = tf.stack([self.batch_size_workaround, self.data.shape[1], self.data.shape[2], self.data.shape[3]])
+
+			# self._reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, conv2d_output_shape, self.strides), self.c , name='reconstruction_without_sigmoid')
+
 
 			self._reconstruction = tf.nn.sigmoid(tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, conv2d_output_shape, self.strides), self.c), name='reconstruction')
 		

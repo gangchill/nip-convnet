@@ -27,3 +27,39 @@ Datasets:
 
 Tutorials: 
 * https://www.tensorflow.org/tutorials/
+
+# Planning
+
+What do we have so far?
+	-> simple fully-connected autoencoder (unclear whether it needs regularization)
+	-> simple conv autoencoder  (desperately needs regularization)
+
+next steps:
+	-> transfer weights to (convolutional) neural network
+		o get setup that lets us train a (convolutional) neural network 
+		o make it possible to load weights stored by the autoencoder if the architecture is fitting
+		o make it possible to set enable/disable the learning of these wheigts in the training
+		o architecture should be generic, the simplest way to test would be to add a fully-connected layer after the encoding layers of the autoencoder
+		o it would probably be good to start with the fully-connected autoencoder for the sake of simplicity
+
+	-> regularizing the conv autoencoder
+
+		o sparsity constraint? (probably not needed if we have maxpool layers and this doesn't reflect a convnet structure)
+
+		o maxpool layer (important!)
+			-> question: how to do upsampling? (there seems to be a way to do it with conv2d_transpose, working on it)
+
+	-> train deeper autoencoders
+		o make the autoencoder classes more generic so that we're able to add as many layers as we want
+		o implement layerwise training? 
+			-> the stacked conv autoencoder paper also suggests a layerwise training, unclear if absolutely needed
+			-> in order to implement this, we need to find a way to fix some variables during the training (there seems to be a flag to set weights trainable, otherwise we would maybe need to choose an adaptive learning rate of 0 or sth like that)
+
+Discussion with Youssef today (23.5.17):
+	-> plot L2 norm during training instead of aggregated cross-entropy
+
+general questions:
+	-> activation functions to use
+		o sigmoid 	(our first autoencoder versions use it and it needs to be used in the last layer)
+		o tanh		(needs to be scaled to [0,1]? as described in stacked ae paper)
+		o rect 		(often used in practise, i think we should use this)
