@@ -47,7 +47,7 @@ next steps:
 	* sparsity constraint? (probably not needed if we have maxpool layers and this doesn't reflect a convnet structure)
 
 	* maxpool layer (important!)
-		-> question: how to do upsampling? (there seems to be a way to do it with conv2d_transpose, working on it)
+		* question: how to do upsampling? (there seems to be a way to do it with conv2d_transpose, working on it)
 
 * train deeper autoencoders
 	* make the autoencoder classes more generic so that we're able to add as many layers as we want
