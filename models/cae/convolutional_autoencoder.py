@@ -21,9 +21,13 @@ class CAE:
 
 		self._encoding 			= None
 		self._optimize			= None
+		self._logit_reconstruction = None
 		self._reconstruction	= None
 		self._error				= None
 
+		with tf.name_scope('CAE'):
+			self.optimize
+			self.reconstruction
 
 	@property
 	def encoding(self):
@@ -33,22 +37,22 @@ class CAE:
 
 			print 'initialize encoding'
 
-			with tf.name_scope('convolutional_autoencoder_network'):
-				
-				# initialize filter and bias variables for the encoding:
-				filter_shape = [self.filter_height, self.filter_width, self.in_channels, self.out_channels]
-				self.W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1))
+			# initialize filter and bias variables for the encoding:
+			filter_shape = [self.filter_height, self.filter_width, self.in_channels, self.out_channels]
+			self.W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name='conv1_weights')
 
-				# TODO: bias for each output channel or for each output dimension? 
-				b = tf.Variable(tf.constant(0.1, shape=[self.out_channels]))
+			# TODO: bias for each output channel or for each output dimension? 
+			b = tf.Variable(tf.constant(0.1, shape=[self.out_channels]), name='conv1_bias')
 
-				self.c = tf.Variable(tf.constant(0.1, shape=[self.in_channels]))
+			# hidden layer representation:
+			# TODO: check relu function, how would we invert it for the reconstruction? Do we nee to?
+			# TODO: tanh / sigmoid??
 
+			post_conv_act = tf.nn.sigmoid( tf.nn.conv2d(self.data, self.W, strides = self.strides, padding='SAME') + b)
 
-				# hidden layer representation:
-				# TODO: check relu function, how would we invert it for the reconstruction? Do we nee to?
-				# TODO: tanh / sigmoid??
-				self._encoding = tf.nn.sigmoid( tf.nn.conv2d(self.data, self.W, strides = self.strides, padding='SAME') + b)
+			# add max-pooling for dimensionality reduction
+			# self._encoding = tf.nn.max_pool(post_conv_act, [1,2,2,1], [1,2,2,1], padding='SAME')
+			self._encoding = post_conv_act
 
 		return self._encoding
 
@@ -59,10 +63,7 @@ class CAE:
 		if self._error is None:
 			print 'initialize error'
 
-			# since we want to use the sigmoid_cross_entropy_with_logits function directly, we define a different reconstruction compared to self.reconstruction (withoug sigmoid)
-			reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, tf.shape(self.data), self.strides) , self.c, name='reconstruction_without_sigmoid')
-			
-			self._error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=reconstruction, name='cross-entropy_error')
+			self._error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
 
 		return self._error
 
@@ -81,18 +82,30 @@ class CAE:
 		return self._optimize
 
 	@property
+	def logit_reconstruction(self):
+		# returns the node containing the reconstruction before applying the sigmoid function 
+		# the logit_reconstruction is separated to use the sigmoid_cross_entropy_with_logits function for the error
+
+		if self._logit_reconstruction is None:
+
+			# upsample_strides = [1,2,2,1]
+
+			# self.reconst_W = tf.Variable(tf.truncated_normal([3, 3, 1, 10] , stddev=0.1))
+
+			self.c = tf.Variable(tf.constant(0.1, shape=[self.in_channels]), name='reconstruction_bias')
+
+			self._logit_reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, tf.shape(self.data), self.strides), self.c, name='logit_reconstruction')
+
+		return self._logit_reconstruction
+
+	@property
 	def reconstruction(self):
 		# returns the reconstruction node that contains the reconstruction of the input
 
 		if self._reconstruction is None:
 			print 'initialize reconstruction'
 
-			conv2d_output_shape = tf.stack([self.batch_size_workaround, self.data.shape[1], self.data.shape[2], self.data.shape[3]])
-
-			# self._reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, conv2d_output_shape, self.strides), self.c , name='reconstruction_without_sigmoid')
-
-
-			self._reconstruction = tf.nn.sigmoid(tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, conv2d_output_shape, self.strides), self.c), name='reconstruction')
+			self._reconstruction = tf.nn.sigmoid(self.logit_reconstruction, name='reconstruction')
 		
 		return self._reconstruction
 

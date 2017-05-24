@@ -22,7 +22,7 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
-	restore_weights_if_existant = True
+	restore_weights_if_existant = False
 
 	# import mnist data set
 	from tensorflow.examples.tutorials.mnist import input_data
@@ -34,23 +34,23 @@ def main():
 	# reshape the input to NHWD format
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-	filter_height 	= 7
-	filter_width 	= 7
-	num_feature_maps= 20
+	filter_height 	= 3
+	filter_width 	= 3
+	num_feature_maps= 10
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_height, filter_width, num_feature_maps)
 
 	print 'call the properties to initialize the graph'
-	autoencoder.optimize
-	autoencoder.reconstruction
+	# autoencoder.optimize
+	# autoencoder.reconstruction
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 1000
+	max_iterations 	= 100
 	chk_iterations  = 100
 
 	weight_file_name = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
@@ -78,7 +78,7 @@ def main():
 
 	# visualize_cae_filters(sess, autoencoder)
 
-	visualize_ae_representation(sess, x_image, autoencoder, mnist, 10)
+	visualize_ae_representation(sess, x_image, autoencoder, mnist, 3)
 
 
 	# add logwriter for tensorboard
@@ -108,6 +108,7 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_d
 	  if chk_iterations > 100 and i % 100 == 0:
 	  	print '...iteration {}'.format(i)
 
+	  
 	  if i % chk_iterations == 0:
 
 		avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
@@ -176,6 +177,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 	encoding, reconst = sess.run([autoencoder.encoding, autoencoder.reconstruction], feed_dict={input_placeholder: dataset[0:100].reshape(100, 28, 28, 1)})
 
 	code_dimx = 28
+	code_dimy = code_dimx
 
 	print 'save {} example images to file'.format(num_images)
 
@@ -191,8 +193,8 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 		max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
 		max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))
 
-		norm_filters 	= mpl.colors.Normalize(vmin=-max_abs_filters,vmax=max_abs_filters) 
-		norm_encodings 	= mpl.colors.Normalize(vmin=-max_abs_encodings,vmax=max_abs_encodings) 
+		norm_filters 	= mpl.colors.Normalize(vmin=-max_abs_filters,vmax=max_abs_filters)
+		norm_encodings 	= mpl.colors.Normalize(vmin=-max_abs_encodings,vmax=max_abs_encodings)
 
 
 		for f in range(num_filters):
@@ -209,9 +211,9 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 			plt.subplot(4,num_filters, 2 * num_filters + f + 1)
 
 			if common_scaling:
-				plt.imshow(encoding[i,:,:,f].reshape(28, 28), cmap='gray', interpolation='None', norm=norm_encodings)
+				plt.imshow(encoding[i,:,:,f].reshape(code_dimx, code_dimy), cmap='gray', interpolation='None', norm=norm_encodings)
 			else:
-				plt.imshow(encoding[i,:,:,f].reshape(28, 28), cmap='gray', interpolation='None')
+				plt.imshow(encoding[i,:,:,f].reshape(code_dimx, code_dimy), cmap='gray', interpolation='None')
 
 			plt.axis('off')
 
