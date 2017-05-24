@@ -3,7 +3,7 @@ import tensorflow as tf
 class CAE: 
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_height, filter_width, out_channels, strides = [1,1,1,1], batch_size_workaround=100):
+	def __init__(self, data, filter_height, filter_width, out_channels, strides = [1,1,1,1], batch_size_workaround=100, use_max_pooling = True):
 
 		# TODO: init all values defining the shape of the convolutions
 		self.filter_height 	= filter_height
@@ -11,6 +11,8 @@ class CAE:
 		self.in_channels 	= int(data.shape[3])
 		self.out_channels	= out_channels
 		self.strides 		= strides 
+
+		self.use_max_pooling= use_max_pooling
 
 		# batch size used for conv2d_transposed, TODO: find a nicer way to define this at runtime
 		self.batch_size_workaround = batch_size_workaround
@@ -51,8 +53,12 @@ class CAE:
 			post_conv_act = tf.nn.sigmoid( tf.nn.conv2d(self.data, self.W, strides = self.strides, padding='SAME') + b)
 
 			# add max-pooling for dimensionality reduction
-			# self._encoding = tf.nn.max_pool(post_conv_act, [1,2,2,1], [1,2,2,1], padding='SAME')
-			self._encoding = post_conv_act
+
+			if self.use_max_pooling:
+				self._encoding = tf.nn.max_pool(post_conv_act, [1,2,2,1], [1,2,2,1], padding='SAME')
+
+			else:
+				self._encoding = post_conv_act
 
 		return self._encoding
 
@@ -94,7 +100,17 @@ class CAE:
 
 			self.c = tf.Variable(tf.constant(0.1, shape=[self.in_channels]), name='reconstruction_bias')
 
-			self._logit_reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, tf.shape(self.data), self.strides), self.c, name='logit_reconstruction')
+			if self.use_max_pooling: 
+				them_strides = [1,2,2,1]
+			else:
+				them_strides = this.strides
+
+			print 'encoding: ', self.encoding.shape
+			print 'W: ', self.W.shape
+			print 'outputshape: ', tf.shape(self.data)
+			print 'strides: ', them_strides
+
+			self._logit_reconstruction = tf.add( tf.nn.conv2d_transpose(self.encoding, self.W, tf.shape(self.data), them_strides), self.c, name='logit_reconstruction')
 
 		return self._logit_reconstruction
 

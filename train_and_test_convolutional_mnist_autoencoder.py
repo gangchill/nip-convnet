@@ -24,6 +24,8 @@ def main():
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
 	restore_weights_if_existant = False
 
+	use_max_pooling = True
+
 	# import mnist data set
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
@@ -34,12 +36,12 @@ def main():
 	# reshape the input to NHWD format
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-	filter_height 	= 3
-	filter_width 	= 3
+	filter_height 	= 7
+	filter_width 	= 7
 	num_feature_maps= 10
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_height, filter_width, num_feature_maps)
+	autoencoder = CAE(x_image, filter_height, filter_width, num_feature_maps, use_max_pooling = use_max_pooling)
 
 	print 'call the properties to initialize the graph'
 	# autoencoder.optimize
@@ -176,7 +178,12 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	encoding, reconst = sess.run([autoencoder.encoding, autoencoder.reconstruction], feed_dict={input_placeholder: dataset[0:100].reshape(100, 28, 28, 1)})
 
-	code_dimx = 28
+	if autoencoder.use_max_pooling:
+		code_dimx = 14
+	else:
+		code_dimx = 28
+
+
 	code_dimy = code_dimx
 
 	print 'save {} example images to file'.format(num_images)
