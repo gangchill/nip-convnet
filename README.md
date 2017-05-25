@@ -56,10 +56,15 @@ next steps:
 		* in order to implement this, we need to find a way to fix some variables during the training (there seems to be a flag to set weights trainable, otherwise we would maybe need to choose an adaptive learning rate of 0 or sth like that)
 
 Discussion with Youssef today (23.5.17):
-* plot L2 norm during training instead of aggregated cross-entropy
+
 
 general questions:
 * activation functions to use
 	* sigmoid 	(our first autoencoder versions use it and it needs to be used in the last layer)
 	* tanh		(needs to be scaled to [0,1]? as described in stacked ae paper)
 	* rect 		(often used in practise, i think we should use this)
+
+Simple TODOS:
+* plot L2 norm during training instead of aggregated cross-entropy
+* add license to github project and make it public
+* only save the weights of the encoder for the best test performance (atm the last weights are stored)

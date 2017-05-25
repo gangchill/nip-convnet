@@ -24,8 +24,6 @@ def main():
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
 	restore_weights_if_existant = False
 
-	use_max_pooling = True
-
 	# import mnist data set
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
@@ -36,26 +34,26 @@ def main():
 	# reshape the input to NHWD format
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-	filter_height 	= 7
-	filter_width 	= 7
-	num_feature_maps= 10
+	# AUTOENCODER SPECIFICATIONS
+	filter_dims 	= [(7,7), (3,3)]
+	hidden_channels = [4,6] 
+	use_max_pooling = True
+	strides = None # other strides should not work yet
+	activation_function = 'sigmoid'
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_height, filter_width, num_feature_maps, use_max_pooling = use_max_pooling)
-
-	print 'call the properties to initialize the graph'
-	# autoencoder.optimize
-	# autoencoder.reconstruction
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 100
+	max_iterations 	= 10
 	chk_iterations  = 100
 
-	weight_file_name = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
+
+	weight_file_name = 'jenes_weightfile.ru' # = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
@@ -136,7 +134,9 @@ def visualize_cae_filters(sess, autoencoder):
 	print 'save the filters to file:'
 
 	with sess.as_default():
-		cae_filters = autoencoder.W.eval()
+		cae_filters = autoencoder.conv_weights.eval()
+
+	cae_filters = cae_filters[0]
 
 	num_filters = cae_filters.shape[3]
 
@@ -166,29 +166,50 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 		if not os.path.exists(dir_path):
 			os.makedirs(dir_path)
 
-	with sess.as_default():
-		cae_filters = autoencoder.W.eval()
-
-	num_filters = cae_filters.shape[3]
+	cae_filters = []
+	walkthrough = []
 
 	if use_training_set:
 		dataset = mnist.train.images
 	else:
 		dataset = mnist.test.images
 
-	encoding, reconst = sess.run([autoencoder.encoding, autoencoder.reconstruction], feed_dict={input_placeholder: dataset[0:100].reshape(100, 28, 28, 1)})
+	encoding, reconst, error, walkthrough = sess.run([autoencoder.encoding, autoencoder.reconstruction, autoencoder.error, autoencoder.model_walkthrough], feed_dict={input_placeholder: dataset[0:num_images].reshape(num_images, 28, 28, 1)})
+
+	print 'jener error: ', np.mean(error)
+
+
+	with sess.as_default():
+		for cw in autoencoder.conv_weights:
+			cae_filters.append(cw.eval())
+
+
+	print len(cae_filters), len(walkthrough)
+
+	# workaround to make old code work
+	# TODO: change the visualization to be able to show all filters + feature maps
+	cae_filters = cae_filters[0]
+
+
+	num_filters = cae_filters.shape[3]
+
 
 	if autoencoder.use_max_pooling:
-		code_dimx = 14
+		code_dimx = 7
 	else:
 		code_dimx = 28
 
-
 	code_dimy = code_dimx
+
+	print 'cae_filters.shape = ', cae_filters[0].shape
+	print 'encoding.shape    = ', encoding.shape
+	print 'reconst.shape     = ', reconst.shape
 
 	print 'save {} example images to file'.format(num_images)
 
 	for i in range(num_images):
+
+		print '...treating image {}'.format(i)
 
 		fig = plt.figure(figsize=(10 * num_filters , 40))
 
