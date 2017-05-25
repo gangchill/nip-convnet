@@ -22,7 +22,8 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
-	restore_weights_if_existant = False
+	restore_weights_if_existant = True # ATTENTION: currently simply restores the weights from the last run if True
+	# TODO: adapt filename to the more complex setup 
 
 	# import mnist data set
 	from tensorflow.examples.tutorials.mnist import input_data
@@ -49,11 +50,11 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 10
+	max_iterations 	= 100
 	chk_iterations  = 100
 
 
-	weight_file_name = 'jenes_weightfile.ru' # = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
+	weight_file_name = 'last_weights' # = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
