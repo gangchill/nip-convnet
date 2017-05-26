@@ -168,7 +168,7 @@ class CAE:
 
 				else:
 					# conv2d_transpose without upsampling 
-					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, self.conv_weights[layer], self.pre_conv_shapes[layer], self.strides[layer]), self.c, name='reconstruction_preact_{}'.format(layer))
+					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, self.conv_weights[layer], self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
 
 				# ACTIVATION
 				if layer > 0:

@@ -36,11 +36,11 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(7,7), (3,3)]
-	hidden_channels = [4,6] 
+	filter_dims 	= [(7,7), (7,7)]
+	hidden_channels = [4,4] 
 	use_max_pooling = True
 	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	activation_function = 'tanh'
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
@@ -50,7 +50,7 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 1000
+	max_iterations 	= 10
 	chk_iterations  = 100
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations)
@@ -79,7 +79,7 @@ def main():
 
 	# visualize_cae_filters(sess, autoencoder)
 
-	visualize_ae_representation(sess, x_image, autoencoder, mnist, 3)
+	visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
 
 
 	# add logwriter for tensorboard
@@ -97,7 +97,7 @@ def get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activati
 	if use_max_pooling:
 		mp_identifier = '-max_pooling'
 	else:
-		mp_dientifier = ''
+		mp_identifier = ''
 
 	architecture_identifier = '({}-{}{}-{})'.format(filter_dims_identifier, hidden_channels_identifier, mp_identifier, activation_function)
 
@@ -223,6 +223,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 	print('cae_filters.shape = {}'.format(cae_filters[0].shape))
 	print('encoding.shape    = {}'.format(encoding.shape))
 	print('reconst.shape     = {}'.format(reconst.shape))
+	print('walkthrough shapes = {}'.format(map(np.shape, walkthrough)))
 
 	print('save {} example images to file'.format(num_images))
 
@@ -230,7 +231,44 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		print('...treating image {}'.format(i))
 
+		print('representation walkthrough')
+
 		fig = plt.figure(figsize=(10 * num_filters , 40))
+
+		max_size 			= np.max(np.array(autoencoder.hidden_channels))
+		hidden_layer_count 	= len(walkthrough)
+		
+		rows = hidden_layer_count + 2
+		cols = max_size
+
+		# plot input
+		plt.subplot(rows, 1, 1)
+		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.axis('off')
+
+		# plot reconstruction
+		plt.subplot(rows,1 , rows)
+		plt.imshow(reconst[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.axis('off')
+
+		for c in range(hidden_layer_count):
+			hc_size = walkthrough[c].shape[3]
+			for r in range(hc_size):
+
+				# plot feature map of filter r in the c-th hidden layer
+				plt.subplot(rows,hc_size, (c + 1) * hc_size + r + 1)
+				plt.imshow(walkthrough[c][i,:,:,r], cmap='gray', interpolation='none')
+				plt.axis('off')
+
+
+		# plt.tight_layout()
+		plt.savefig(os.path.join('digit_reconstructions', 'cae_example{}_feature_maps.png'.format(i)))
+		plt.close(fig)
+
+		print('filter + representation')
+		fig = plt.figure(figsize=(10 * num_filters , 40))
+
+
 
 		plt.subplot(4,1,1)
 		# plt.title('input image', fontsize=fontsize)
@@ -258,9 +296,9 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 			plt.subplot(4,num_filters, 2 * num_filters + f + 1)
 
 			if common_scaling:
-				plt.imshow(encoding[i,:,:,f].reshape(code_dimx, code_dimy), cmap='gray', interpolation='None', norm=norm_encodings)
+				plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None', norm=norm_encodings)
 			else:
-				plt.imshow(encoding[i,:,:,f].reshape(code_dimx, code_dimy), cmap='gray', interpolation='None')
+				plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None')
 
 			plt.axis('off')
 
