@@ -66,5 +66,5 @@ general questions:
 
 Simple TODOS:
 * plot L2 norm during training instead of aggregated cross-entropy
-* add license to github project and make it public
 * only save the weights of the encoder for the best test performance (atm the last weights are stored)
+* update weight file name for saving (should be unique for a certain architecture/training combination) 
