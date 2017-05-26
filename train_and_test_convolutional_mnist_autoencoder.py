@@ -220,9 +220,9 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	code_dimy = code_dimx
 
-	print('cae_filters.shape = ', cae_filters[0].shape)
-	print('encoding.shape    = ', encoding.shape)
-	print('reconst.shape     = ', reconst.shape)
+	print('cae_filters.shape = {}'.format(cae_filters[0].shape))
+	print('encoding.shape    = {}'.format(encoding.shape))
+	print('reconst.shape     = {}'.format(reconst.shape))
 
 	print('save {} example images to file'.format(num_images))
 
