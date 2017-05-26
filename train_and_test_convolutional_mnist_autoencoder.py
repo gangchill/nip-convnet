@@ -40,7 +40,7 @@ def main():
 	hidden_channels = [4,6] 
 	use_max_pooling = True
 	strides = None # other strides should not work yet
-	activation_function = 'sigmoid'
+	activation_function = 'relu'
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
@@ -50,11 +50,11 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 100
+	max_iterations 	= 1000
 	chk_iterations  = 100
 
+	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations)
 
-	weight_file_name = 'last_weights' # = 'cae_weights_{}_{}_{}_{}.ckpt'.format(filter_height, filter_width, num_feature_maps, max_iterations)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
@@ -63,7 +63,7 @@ def main():
 		chkpnt_file_path = os.path.join(cwd, cae_weights_dir, weight_file_name)
 
 		if os.path.exists(chkpnt_file_path + '.index'):
-			print 'Model file for same configuration was found ... load weights'
+			print('Model file for same configuration was found ... load weights')
 
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)			
 
@@ -75,7 +75,7 @@ def main():
 		train_ae(sess, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
 	
 
-	print 'Test the training:'
+	print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
 
@@ -87,6 +87,24 @@ def main():
 	writer.close()
 
 	sess.close()
+
+def get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations):
+	# define unique file name for architecture + training combination
+
+	# architecture:
+	filter_dims_identifier 		= reduce(lambda x,y: '{}|{}'.format(x,y), map(lambda (x,y): '{},{}'.format(x,y), filter_dims))
+	hidden_channels_identifier 	= reduce(lambda x,y: '{}|{}'.format(x,y), hidden_channels)
+	if use_max_pooling:
+		mp_identifier = '-max_pooling'
+	else:
+		mp_dientifier = ''
+
+	architecture_identifier = '({}-{}{}-{})'.format(filter_dims_identifier, hidden_channels_identifier, mp_identifier, activation_function)
+
+	# training:
+	training_identifier = '({},{})'.format(batch_size, max_iterations)
+
+	return '{}-{}'.format(architecture_identifier, training_identifier)
 
 
 def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size=100, max_iterations=1000, chk_iterations=500):
@@ -107,7 +125,7 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_d
 	  sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
 
 	  if chk_iterations > 100 and i % 100 == 0:
-	  	print '...iteration {}'.format(i)
+	  	print('...iteration {}'.format(i))
 
 	  
 	  if i % chk_iterations == 0:
@@ -117,10 +135,10 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_d
 		print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
 
 
-	print '...finished training'
+	print('...finished training')
 
 	autoencoder.store_model_to_file(sess, os.path.join(cae_weights_dir, weight_file_name))
-	print '...saved model to file'
+	print('...saved model to file')
 
 
 def visualize_cae_filters(sess, autoencoder): 
@@ -132,7 +150,7 @@ def visualize_cae_filters(sess, autoencoder):
 		if not os.path.exists(dir_path):
 			os.makedirs(dir_path)
 
-	print 'save the filters to file:'
+	print('save the filters to file:')
 
 	with sess.as_default():
 		cae_filters = autoencoder.conv_weights.eval()
@@ -177,7 +195,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	encoding, reconst, error, walkthrough = sess.run([autoencoder.encoding, autoencoder.reconstruction, autoencoder.error, autoencoder.model_walkthrough], feed_dict={input_placeholder: dataset[0:num_images].reshape(num_images, 28, 28, 1)})
 
-	print 'jener error: ', np.mean(error)
+	print('jener error: ', np.mean(error))
 
 
 	with sess.as_default():
@@ -185,7 +203,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 			cae_filters.append(cw.eval())
 
 
-	print len(cae_filters), len(walkthrough)
+	print(len(cae_filters), len(walkthrough))
 
 	# workaround to make old code work
 	# TODO: change the visualization to be able to show all filters + feature maps
@@ -202,15 +220,15 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	code_dimy = code_dimx
 
-	print 'cae_filters.shape = ', cae_filters[0].shape
-	print 'encoding.shape    = ', encoding.shape
-	print 'reconst.shape     = ', reconst.shape
+	print('cae_filters.shape = ', cae_filters[0].shape)
+	print('encoding.shape    = ', encoding.shape)
+	print('reconst.shape     = ', reconst.shape)
 
-	print 'save {} example images to file'.format(num_images)
+	print('save {} example images to file'.format(num_images))
 
 	for i in range(num_images):
 
-		print '...treating image {}'.format(i)
+		print('...treating image {}'.format(i))
 
 		fig = plt.figure(figsize=(10 * num_filters , 40))
 
