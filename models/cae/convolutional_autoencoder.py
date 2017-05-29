@@ -51,7 +51,7 @@ class CAE:
 		print('Initializing conv autoencoder')
 		with tf.name_scope('CAE'):
 			self.optimize
-			self.reconstruction
+			self.error
 
 	@property
 	def encoding(self):
@@ -117,7 +117,7 @@ class CAE:
 		if self._error is None:
 			print('initialize error')
 
-			self._error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
+			self._error = tf.reduce_mean(tf.squared_difference(self.reconstruction, self.data), name='mean-squared_error')
 
 		return self._error
 
@@ -131,7 +131,9 @@ class CAE:
 			# TODO: make step size modifiable
 			step_size = 0.001
 
-			self._optimize = tf.train.GradientDescentOptimizer(step_size).minimize(self.error)
+			ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
+
+			self._optimize = tf.train.GradientDescentOptimizer(step_size).minimize(ce_error)
 
 		return self._optimize
 

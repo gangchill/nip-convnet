@@ -36,11 +36,11 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(7,7), (7,7)]
-	hidden_channels = [4,4] 
+	filter_dims 	= [(5,5), (5,5)] # [(5,5), (5,5)]
+	hidden_channels = [5, 5] # [32,64] 
 	use_max_pooling = True
 	strides = None # other strides should not work yet
-	activation_function = 'tanh'
+	activation_function = 'rect'
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
@@ -50,7 +50,7 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 10
+	max_iterations 	= 1000
 	chk_iterations  = 100
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations)
@@ -195,7 +195,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	encoding, reconst, error, walkthrough = sess.run([autoencoder.encoding, autoencoder.reconstruction, autoencoder.error, autoencoder.model_walkthrough], feed_dict={input_placeholder: dataset[0:num_images].reshape(num_images, 28, 28, 1)})
 
-	print('jener error: ', np.mean(error))
+	print('jener error: ', error)
 
 
 	with sess.as_default():

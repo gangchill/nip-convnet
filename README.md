@@ -33,6 +33,7 @@ Tutorials:
 What do we have so far?
 *  simple fully-connected autoencoder (unclear whether it needs regularization)
 *  generic convolutional autoencoder (deeper architectures with max-pooling possible) however, the reconstruction currently doesn't work for deeper structures (see issues) 
+*  generic convolutional neural network that uses convolutional and max-pooling layers for feature extraction and dense layers for classification
 
 next steps:
 * test the convolutional autoencoder class for deeper structures
@@ -42,8 +43,6 @@ next steps:
 	* get setup that lets us train a (convolutional) neural network 
 	* make it possible to load weights stored by the autoencoder if the architecture is fitting
 	* make it possible to set enable/disable the learning of these wheigts in the training
-	* architecture should be generic, the simplest way to test would be to add a fully-connected layer after the encoding layers of the autoencoder
-	* it would probably be good to start with the fully-connected autoencoder for the sake of simplicity
 
 * regularizing the conv autoencoder
 

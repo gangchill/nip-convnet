@@ -46,9 +46,9 @@ def main():
 
 	# training parameters:
 	batch_size 		= 50
-	max_iterations	= 1000
-	chk_iterations 	= 100
-	dropout_k_p		= 1.0
+	max_iterations	= 20000
+	chk_iterations 	= 1000
+	dropout_k_p		= 0.5
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
