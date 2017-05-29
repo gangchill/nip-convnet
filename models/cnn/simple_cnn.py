@@ -139,16 +139,22 @@ class SCNN:
 
 				dense_preact 	= tf.add(tf.matmul(tmp_tensor, W), b, name='dense_{}_preact'.format(d_ind))
 				
-				if self.activation_function =='relu':
-					dense_act = tf.nn.relu(dense_preact, name='dense_{}_act'.format(d_ind))
-				
+				if d_ind != len(self.dense_depths) - 1:
+
+					if self.activation_function =='relu':
+						dense_act = tf.nn.relu(dense_preact, name='dense_{}_act'.format(d_ind))
+					
+					else:
+						dense_act = tf.nn.sigmoid(dense_preact, name='dense_{}_act'.format(d_ind))
+
+					# add dropout regularization
+					dense_act_drop = tf.nn.dropout(dense_act, self.keep_prob)
+
+					tmp_tensor = dense_act_drop
+
 				else:
-					dense_act = tf.nn.sigmoid(dense_preact, name='dense_{}_act'.format(d_ind))
 
-				# add dropout regularization
-				dense_act_drop = tf.nn.dropout(dense_act, self.keep_prob)
-
-				tmp_tensor = dense_act_drop
+					tmp_tensor = dense_preact
 
 			self._logits = tmp_tensor
 
