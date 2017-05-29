@@ -53,12 +53,5 @@ next steps:
 		* the stacked conv autoencoder paper also suggests a layerwise training, unclear if absolutely needed
 		* in order to implement this, we need to find a way to fix some variables during the training (there seems to be a flag to set weights trainable, otherwise we would maybe need to choose an adaptive learning rate of 0 or sth like that)
 
-general questions:
-* activation functions to use
-	* sigmoid 	(our first autoencoder versions use it and it needs to be used in the last layer)
-	* tanh		(needs to be scaled to [0,1]? as described in stacked ae paper)
-	* rect 		(often used in practise, i think we should use this)
-
 Simple TODOS:
-* plot L2 norm during training instead of aggregated cross-entropy
 * only save the weights of the encoder for the best test performance (atm the last weights are stored)
