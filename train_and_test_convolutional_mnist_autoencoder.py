@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
+from functools import reduce
 
 # import the simple autoencoder class from SAE.py
 from models.cae.convolutional_autoencoder import CAE
@@ -92,7 +93,7 @@ def get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activati
 	# define unique file name for architecture + training combination
 
 	# architecture:
-	filter_dims_identifier 		= reduce(lambda x,y: '{}|{}'.format(x,y), map(lambda (x,y): '{},{}'.format(x,y), filter_dims))
+	filter_dims_identifier 		= reduce(lambda x,y: '{}|{}'.format(x,y), map(lambda xy: '{},{}'.format(xy[0],xy[1]), filter_dims))
 	hidden_channels_identifier 	= reduce(lambda x,y: '{}|{}'.format(x,y), hidden_channels)
 	if use_max_pooling:
 		mp_identifier = '-max_pooling'
@@ -121,18 +122,18 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_d
 
 	for i in range(max_iterations):
 
-	  batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-	  sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
+		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+		sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
 
-	  if chk_iterations > 100 and i % 100 == 0:
-	  	print('...iteration {}'.format(i))
+		if chk_iterations > 100 and i % 100 == 0:
+			print('...iteration {}'.format(i))
 
 	  
-	  if i % chk_iterations == 0:
+		if i % chk_iterations == 0:
 
-		avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
+			avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
 
-		print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
+			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
 
 
 	print('...finished training')

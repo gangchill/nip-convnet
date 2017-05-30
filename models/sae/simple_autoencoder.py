@@ -5,7 +5,7 @@ class SAE:
 
 	def __init__(self, data, hidden_layer_size):
 
-		print 'Initializing autoencoder with hidden layer size {}'.format(hidden_layer_size)
+		print('Initializing autoencoder with hidden layer size {}'.format(hidden_layer_size))
 
 		self.data = data
 
@@ -24,7 +24,7 @@ class SAE:
 
 		if self._encoding is None:
 
-			print 'initialize encoding'
+			print('initialize encoding')
 
 			with tf.name_scope('autoencoder_network'):
 				# TODO: switch to gaussian or xavier init instead of uniform
@@ -46,7 +46,7 @@ class SAE:
 		# returns the training error node (cross-entropy) used for the training and testing
 
 		if self._error is None:
-			print 'initialize error'
+			print('initialize error')
 
 			reconstruction = tf.add(tf.matmul(self.encoding, tf.transpose(self.W)), self.c, name='reconstruction_without_sigmoid')
 			self._error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=reconstruction, name='cross-entropy_error')
@@ -58,7 +58,7 @@ class SAE:
 		# returns the cross-entropy node we use for the optimization
 
 		if self._optimize is None:
-			print 'initialize optimizer'
+			print('initialize optimizer')
 
 			# TODO: make step size modifiable
 			step_size = 0.001
@@ -72,7 +72,7 @@ class SAE:
 		# returns the reconstruction node that contains the reconstruction of the input
 
 		if self._reconstruction is None:
-			print 'initialize reconstruction'
+			print('initialize reconstruction')
 
 			self._reconstruction = tf.nn.sigmoid(tf.matmul(self.encoding, tf.transpose(self.W)) + self.c, name='reconstruction')
 		return self._reconstruction
@@ -83,7 +83,7 @@ class SAE:
 		saver = tf.train.Saver()
 		save_path = saver.save(sess, path_to_file)
 
-		print 'Model was saved in {}'.format(save_path)
+		print('Model was saved in {}'.format(save_path))
 
 		return save_path
 
@@ -92,4 +92,4 @@ class SAE:
 		saver = tf.train.Saver()
 		saver.restore(sess, path_to_file)
 
-		print 'Restored model from {}'.format(path_to_file)
+		print('Restored model from {}'.format(path_to_file))

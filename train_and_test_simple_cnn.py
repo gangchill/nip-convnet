@@ -68,19 +68,19 @@ def train_cnn(sess, cnn, mnist, x, y, keep_prob, dropout_k_p, batch_size, max_it
 
 	for i in range(max_iterations):
 
-	  batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
 
-	  sess.run(cnn.optimize, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
+		sess.run(cnn.optimize, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
 
-	  if chk_iterations > 100 and i % 100 == 0:
-	  	print('...iteration {}'.format(i))
+		if chk_iterations > 100 and i % 100 == 0:
+			print('...iteration {}'.format(i))
 
-	  
-	  if i % chk_iterations == 0:
 
-		avg_r_e = sess.run(cnn.accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
+		if i % chk_iterations == 0:
 
-		print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
+			avg_r_e = sess.run(cnn.accuracy, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
+
+			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
 
 
 	print('...finished training')

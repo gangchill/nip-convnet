@@ -35,7 +35,7 @@ def main():
 	# construct autoencoder
 	autoencoder = SAE(x, hidden_layer_size)
 
-	print 'call the properties to initialize the graph'
+	print('call the properties to initialize the graph')
 	autoencoder.optimize
 	autoencoder.reconstruction
 
@@ -54,7 +54,7 @@ def main():
 		chkpnt_file_path = os.path.join(cwd, sae_weights_dir, '{}_autoencoder_{}it.ckpt'.format(autoencoder.hidden_layer_size, max_iterations))
 
 		if os.path.exists(chkpnt_file_path + '.index'):
-			print 'Model file for same configuration was found ... load weights'
+			print('Model file for same configuration was found ... load weights')
 
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)			
 
@@ -66,7 +66,7 @@ def main():
 		train_ae(sess, x, autoencoder, mnist, sae_dir, sae_weights_dir, batch_size, max_iterations, chk_iterations)
 	
 
-	print 'Test the training:'
+	print('Test the training:')
 
 	visualize_ae_representation(sess, x, autoencoder, mnist, 1)
 
@@ -92,23 +92,23 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, sae_dir, sae_weights_d
 
 	for i in range(max_iterations):
 
-	  batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-	  sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
+		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+		sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
 
-	  if chk_iterations > 100 and i % 100 == 0:
-	  	print '...iteration {}'.format(i)
+		if chk_iterations > 100 and i % 100 == 0:
+			print('...iteration {}'.format(i))
 
-	  if i % chk_iterations == 0:
+		if i % chk_iterations == 0:
 
-		avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
+			avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
 
-		print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
+			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
 
 
-	print '...finished training'
+	print('...finished training')
 
 	autoencoder.store_model_to_file(sess, os.path.join(sae_weights_dir, '{}_sae_{}it'.format(autoencoder.hidden_layer_size, max_iterations)))
-	print '...saved model to file'
+	print('...saved model to file')
 
 def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num_images):
 
@@ -125,7 +125,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 	code_dimx = int(autoencoder.hidden_layer_size**.5)
 
-	print 'save {} example images to file'.format(num_images)
+	print('save {} example images to file'.format(num_images))
 
 	for i in range(num_images):
 
