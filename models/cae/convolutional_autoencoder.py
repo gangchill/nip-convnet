@@ -3,7 +3,7 @@ import tensorflow as tf
 class CAE: 
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, strides = None, use_max_pooling = True, activation_function = 'sigmoid', store_model_walkthrough = False):
+	def __init__(self, data, filter_dims, hidden_channels, strides = None, use_max_pooling = True, activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -27,10 +27,21 @@ class CAE:
 		self.use_max_pooling 		= use_max_pooling
 		self.activation_function	= activation_function
 
+		self.tie_conv_weights = tie_conv_weights
+
+		self.add_tensorboard_summary = add_tensorboard_summary
+
 		# init lists that will store weights and biases for the convolution operations
 		self.conv_weights 	= []
 		self.conv_biases	= []
+		self.reconst_weights= []
 		self.reconst_biases = []
+
+		self.weight_init_stddev 	= 0.15
+		self.weight_init_mean 		= 0
+		self.initial_bias_value 	= 0.0001
+		self.step_size 				= 0.0001
+
 
 		# init list to store the shapes in the forward pass for the conv2d_transpose operations
 		self.pre_conv_shapes = []
@@ -52,6 +63,9 @@ class CAE:
 		with tf.name_scope('CAE'):
 			self.optimize
 			self.error
+
+		if self.add_tensorboard_summary:
+			self.merged = tf.summary.merge_all()
 
 	@property
 	def encoding(self):
@@ -80,8 +94,14 @@ class CAE:
 				# initialize weights and biases:
 				filter_shape = [self.filter_dims[layer][0], self.filter_dims[layer][1], in_channels, out_channels]
 
-				W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name='conv{}_weights'.format(layer))
-				b = tf.Variable(tf.constant(0.1, shape=[out_channels]), name='conv{}_bias'.format(layer))
+				W = tf.Variable(tf.truncated_normal(filter_shape, mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
+				b = tf.Variable(tf.constant(self.initial_bias_value, shape=[out_channels]), name='conv{}_bias'.format(layer))
+
+				if self.add_tensorboard_summary and layer == 0:
+					# visualize first layer filters
+
+					tf.summary.image('first filter', W[None, :,:,0,0, None])
+
 
 				self.conv_weights.append(W)
 				self.conv_biases.append(b)
@@ -94,6 +114,9 @@ class CAE:
 				# ACTIVATION
 				if self.activation_function == 'relu':
 					conv_act = tf.nn.relu(conv_preact, name='conv_{}_activation'.format(layer))
+
+				# TODO: try shifted tanh function 
+				# elif self.activation_function == 'stanh':
 
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
@@ -108,6 +131,9 @@ class CAE:
 
 			self._encoding = tmp_tensor
 
+			if self.add_tensorboard_summary:
+				tf.summary.histogram('encoding histogram', self._encoding)
+
 		return self._encoding
 
 	@property
@@ -119,6 +145,9 @@ class CAE:
 
 			self._error = tf.reduce_mean(tf.squared_difference(self.reconstruction, self.data), name='mean-squared_error')
 
+			if self.add_tensorboard_summary:
+				tf.summary.scalar('mean squared error', self._error)
+
 		return self._error
 
 	@property
@@ -129,7 +158,7 @@ class CAE:
 			print('initialize optimizer')
 
 			# TODO: make step size modifiable
-			step_size = 0.001
+			step_size = self.step_size
 
 			ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
 
@@ -159,18 +188,24 @@ class CAE:
 				else:
 					channels = self.hidden_channels[layer - 1]
 
+
+				if not self.tie_conv_weights:
+					W = tf.Variable(tf.truncated_normal(tf.shape(self.conv_weights[layer]), mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
+				else:
+					W = self.conv_weights[layer]
+
 				# init reconstruction bias
-				c = tf.Variable(tf.constant(0.1, shape=[channels]), name='reconstruction_bias_{}'.format(layer))
+				c = tf.Variable(tf.constant(self.initial_bias_value, shape=[channels]), name='reconstruction_bias_{}'.format(layer))
 				self.reconst_biases.append(c)
 
 				if self.use_max_pooling:
 					# conv2d_transpose with upsampling
 					upsampling_strides = [1,2,2,1]
-					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, self.conv_weights[layer], self.pre_conv_shapes[layer], upsampling_strides), c, name='reconstruction_preact_{}'.format(layer))
+					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], upsampling_strides), c, name='reconstruction_preact_{}'.format(layer))
 
 				else:
 					# conv2d_transpose without upsampling 
-					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, self.conv_weights[layer], self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
+					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
 
 				# ACTIVATION
 				if layer > 0:

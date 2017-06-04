@@ -23,7 +23,7 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
-	restore_weights_if_existant = True # ATTENTION: currently simply restores the weights from the last run if True
+	restore_weights_if_existant = False # ATTENTION: currently simply restores the weights from the last run if True
 	# TODO: adapt filename to the more complex setup 
 
 	# import mnist data set
@@ -37,11 +37,11 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5)] # [(5,5), (5,5)]
-	hidden_channels = [5, 5] # [32,64] 
-	use_max_pooling = True
+	filter_dims 	= [(5,5)]
+	hidden_channels = [5] 
+	use_max_pooling = False
 	strides = None # other strides should not work yet
-	activation_function = 'rect'
+	activation_function = 'sigmoid'
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
@@ -51,11 +51,12 @@ def main():
 
 	print("Begin autencoder training")
 	batch_size 		= 100
-	max_iterations 	= 1000
-	chk_iterations  = 100
+	max_iterations 	= 100
+	chk_iterations  = 20
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations)
 
+	writer = tf.summary.FileWriter("logs", sess.graph)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
@@ -66,14 +67,14 @@ def main():
 		if os.path.exists(chkpnt_file_path + '.index'):
 			print('Model file for same configuration was found ... load weights')
 
-			autoencoder.load_model_from_file(sess, chkpnt_file_path)			
+			autoencoder.load_model_from_file(sess, chkpnt_file_path)
 
 		else:
-			train_ae(sess, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
+			train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
+		train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
 	
 
 	print('Test the training:')
@@ -84,7 +85,6 @@ def main():
 
 
 	# add logwriter for tensorboard
-	writer = tf.summary.FileWriter("logs", sess.graph)
 	writer.close()
 
 	sess.close()
@@ -108,7 +108,7 @@ def get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activati
 	return '{}-{}'.format(architecture_identifier, training_identifier)
 
 
-def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size=100, max_iterations=1000, chk_iterations=500):
+def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size=100, max_iterations=1000, chk_iterations=500):
 
 	print('...checking folder structure')
 	folders = ['models', cae_dir, cae_weights_dir]
@@ -131,9 +131,11 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, cae_dir, cae_weights_d
 	  
 		if i % chk_iterations == 0:
 
-			avg_r_e = sess.run(autoencoder.error, feed_dict={input_placeholder: mnist.test.images})
+			summary, avg_r_e = sess.run([autoencoder.merged, autoencoder.error], feed_dict={input_placeholder: mnist.test.images})
 
 			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
+
+			writer.add_summary(summary, i)
 
 
 	print('...finished training')
@@ -275,6 +277,8 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 		# plt.title('input image', fontsize=fontsize)
 		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
 		plt.axis('off')
+
+		print 'minimum_filter_value: ', np.min(cae_filters[:,:,0,:]) 
 
 		max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
 		max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))
