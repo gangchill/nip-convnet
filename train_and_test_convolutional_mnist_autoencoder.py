@@ -23,7 +23,7 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
-	restore_weights_if_existant = False # ATTENTION: currently simply restores the weights from the last run if True
+	restore_weights_if_existant = False
 	# TODO: adapt filename to the more complex setup 
 
 	# import mnist data set
@@ -37,26 +37,35 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5)]
-	hidden_channels = [5] 
-	use_max_pooling = False
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [8, 16] 
+	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
-	activation_function = 'sigmoid'
+	activation_function = 'relu'
+
+	batch_size 		= 100
+	max_iterations 	= 1000
+	chk_iterations  = 100
+	step_size 		= 0.000001
+
+	tie_conv_weights = False
+
+	folder_name = 'dcae_strided_conv_relu_nwt'
+	run_name 	= 'dcae_{}_{}_{}'.format(max_iterations, batch_size, step_size)
+
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, strides, use_max_pooling, activation_function, store_model_walkthrough = True)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
 
 	print("Begin autencoder training")
-	batch_size 		= 100
-	max_iterations 	= 100
-	chk_iterations  = 20
+	
 
-	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations)
+	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations)
 
-	writer = tf.summary.FileWriter("logs", sess.graph)
+	writer = tf.summary.FileWriter("logs/{}/{}".format(folder_name, run_name), sess.graph)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
@@ -77,10 +86,9 @@ def main():
 		train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
 	
 
-	print('Test the training:')
+	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-
 	visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
 
 
@@ -89,16 +97,14 @@ def main():
 
 	sess.close()
 
-def get_weight_file_name(filter_dims, hidden_channels, use_max_pooling, activation_function, batch_size, max_iterations):
+def get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations):
 	# define unique file name for architecture + training combination
 
 	# architecture:
 	filter_dims_identifier 		= reduce(lambda x,y: '{}|{}'.format(x,y), map(lambda xy: '{},{}'.format(xy[0],xy[1]), filter_dims))
 	hidden_channels_identifier 	= reduce(lambda x,y: '{}|{}'.format(x,y), hidden_channels)
-	if use_max_pooling:
-		mp_identifier = '-max_pooling'
-	else:
-		mp_identifier = ''
+	
+	mp_identifier = pooling_type
 
 	architecture_identifier = '({}-{}{}-{})'.format(filter_dims_identifier, hidden_channels_identifier, mp_identifier, activation_function)
 
@@ -216,7 +222,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 	num_filters = cae_filters.shape[3]
 
 
-	if autoencoder.use_max_pooling:
+	if autoencoder.pooling_type == 'max_pooling' or autoencoder.pooling_type == 'strided_conv':
 		code_dimx = 7
 	else:
 		code_dimx = 28

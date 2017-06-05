@@ -1,9 +1,9 @@
 import tensorflow as tf 
 
-class CAE: 
+class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, strides = None, use_max_pooling = True, activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -21,10 +21,15 @@ class CAE:
 
 		self.filter_dims 		= filter_dims 		# height and width of the conv kernels 	for each layer
 		self.hidden_channels 	= hidden_channels	# number of feature maps 				for each layer
+		
 		if strides is None:
-			self.strides = [[1,1,1,1] for filter in filter_dims]
+			if pooling_type == 'strided_conv':
+				self.strides = [[1,2,2,1] for filter in filter_dims]
+			else:
+				self.strides = [[1,1,1,1] for filter in filter_dims]
 
-		self.use_max_pooling 		= use_max_pooling
+
+		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
 
 		self.tie_conv_weights = tie_conv_weights
@@ -37,10 +42,10 @@ class CAE:
 		self.reconst_weights= []
 		self.reconst_biases = []
 
-		self.weight_init_stddev 	= 0.15
-		self.weight_init_mean 		= 0
+		self.weight_init_stddev 	= 0.00015
+		self.weight_init_mean 		= 0.00000001
 		self.initial_bias_value 	= 0.0001
-		self.step_size 				= 0.0001
+		self.step_size 				= step_size
 
 
 		# init list to store the shapes in the forward pass for the conv2d_transpose operations
@@ -100,7 +105,8 @@ class CAE:
 				if self.add_tensorboard_summary and layer == 0:
 					# visualize first layer filters
 
-					tf.summary.image('first filter', W[None, :,:,0,0, None])
+					for fltr_indx in range(out_channels):
+						tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None])
 
 
 				self.conv_weights.append(W)
@@ -115,6 +121,9 @@ class CAE:
 				if self.activation_function == 'relu':
 					conv_act = tf.nn.relu(conv_preact, name='conv_{}_activation'.format(layer))
 
+					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
+					tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons)
+
 				# TODO: try shifted tanh function 
 				# elif self.activation_function == 'stanh':
 
@@ -122,7 +131,7 @@ class CAE:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
 
 				# POOLING (2x2 max pooling)
-				if self.use_max_pooling:
+				if self.pooling_type == 'max_pooling':
 					pool_out = tf.nn.max_pool(conv_act, [1,2,2,1], [1,2,2,1], padding='SAME', name='max_pool_{}'.format(layer))
 					tmp_tensor = pool_out
 
@@ -198,7 +207,7 @@ class CAE:
 				c = tf.Variable(tf.constant(self.initial_bias_value, shape=[channels]), name='reconstruction_bias_{}'.format(layer))
 				self.reconst_biases.append(c)
 
-				if self.use_max_pooling:
+				if self.pooling_type == 'max_pooling':
 					# conv2d_transpose with upsampling
 					upsampling_strides = [1,2,2,1]
 					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], upsampling_strides), c, name='reconstruction_preact_{}'.format(layer))
@@ -219,6 +228,9 @@ class CAE:
 
 				else:
 					self._logit_reconstruction = reconst_preact
+
+			if self.add_tensorboard_summary:
+				tf.summary.histogram('logit reconstruction', self._logit_reconstruction)
 
 		return self._logit_reconstruction
 
