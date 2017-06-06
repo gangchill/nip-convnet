@@ -32,6 +32,10 @@ class CAE:
 		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
 
+		self.hl_reconstruction_activation_function = self.activation_function
+
+		self.output_reconstruction_activation	= 'scaled_tanh'
+
 		self.tie_conv_weights = tie_conv_weights
 
 		self.add_tensorboard_summary = add_tensorboard_summary
@@ -42,8 +46,8 @@ class CAE:
 		self.reconst_weights= []
 		self.reconst_biases = []
 
-		self.weight_init_stddev 	= 0.00015
-		self.weight_init_mean 		= 0.00000001
+		self.weight_init_stddev 	= 0.000015
+		self.weight_init_mean 		= 0.0001
 		self.initial_bias_value 	= 0.0001
 		self.step_size 				= step_size
 
@@ -117,6 +121,8 @@ class CAE:
 				# PREACTIVATION
 				conv_preact = tf.add(tf.nn.conv2d(tmp_tensor, W, strides = self.strides[layer], padding='SAME'),  b, name='conv_{}_preactivation'.format(layer))
 
+				tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact)
+
 				# ACTIVATION
 				if self.activation_function == 'relu':
 					conv_act = tf.nn.relu(conv_preact, name='conv_{}_activation'.format(layer))
@@ -169,7 +175,13 @@ class CAE:
 			# TODO: make step size modifiable
 			step_size = self.step_size
 
-			ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
+			if self.output_reconstruction_activation == 'scaled_tanh':
+
+				ce_error = -tf.reduce_sum(self.data * tf.log(self.reconstruction), name='cross-entropy_on_scaled_tanh')
+
+			else:
+
+				ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
 
 			self._optimize = tf.train.GradientDescentOptimizer(step_size).minimize(ce_error)
 
@@ -216,10 +228,12 @@ class CAE:
 					# conv2d_transpose without upsampling 
 					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
 
+				tf.summary.histogram('layer {} reconstruction preactivations'.format(layer), reconst_preact)
+
 				# ACTIVATION
 				if layer > 0:
 					# do not use the activation function in the last layer because we want the logits
-					if self.activation_function == 'relu':
+					if self.hl_reconstruction_activation_function == 'relu':
 						reconst_act = tf.nn.relu(reconst_preact, name='reconst_act')
 					else:
 						reconst_act = tf.nn.sigmoid(reconst_preact ,name='reconst_act')
@@ -241,9 +255,22 @@ class CAE:
 		if self._reconstruction is None:
 			print('initialize reconstruction')
 
-			self._reconstruction = tf.nn.sigmoid(self.logit_reconstruction, name='reconstruction')
+			if self.output_reconstruction_activation == 'scaled_tanh':
+
+				self._reconstruction = tf.add(tf.nn.tanh(self.logit_reconstruction) / 2, 0.5, name='scaled_tanh_reconstruction')
+
+			else:
+
+				self._reconstruction = tf.nn.sigmoid(self.logit_reconstruction, name='reconstruction')
 		
 		return self._reconstruction
+
+
+	def store_encoding_weights(self, sess, path_to_file):
+
+		# TODO: implement storage of all weights of the encoder part in order to pass them to the CNN
+		# it seems to be possible to give the tf.train.Saver a dictionary with all the variable names that should be stored
+		pass
 
 	def store_model_to_file(self, sess, path_to_file):
 

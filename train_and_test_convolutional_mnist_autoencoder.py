@@ -44,13 +44,13 @@ def main():
 	activation_function = 'relu'
 
 	batch_size 		= 100
-	max_iterations 	= 1000
-	chk_iterations  = 100
-	step_size 		= 0.000001
+	max_iterations 	= 10
+	chk_iterations  = 1
+	step_size 		= 0.0001
 
 	tie_conv_weights = False
 
-	folder_name = 'dcae_strided_conv_relu_nwt'
+	folder_name = 'dcae_stanh_test'
 	run_name 	= 'dcae_{}_{}_{}'.format(max_iterations, batch_size, step_size)
 
 
