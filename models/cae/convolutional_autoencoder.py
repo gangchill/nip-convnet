@@ -268,10 +268,16 @@ class CAE:
 
 
 	def store_encoding_weights(self, sess, path_to_file):
+		
+		conv_w_d = zip(['conv_W_{}'.format(i) for i in enumerate(self.conv_weights)], self.conv_weights)
+		conv_b_d = zip(['conv_b_{}'.format(i) for i in enumerate(self.conv_biases )], self.conv_biases)
 
-		# TODO: implement storage of all weights of the encoder part in order to pass them to the CNN
-		# it seems to be possible to give the tf.train.Saver a dictionary with all the variable names that should be stored
-		pass
+		conv_variable_dict = dict(conv_w_d + conv_b_d)
+
+		saver = tf.train.Saver(conv_variable_dict)
+		save_path = saver.save(sess, path_to_file)
+
+		print('Saved encoding weights to {}'.format(save_path))
 
 	def store_model_to_file(self, sess, path_to_file):
 

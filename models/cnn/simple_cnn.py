@@ -48,7 +48,7 @@ class SCNN:
 
 
 		self.add_tensorboard_summary = add_tensorboard_summary
-		
+
 		self.conv_weights_dict = {}
 		self.conv_biases_dict = {}
 		self.conv_merged_dict = {}
@@ -277,7 +277,7 @@ class SCNN:
 		return z
 
 	# store weights and biases separately in two simple dicts, and do a simple merge to create a new dict of weights and biases
-	def store_model_to_file(self, sess, path_to_file):
+	def store_model_to_file_v1(self, sess, path_to_file):
 
 		if len(self.conv_weights) > 0:
 			weights = dict(zip(['conv_w_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
@@ -317,7 +317,19 @@ class SCNN:
 		save_path = saver.save(sess, path_to_file)
 		return
 
+
+	def store_model_to_file(self, sess, path_to_file):
+		# store the whole model to file
+
+		saver = tf.train.Saver()
+		save_path = saver.save(sess, path_to_file)
+
+		print('Model was saved in {}'.format(save_path))
+
+		return save_path
+
 	def load_model_from_file(self, sess, path_to_file):
+
 
 		saver = tf.train.Saver()
 		saver.restore(sess, path_to_file)
@@ -329,9 +341,13 @@ class SCNN:
 
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
-		if self.conv_merged_dict is None:
-			self.store_model_to_file_v2(self, sess, path_to_file)
-		saver = tf.train.Saver(self.conv_merged_dict)
+		
+		conv_w_d = zip(['conv_W_{}'.format(i) for i in enumerate(self.conv_weights)], self.conv_weights)
+		conv_b_d = zip(['conv_b_{}'.format(i) for i in enumerate(self.conv_biases )], self.conv_biases)
+
+		conv_variable_dict = dict(conv_w_d + conv_b_d)
+
+		saver = tf.train.Saver(conv_variable_dict)
 		saver.restore(sess, path_to_file)
 
 		print('Restored model from {}'.format(path_to_file))
