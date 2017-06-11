@@ -253,8 +253,8 @@ class SCNN:
 		# similar to the CAE.store_encoding_weights() function
 		if self.conv_merged_dict is None:
 			self.store_model_to_file(self, sess, path_to_file)
-		saver = tf.train.Saver()
-		saver.restore(sess, self.conv_merged_dict)
+		saver = tf.train.Saver(self.conv_merged_dict)
+		saver.restore(sess, path_to_file)
 
 		print('Restored model from {}'.format(path_to_file))
 
