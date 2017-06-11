@@ -121,7 +121,8 @@ class CAE:
 				# PREACTIVATION
 				conv_preact = tf.add(tf.nn.conv2d(tmp_tensor, W, strides = self.strides[layer], padding='SAME'),  b, name='conv_{}_preactivation'.format(layer))
 
-				tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact)
+				if self.add_tensorboard_summary:
+					tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact)
 
 				# ACTIVATION
 				if self.activation_function == 'relu':
