@@ -5,6 +5,10 @@ Dependencies:
 * tensorflow (tested with 1.1.0 )
 * python 2.7 (tested with 2.7.12)
 * matplotlib (tested with 1.5.1 )
+* pandas (tested with 0.20.2)
+* Pillow (tested with 4.1.1)
+* scipy (tested with 0.19.0)
+* scikit-learn (tested with 0.18.1)
 
 To train and test a simple single-layer autoencoder on the MNIST dataset, simply call 'python train_and_test_simple_mnist_autoencoder.py'
 

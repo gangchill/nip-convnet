@@ -18,18 +18,31 @@ from scripts.train_cnn import train_cnn
 
 def main():
 
-	# load mnist
-	from tensorflow.examples.tutorials.mnist import input_data
-	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+	DATASET = "MNIST"
+
+	if DATASET == "MNIST":
+		# load mnist
+		from tensorflow.examples.tutorials.mnist import input_data
+		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		input_size = (28, 28)
+		num_classes = 10
+
+	elif DATASET == "CKPLUS":
+		import scripts.load_ckplus as load_ckplus
+		dataset = load_ckplus.read_data_sets(one_hot=True)
+		input_size = load_ckplus.INPUT_SIZE
+		num_classes = load_ckplus.NUM_CLASSES
+
 
 	# input variables: x (images), y_ (labels), keep_prob (dropout rate)
-	x  = tf.placeholder(tf.float32, [None, 784], name='input_digits')
-	y_ = tf.placeholder(tf.float32, [None, 10], name='target_labels')
+	x  = tf.placeholder(tf.float32, [None, input_size[0]*input_size[1]], name='input_digits')
+
+	y_ = tf.placeholder(tf.float32, [None, num_classes], name='target_labels')
 
 	keep_prob = tf.placeholder(tf.float32)
 
 	# reshape the input to NHWD format
-	x_image = tf.reshape(x, [-1, 28, 28, 1])
+	x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
 
 	# CNN parameters:
 
@@ -69,7 +82,7 @@ def main():
 	# add logwriter for tensorboard
 	writer = tf.summary.FileWriter(log_path, sess.graph)
 
-	train_cnn(sess, cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
+	train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
 
 
 	writer.close()
