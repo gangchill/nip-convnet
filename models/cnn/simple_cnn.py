@@ -38,8 +38,9 @@ class SCNN:
 		self.conv_weights 	= []
 		self.conv_biases	= []
 
-		self.encoding_weights_dict = {}
+		self.conv_weights_dict = {}
 		self.conv_biases_dict = {}
+		self.conv_merged_dict = {}
 
 		# TODO: implement storage of model walkthrough
 		self.store_model_walkthrough = store_model_walkthrough
@@ -213,39 +214,29 @@ class SCNN:
 
 		return self._accuracy
 
+	def merge_two_dicts(x, y):
+		"""Given two dicts, merge them into a new dict as a shallow copy."""
+		z = x.copy()
+		z.update(y)
+		return z
+
 	def store_model_to_file(self, sess, path_to_file):
 
-		# TODO: add store / save function to the class
-		# saver = tf.train.Saver()
-		# save_path = saver.save(sess, path_to_file)
+		if len(self.conv_weights) > 0:
+			weights = dict(zip(['conv_w_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
+			if weights is not None:
+				self.conv_weights_dict = weights
 
-		#print('Model was saved in {}'.format(save_path))
-		current_path = os.getcwd()
-		#return save_path
-		weights = dict(zip(['conv_w_'+str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
-		self.encoding_weights_dict = weights
+		if len(self.conv_biases) > 0:
+			biases = dict(zip(['conv_b_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
+			if biases is not None:
+				self.conv_biases_dict = biases
 
-		if self.encoding_weights_dict is not None:
-			with open(current_path+'/encoding_weights.csv', 'wb') as f:
-				w = csv.writer(f)
-				w.writerows(self.encoding_weights_dict.items())
+		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
+			self.conv_merged_dict=self.merge_two_dicts(self.conv_weights_dict, self.conv_biases_dict)
 
-			with open(current_path+'/encoding_weights_transposed.csv', 'wb') as f:
-				w = csv.writer(f)
-				w.writerow(self.encoding_weights_dict.keys())
-				w.writerow(self.encoding_weights_dict.values())
-
-		biases = dict(zip(['conv_b_'+str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
-		self.encoding_biases_dict = biases
-		if self.encoding_biases_dict is not None:
-			with open(current_path+'/encoding_biases.csv', 'wb') as f:
-				w = csv.writer(f)
-				w.writerows(self.encoding_biases_dict.items())
-
-			with open(current_path+'/encoding_biases_transposed.csv', 'wb') as f:
-				w = csv.writer(f)
-				w.writerow(self.encoding_biases_dict.keys())
-				w.writerow(self.encoding_biases_dict.values())
+		saver = tf.train.Saver(self.conv_merged_dict)
+		save_path = saver.save(sess, path_to_file)
 		return
 
 	def load_model_from_file(self, sess, path_to_file):
@@ -255,21 +246,13 @@ class SCNN:
 
 		print('Restored model from {}'.format(path_to_file))
 
-	def read_csv_as_dict(csv_file):
-		try:
-			reader = csv.reader(open(csv_file, 'r'))
-			param_dict = {}
-			for row in reader:
-				k, v = row
-				param_dict[k] = v
-		except IOError as e:
-			print("I/O error({0}): {1}".format(e.errno, e.strerror))
-		return param_dict
 
 	def load_encoding_weights(self, sess, path_to_file):
 
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
-		encoding_weights_dict = self.read_csv_as_dict(path_to_file)
-		return encoding_weights_dict
+		saver = tf.train.Saver()
+		saver.restore(sess, path_to_file)
+
+		print('Restored model from {}'.format(path_to_file))
 
