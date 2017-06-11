@@ -38,7 +38,7 @@ def main():
 	hidden_channels = [10] 
 	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	activation_function = 'sigmoid'
 
 	# fc-layer parameters:
 	dense_depths = []

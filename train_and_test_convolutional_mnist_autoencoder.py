@@ -42,11 +42,11 @@ def main():
 	hidden_channels = [8, 16] 
 	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	activation_function = 'sigmoid'
 
 	batch_size 		= 100
-	max_iterations 	= 10
-	chk_iterations  = 1
+	max_iterations 	= 1000
+	chk_iterations  = 100
 	step_size 		= 0.0001
 
 	tie_conv_weights = False
@@ -90,7 +90,7 @@ def main():
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
+	# visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
 
 
 	# add logwriter for tensorboard

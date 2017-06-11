@@ -35,8 +35,8 @@ def main():
 	## ##################### ##
 
 	# feature extraction (both CAE and CNN)
-	filter_dims 	= [(5,5)]
-	hidden_channels = [10] 
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [16, 32] 
 	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'sigmoid'
@@ -53,8 +53,8 @@ def main():
 
 	# currently, the same parameters are used for the training of the cae and the cnn
 	batch_size 		= 100
-	max_iterations	= 100
-	chk_iterations 	= 100
+	max_iterations	= 101
+	chk_iterations 	= 20
 	dropout_k_p		= 0.5
 	step_size 		= 0.001
 
@@ -81,6 +81,8 @@ def main():
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, strides, pooling_type, activation_function, tie_conv_weights)
 	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
 
+	# second cnn with the same structure that will be trained independently from the autoencoder
+	comparison_cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
 
 	## ###### ##
 	# TRAINING #
@@ -108,6 +110,12 @@ def main():
 	# train the cnn
 	train_cnn(sess, cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
 	print '...finished training the cnn'
+
+	train_cnn(sess, comparison_cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
+	print '...finished training comparison cnn'
+
+	# train the comparison cnn
+
 
 
 	writer.close()
