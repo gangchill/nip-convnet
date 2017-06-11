@@ -1,5 +1,6 @@
 import tensorflow as tf
 import csv, os
+import collections
 
 class SCNN: 
 	# simple convolutional neural network (same structure as cae with added fully-connected layers)
@@ -220,6 +221,7 @@ class SCNN:
 		z.update(y)
 		return z
 
+	# store weights and biases separately in two simple dicts, and do a simple merge to create a new dict of weights and biases
 	def store_model_to_file(self, sess, path_to_file):
 
 		if len(self.conv_weights) > 0:
@@ -239,6 +241,27 @@ class SCNN:
 		save_path = saver.save(sess, path_to_file)
 		return
 
+	# store weights and biases separately in two ordered dicts, and do a merge on same key to create a new dict of pairs of weights and biases
+	def store_model_to_file_v2(self, sess, path_to_file):
+
+		if len(self.conv_weights) > 0:
+			weights = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
+			if weights is not None:
+				self.conv_weights_dict = weights
+
+		if len(self.conv_biases) > 0:
+			biases = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
+			if biases is not None:
+				self.conv_biases_dict = biases
+
+		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
+			dicts = self.conv_weights_dict, self.conv_biases_dict
+			self.conv_merged_dict={k:[d.get(k) for d in dicts] for k in {k for d in dicts for k in d}}
+
+		saver = tf.train.Saver(self.conv_merged_dict)
+		save_path = saver.save(sess, path_to_file)
+		return
+
 	def load_model_from_file(self, sess, path_to_file):
 
 		saver = tf.train.Saver()
@@ -252,7 +275,7 @@ class SCNN:
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
 		if self.conv_merged_dict is None:
-			self.store_model_to_file(self, sess, path_to_file)
+			self.store_model_to_file_v2(self, sess, path_to_file)
 		saver = tf.train.Saver(self.conv_merged_dict)
 		saver.restore(sess, path_to_file)
 
