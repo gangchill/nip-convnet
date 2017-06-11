@@ -249,7 +249,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
 		plt.axis('off')
 
-		print 'minimum_filter_value: ', np.min(cae_filters[:,:,0,:]) 
+		print('minimum_filter_value: ', np.min(cae_filters[:,:,0,:]))
 
 		max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
 		max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))

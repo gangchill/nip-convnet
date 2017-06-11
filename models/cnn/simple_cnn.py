@@ -77,13 +77,13 @@ class SCNN:
 		if self.add_tensorboard_summary:
 			self.merged = tf.summary.merge_all()
 
-		print '...finished initialization'
+		print('...finished initialization')
 
 	@property
 	def encoding(self):
 		# returns the hidden layer representation (encoding) of the autoencoder
 
-		print 'encoding called'
+		print('encoding called')
 
 		if self._encoding is None:
 
@@ -152,7 +152,7 @@ class SCNN:
 	@property
 	def logits(self):
 
-		print 'logits called'
+		print('logits called')
 
 		if self._logits is None:
 
@@ -217,7 +217,7 @@ class SCNN:
 	def error(self):
 		# returns the training error node (cross-entropy) used for the training and testing
 
-		print 'error called'
+		print('error called')
 
 		if self._error is None:
 			print('initialize error')
@@ -235,7 +235,7 @@ class SCNN:
 
 		if self._optimize is None:
 
-			print 'init optimization'
+			print('init optimization')
 
 			self._optimize = tf.train.AdamOptimizer(self.step_size).minimize(self.error)
 
@@ -247,7 +247,7 @@ class SCNN:
 
 		if self._optimize_dense_layers is None:
 
-			print 'init dense layer optimization'
+			print('init dense layer optimization')
 
 			self._optimize_dense_layers = tf.train.AdamOptimizer(self.step_size).minimize(self.error, var_list = self.dense_layer_variables)
 

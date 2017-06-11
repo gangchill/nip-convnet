@@ -97,19 +97,19 @@ def main():
 
 	# train the autoencoder
 	train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name_cae, batch_size, max_iterations, chk_iterations)
-	print '...finished training the cae'
+	print('...finished training the cae')
 
 	# save autoencoder weights to file
 	autoencoder.store_encoding_weights(sess, encoding_weights_path)
-	print '...saved cae encoding weights to file'
+	print('...saved cae encoding weights to file')
 
 	# load the same weights into the cnn
 	cnn.load_encoding_weights(sess, encoding_weights_path)
-	print '...loaded the cae weights into the cnn'
+	print('...loaded the cae weights into the cnn')
 
 	# train the cnn
 	train_cnn(sess, cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
-	print '...finished training the cnn'
+	print('...finished training the cnn')
 
 	train_cnn(sess, comparison_cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
 	print '...finished training comparison cnn'
