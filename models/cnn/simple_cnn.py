@@ -251,8 +251,10 @@ class SCNN:
 
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
+		if self.conv_merged_dict is None:
+			self.store_model_to_file(self, sess, path_to_file)
 		saver = tf.train.Saver()
-		saver.restore(sess, path_to_file)
+		saver.restore(sess, self.conv_merged_dict)
 
 		print('Restored model from {}'.format(path_to_file))
 
