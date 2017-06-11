@@ -269,8 +269,8 @@ class CAE:
 
 	def store_encoding_weights(self, sess, path_to_file):
 		
-		conv_w_d = zip(['conv_W_{}'.format(i) for i in enumerate(self.conv_weights)], self.conv_weights)
-		conv_b_d = zip(['conv_b_{}'.format(i) for i in enumerate(self.conv_biases )], self.conv_biases)
+		conv_w_d = zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights)
+		conv_b_d = zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases)
 
 		conv_variable_dict = dict(conv_w_d + conv_b_d)
 

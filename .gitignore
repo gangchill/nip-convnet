@@ -1,6 +1,7 @@
 digit_reconstructions/*
 logs/*
-models/sae/weights*
+models/sae/weights
+models/cae/weights
 MNIST_data/*
 *.pyc
 
