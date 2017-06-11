@@ -1,4 +1,6 @@
-import tensorflow as tf 
+import tensorflow as tf
+import csv, os
+import collections
 
 class SCNN: 
 	# simple convolutional neural network (same structure as cae with added fully-connected layers)
@@ -44,7 +46,12 @@ class SCNN:
 		self.conv_weights 	= []
 		self.conv_biases	= []
 
+
 		self.add_tensorboard_summary = add_tensorboard_summary
+		
+		self.conv_weights_dict = {}
+		self.conv_biases_dict = {}
+		self.conv_merged_dict = {}
 
 		# private attributes used by the properties
 		self._encoding 		= None
@@ -263,15 +270,52 @@ class SCNN:
 
 		return self._accuracy
 
+	def merge_two_dicts(x, y):
+		"""Given two dicts, merge them into a new dict as a shallow copy."""
+		z = x.copy()
+		z.update(y)
+		return z
+
+	# store weights and biases separately in two simple dicts, and do a simple merge to create a new dict of weights and biases
 	def store_model_to_file(self, sess, path_to_file):
 
-		# TODO: add store / save function to the class
-		saver = tf.train.Saver()
+		if len(self.conv_weights) > 0:
+			weights = dict(zip(['conv_w_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
+			if weights is not None:
+				self.conv_weights_dict = weights
+
+		if len(self.conv_biases) > 0:
+			biases = dict(zip(['conv_b_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
+			if biases is not None:
+				self.conv_biases_dict = biases
+
+		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
+			self.conv_merged_dict=self.merge_two_dicts(self.conv_weights_dict, self.conv_biases_dict)
+
+		saver = tf.train.Saver(self.conv_merged_dict)
 		save_path = saver.save(sess, path_to_file)
+		return
 
-		print('Model was saved in {}'.format(save_path))
+	# store weights and biases separately in two ordered dicts, and do a merge on same key to create a new dict of pairs of weights and biases
+	def store_model_to_file_v2(self, sess, path_to_file):
 
-		return save_path
+		if len(self.conv_weights) > 0:
+			weights = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
+			if weights is not None:
+				self.conv_weights_dict = weights
+
+		if len(self.conv_biases) > 0:
+			biases = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
+			if biases is not None:
+				self.conv_biases_dict = biases
+
+		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
+			dicts = self.conv_weights_dict, self.conv_biases_dict
+			self.conv_merged_dict={k:[d.get(k) for d in dicts] for k in {k for d in dicts for k in d}}
+
+		saver = tf.train.Saver(self.conv_merged_dict)
+		save_path = saver.save(sess, path_to_file)
+		return
 
 	def load_model_from_file(self, sess, path_to_file):
 
@@ -280,8 +324,15 @@ class SCNN:
 
 		print('Restored model from {}'.format(path_to_file))
 
+
 	def load_encoding_weights(self, sess, path_to_file):
 
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
-		pass
+		if self.conv_merged_dict is None:
+			self.store_model_to_file_v2(self, sess, path_to_file)
+		saver = tf.train.Saver(self.conv_merged_dict)
+		saver.restore(sess, path_to_file)
+
+		print('Restored model from {}'.format(path_to_file))
+
