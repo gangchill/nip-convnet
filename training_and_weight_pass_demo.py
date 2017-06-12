@@ -21,14 +21,16 @@ def main():
 	from tensorflow.examples.tutorials.mnist import input_data
 	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-	# input variables: x (images), y_ (labels), keep_prob (dropout rate)
-	x  = tf.placeholder(tf.float32, [None, 784], name='input_digits')
-	y_ = tf.placeholder(tf.float32, [None, 10], name='target_labels')
+	with tf.name_scope('Input'):
+		# input variables: x (images), y_ (labels), keep_prob (dropout rate)
+		x  = tf.placeholder(tf.float32, [None, 784], name='input_digits')
+		# reshape the input to NHWD format
+		x_image = tf.reshape(x, [-1, 28, 28, 1], name='input_digits_NHWD')
+		y_ = tf.placeholder(tf.float32, [None, 10], name='target_labels')
 
-	keep_prob = tf.placeholder(tf.float32)
+		keep_prob = tf.placeholder(tf.float32, name='dropout_keep_prob')
 
-	# reshape the input to NHWD format
-	x_image = tf.reshape(x, [-1, 28, 28, 1])
+	
 
 	## ##################### ##
 	# ARCHITECTURE PARAMETERS #
@@ -53,19 +55,19 @@ def main():
 
 	# currently, the same parameters are used for the training of the cae and the cnn
 	batch_size 		= 100
-	max_iterations	= 101
-	chk_iterations 	= 20
+	max_iterations	= 11
+	chk_iterations 	= 10
 	dropout_k_p		= 0.5
-	step_size 		= 0.001
+	step_size 		= 0.0001
 
 	# only optimize dense layers of the cnn
 	fine_tuning_only = False
 
 	# log names
-	log_folder_name = 'weight_passing'
+	log_folder_name = 'weight_passing_demo'
 	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
 	training_str 		= 'tr' + str(batch_size) + '_' + str(max_iterations) + '_' + str(dropout_k_p)
-	run_prefix 			= 'mnist_wp_' + architecture_str # + training_str
+	run_prefix 			= 'mnist_wp_' + architecture_str + training_str
 	log_path = os.path.join('logs', log_folder_name, run_prefix)
 
 	encoding_weights_path = log_path + 'wp'
@@ -79,18 +81,17 @@ def main():
 	## ######### ##
 
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, strides, pooling_type, activation_function, tie_conv_weights)
-	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
+	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='pre_trained_CNN')
 
 	# second cnn with the same structure that will be trained independently from the autoencoder
-	comparison_cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
+	comparison_cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='reference_CNN')
 
 	## ###### ##
 	# TRAINING #
 	## ###### ##
 
-	sess = tf.Session() 
+	sess = tf.Session()
 	sess.run(tf.global_variables_initializer())
-
 
 	# add logwriter for tensorboard
 	writer = tf.summary.FileWriter(log_path, sess.graph)

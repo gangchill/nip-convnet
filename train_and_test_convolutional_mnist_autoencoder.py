@@ -39,20 +39,23 @@ def main():
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [8, 16] 
-	pooling_type 	= 'strided_conv'
+	hidden_channels = [16, 32] 
+	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
 	activation_function = 'sigmoid'
 
 	batch_size 		= 100
-	max_iterations 	= 1000
+	max_iterations 	= 2000
 	chk_iterations  = 100
 	step_size 		= 0.0001
 
-	tie_conv_weights = False
+	tie_conv_weights = True
 
-	folder_name = 'dcae_stanh_test'
-	run_name 	= 'dcae_{}_{}_{}'.format(max_iterations, batch_size, step_size)
+	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations)
+
+
+	folder_name = 'dcae_reference_try'
+	run_name 	= 'dcae_tied_weights{}'.format(weight_file_name)
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
@@ -64,8 +67,7 @@ def main():
 	print("Begin autencoder training")
 	
 
-	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations)
-
+	
 	writer = tf.summary.FileWriter("logs/{}/{}".format(folder_name, run_name), sess.graph)
 
 	if restore_weights_if_existant:

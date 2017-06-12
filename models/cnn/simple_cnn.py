@@ -5,7 +5,7 @@ import collections
 class SCNN: 
 	# simple convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN'):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -31,7 +31,8 @@ class SCNN:
 			self.strides = [[1,1,1,1] for filter in filter_dims]
 
 		# layer sizes for the dense layers (decision making)
-		self.dense_depths = dense_depths
+		self.dense_depths = []
+		self.dense_depths.extend(dense_depths)
 
 		# list that will store all dense layer variables for fine tuning 
 		self.dense_layer_variables = []
@@ -62,20 +63,24 @@ class SCNN:
 		self._optimize_dense_layers = None
 		self._accuracy		= None
 
-		self.weight_init_stddev 	= 0.000015
-		self.weight_init_mean 		= 0.0001
-		self.initial_bias_value 	= 0.0001
-		self.step_size 				= 0.0001
+		self.weight_init_stddev 	= 0.1 # 0.000015
+		self.weight_init_mean 		= 0   # 0.0001
+		self.initial_bias_value 	= 0.1 # 0.0001
+		self.step_size 				= 0.0001 # 0.0001
+
+		self._summaries = []
 		
 
 		print('Initializing simple CNN')
-		with tf.name_scope('CNN'):
+		with tf.name_scope(scope_name):
 			self.optimize
 			self.optimize_dense_layers
-		self.accuracy
+
+		with tf.name_scope('accuracy_' + scope_name):
+			self.accuracy
 
 		if self.add_tensorboard_summary:
-			self.merged = tf.summary.merge_all()
+			self.merged = tf.summary.merge(self._summaries)
 
 		print('...finished initialization')
 
@@ -111,7 +116,7 @@ class SCNN:
 					# visualize first layer filters
 
 					for fltr_indx in range(out_channels):
-						tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None])
+						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None]))
 
 
 				self.conv_weights.append(W)
@@ -122,14 +127,14 @@ class SCNN:
 				# PREACTIVATION
 				conv_preact = tf.add(tf.nn.conv2d(tmp_tensor, W, strides = self.strides[layer], padding='SAME'),  b, name='conv_{}_preactivation'.format(layer))
 
-				tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact)
+				self._summaries.append(tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact))
 
 				# ACTIVATION
 				if self.activation_function == 'relu':
 					conv_act = tf.nn.relu(conv_preact, name='conv_{}_activation'.format(layer))
 
 					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
-					tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons)
+					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
 
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
@@ -145,7 +150,7 @@ class SCNN:
 			self._encoding = tmp_tensor
 
 			if self.add_tensorboard_summary:
-				tf.summary.histogram('encoding histogram', self._encoding)
+				self._summaries.append(tf.summary.histogram('encoding histogram', self._encoding))
 
 		return self._encoding
 
@@ -225,7 +230,7 @@ class SCNN:
 			self._error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
 
 			if self.add_tensorboard_summary:
-				tf.summary.scalar('cross entropy error', self._error)
+				self._summaries.append(tf.summary.scalar('cross entropy error', self._error))
 
 		return self._error
 
@@ -265,7 +270,7 @@ class SCNN:
 			self._accuracy = accuracy 
 
 			if self.add_tensorboard_summary:
-				tf.summary.scalar('accuracy', self._accuracy)
+				self._summaries.append(tf.summary.scalar('accuracy', self._accuracy))
 
 
 		return self._accuracy

@@ -1,4 +1,5 @@
 import tensorflow as tf 
+import numpy as np
 
 class CAE:
 	# convolutional autoencoder 
@@ -34,7 +35,7 @@ class CAE:
 
 		self.hl_reconstruction_activation_function = self.activation_function
 
-		self.output_reconstruction_activation	= 'scaled_tanh'
+		self.output_reconstruction_activation	= 'sigmoid'
 
 		self.tie_conv_weights = tie_conv_weights
 
@@ -46,7 +47,7 @@ class CAE:
 		self.reconst_weights= []
 		self.reconst_biases = []
 
-		self.weight_init_stddev 	= 0.000015
+		self.weight_init_stddev 	= 0.00015
 		self.weight_init_mean 		= 0.0001
 		self.initial_bias_value 	= 0.0001
 		self.step_size 				= step_size
@@ -67,6 +68,8 @@ class CAE:
 		self._reconstruction		= None
 		self._error					= None
 
+		self._summaries = []
+
 
 		print('Initializing conv autoencoder')
 		with tf.name_scope('CAE'):
@@ -74,7 +77,7 @@ class CAE:
 			self.error
 
 		if self.add_tensorboard_summary:
-			self.merged = tf.summary.merge_all()
+			self.merged = tf.summary.merge(self._summaries)
 
 	@property
 	def encoding(self):
@@ -110,7 +113,7 @@ class CAE:
 					# visualize first layer filters
 
 					for fltr_indx in range(out_channels):
-						tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None])
+						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None]))
 
 
 				self.conv_weights.append(W)
@@ -122,14 +125,14 @@ class CAE:
 				conv_preact = tf.add(tf.nn.conv2d(tmp_tensor, W, strides = self.strides[layer], padding='SAME'),  b, name='conv_{}_preactivation'.format(layer))
 
 				if self.add_tensorboard_summary:
-					tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact)
+					self._summaries.append(tf.summary.histogram('layer {} preactivations'.format(layer), conv_preact))
 
 				# ACTIVATION
 				if self.activation_function == 'relu':
 					conv_act = tf.nn.relu(conv_preact, name='conv_{}_activation'.format(layer))
 
 					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
-					tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons)
+					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
 
 				# TODO: try shifted tanh function 
 				# elif self.activation_function == 'stanh':
@@ -148,7 +151,7 @@ class CAE:
 			self._encoding = tmp_tensor
 
 			if self.add_tensorboard_summary:
-				tf.summary.histogram('encoding histogram', self._encoding)
+				self._summaries.append(tf.summary.histogram('encoding histogram', self._encoding))
 
 		return self._encoding
 
@@ -162,7 +165,7 @@ class CAE:
 			self._error = tf.reduce_mean(tf.squared_difference(self.reconstruction, self.data), name='mean-squared_error')
 
 			if self.add_tensorboard_summary:
-				tf.summary.scalar('mean squared error', self._error)
+				self._summaries.append(tf.summary.scalar('mean squared error', self._error))
 
 		return self._error
 
@@ -229,7 +232,7 @@ class CAE:
 					# conv2d_transpose without upsampling 
 					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
 
-				tf.summary.histogram('layer {} reconstruction preactivations'.format(layer), reconst_preact)
+				self._summaries.append(tf.summary.histogram('layer {} reconstruction preactivations'.format(layer), reconst_preact))
 
 				# ACTIVATION
 				if layer > 0:
@@ -245,7 +248,7 @@ class CAE:
 					self._logit_reconstruction = reconst_preact
 
 			if self.add_tensorboard_summary:
-				tf.summary.histogram('logit reconstruction', self._logit_reconstruction)
+				self._summaries.append(tf.summary.histogram('logit reconstruction', self._logit_reconstruction))
 
 		return self._logit_reconstruction
 
@@ -264,6 +267,14 @@ class CAE:
 
 				self._reconstruction = tf.nn.sigmoid(self.logit_reconstruction, name='reconstruction')
 		
+
+		# stack the first input image and the reconstruction horizontally:
+		#comparison_image = np.hstack([self.data, self._reconstruction])
+		#tf.summary.image('reconstruction comparison', comparison_image)
+		
+		self._summaries.append(tf.summary.image('input', self.data))
+		self._summaries.append(tf.summary.image('reconstruction', self._reconstruction))
+
 		return self._reconstruction
 
 

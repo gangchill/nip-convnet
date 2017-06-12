@@ -23,7 +23,7 @@ def train_cnn(sess, cnn, mnist, x, y, keep_prob, dropout_k_p, batch_size, max_it
 
 			avg_r_e, summary = sess.run([cnn.accuracy, cnn.merged], feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
 
-			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
+			print('it {} accuracy {}'.format(i, np.mean(avg_r_e)))
 
 			writer.add_summary(summary, i)
 

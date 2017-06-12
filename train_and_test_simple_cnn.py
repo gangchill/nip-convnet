@@ -47,8 +47,8 @@ def main():
 	# CNN parameters:
 
 	# feature extraction parameters
-	filter_dims 	= [(5,5)]
-	hidden_channels = [10] 
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [16, 32] 
 	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'sigmoid'
@@ -63,15 +63,15 @@ def main():
 
 	# training parameters:
 	batch_size 		= 100
-	max_iterations	= 1000
-	chk_iterations 	= 100
+	max_iterations	= 5001
+	chk_iterations 	= 500
 	dropout_k_p		= 0.5
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
 
 	# construct names for logging
-	log_folder_name = 'CNN_training'
+	log_folder_name = 'cnn_reference_try'
 
 	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
 	training_str 		= 'tr' + str(batch_size) + '_' + str(max_iterations) + '_' + str(dropout_k_p)
