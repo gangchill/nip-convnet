@@ -55,8 +55,8 @@ def main():
 
 	# currently, the same parameters are used for the training of the cae and the cnn
 	batch_size 		= 100
-	max_iterations	= 11
-	chk_iterations 	= 10
+	max_iterations	= 6001
+	chk_iterations 	= 300
 	dropout_k_p		= 0.5
 	step_size 		= 0.0001
 

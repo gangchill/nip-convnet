@@ -1,6 +1,8 @@
 import tensorflow as tf 
 import numpy as np
 
+from lib.activations import l_relu
+
 class CAE:
 	# convolutional autoencoder 
 
@@ -134,8 +136,9 @@ class CAE:
 					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
 					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
 
-				# TODO: try shifted tanh function 
-				# elif self.activation_function == 'stanh':
+				elif self.activation_function == 'lrelu':
+					# leaky relu to avoid the dying relu problem
+					conv_act = l_relu(conv_preact, name='conv_{}_activation'.format(layer))
 
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
@@ -239,6 +242,10 @@ class CAE:
 					# do not use the activation function in the last layer because we want the logits
 					if self.hl_reconstruction_activation_function == 'relu':
 						reconst_act = tf.nn.relu(reconst_preact, name='reconst_act')
+
+					elif self.hl_reconstruction_activation_function == 'lrelu':
+						reconst_act = l_relu(reconst_preact, name='reconst_act')
+
 					else:
 						reconst_act = tf.nn.sigmoid(reconst_preact ,name='reconst_act')
 

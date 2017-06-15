@@ -9,6 +9,7 @@ import matplotlib as mpl
 import os
 from functools import reduce
 
+
 # import the simple autoencoder class from SAE.py
 from models.cae.convolutional_autoencoder import CAE
 from scripts.train_cae import train_ae
