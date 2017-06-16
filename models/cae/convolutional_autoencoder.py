@@ -6,7 +6,7 @@ from lib.activations import l_relu
 class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -34,6 +34,7 @@ class CAE:
 
 		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
+		self.relu_leak = relu_leak # only used if activation function is leaky relu
 
 		self.hl_reconstruction_activation_function = self.activation_function
 
@@ -49,9 +50,9 @@ class CAE:
 		self.reconst_weights= []
 		self.reconst_biases = []
 
-		self.weight_init_stddev 	= 0.00015
-		self.weight_init_mean 		= 0.0001
-		self.initial_bias_value 	= 0.0001
+		self.weight_init_stddev 	= weight_init_stddev
+		self.weight_init_mean 		= weight_init_mean
+		self.initial_bias_value 	= initial_bias_value
 		self.step_size 				= step_size
 
 
@@ -138,7 +139,10 @@ class CAE:
 
 				elif self.activation_function == 'lrelu':
 					# leaky relu to avoid the dying relu problem
-					conv_act = l_relu(conv_preact, name='conv_{}_activation'.format(layer))
+					conv_act = l_relu(conv_preact, leak = self.relu_leak,  name='conv_{}_activation'.format(layer))
+
+					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
+					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
 
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
@@ -217,7 +221,7 @@ class CAE:
 					channels = self.hidden_channels[layer - 1]
 
 
-				if not self.tie_conv_weights:
+				if not self.tie_conv_weights and layer == 0:
 					W = tf.Variable(tf.truncated_normal(tf.shape(self.conv_weights[layer]), mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
 				else:
 					W = self.conv_weights[layer]
@@ -225,6 +229,7 @@ class CAE:
 				# init reconstruction bias
 				c = tf.Variable(tf.constant(self.initial_bias_value, shape=[channels]), name='reconstruction_bias_{}'.format(layer))
 				self.reconst_biases.append(c)
+
 
 				if self.pooling_type == 'max_pooling':
 					# conv2d_transpose with upsampling
@@ -243,8 +248,11 @@ class CAE:
 					if self.hl_reconstruction_activation_function == 'relu':
 						reconst_act = tf.nn.relu(reconst_preact, name='reconst_act')
 
+						alive_neurons = tf.count_nonzero(reconst_act, name='alive_relus_in_reconstruction_layer_{}'.format(layer))
+						self._summaries.append(tf.summary.scalar('alive neurons in reconstruction layer {}'.format(layer), alive_neurons))
+
 					elif self.hl_reconstruction_activation_function == 'lrelu':
-						reconst_act = l_relu(reconst_preact, name='reconst_act')
+						reconst_act = l_relu(reconst_preact, leak = self.relu_leak, name='reconst_act')
 
 					else:
 						reconst_act = tf.nn.sigmoid(reconst_preact ,name='reconst_act')

@@ -40,27 +40,32 @@ def main():
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 32] 
-	pooling_type 	= 'max_pooling'
+	hidden_channels = [4, 4] 
+	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
-	activation_function = 'sigmoid'
+	activation_function = 'relu'
+	relu_leak = 0.2 # only for leaky relus
+
+	weight_init_mean 	= 0.001
+	weight_init_stddev 	= 0.0001
+	initial_bias_value  = 0.00000001
 
 	batch_size 		= 100
-	max_iterations 	= 2000
+	max_iterations 	= 1000
 	chk_iterations  = 100
-	step_size 		= 0.0001
+	step_size 		= 0.0000001
 
-	tie_conv_weights = True
+	tie_conv_weights = False
 
-	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations)
+	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	folder_name = 'dcae_reference_try'
-	run_name 	= 'dcae_tied_weights{}'.format(weight_file_name)
+	folder_name = 'relu_depth'
+	run_name 	= 'dcae_difcheck_{}'.format(weight_file_name)
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
@@ -101,7 +106,7 @@ def main():
 
 	sess.close()
 
-def get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, batch_size, max_iterations):
+def get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value):
 	# define unique file name for architecture + training combination
 
 	# architecture:
@@ -110,10 +115,15 @@ def get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_
 	
 	mp_identifier = pooling_type
 
-	architecture_identifier = '({}-{}{}-{})'.format(filter_dims_identifier, hidden_channels_identifier, mp_identifier, activation_function)
+	if tie_conv_weights:
+		tying_str = '_TW'
+	else:
+		tying_str = ''
+
+	architecture_identifier = '({}-{}{}-{}{})'.format(filter_dims_identifier, hidden_channels_identifier, mp_identifier, activation_function, tying_str)
 
 	# training:
-	training_identifier = '({},{})'.format(batch_size, max_iterations)
+	training_identifier = '({},{}, {},{}, {}, {})'.format(batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 	return '{}-{}'.format(architecture_identifier, training_identifier)
 

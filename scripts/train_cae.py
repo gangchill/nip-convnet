@@ -16,9 +16,6 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_
 
 	for i in range(max_iterations):
 
-		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-		sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
-
 		if chk_iterations > 100 and i % 100 == 0:
 			print('...iteration {}'.format(i))
 
@@ -30,6 +27,9 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_
 			print('it {} avg_re {}'.format(i, np.mean(avg_r_e)))
 
 			writer.add_summary(summary, i)
+
+		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+		sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
 
 
 	print('...finished training')
