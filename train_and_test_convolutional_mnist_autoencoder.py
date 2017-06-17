@@ -39,9 +39,9 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [4, 4] 
-	pooling_type 	= 'strided_conv'
+	filter_dims 	= [(1,1), (1,1)]
+	hidden_channels = [1, 1] 
+	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
@@ -60,8 +60,8 @@ def main():
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	folder_name = 'relu_depth'
-	run_name 	= 'dcae_difcheck_{}'.format(weight_file_name)
+	folder_name = '1x1_conv_test'
+	run_name 	= 'dcae_1x1_{}'.format(weight_file_name)
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)

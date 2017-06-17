@@ -31,6 +31,7 @@ class CAE:
 			else:
 				self.strides = [[1,1,1,1] for filter in filter_dims]
 
+		self.scalar_bias = False # use the same bias over all dimensions (simpler model)
 
 		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
@@ -109,10 +110,15 @@ class CAE:
 				# initialize weights and biases:
 				filter_shape = [self.filter_dims[layer][0], self.filter_dims[layer][1], in_channels, out_channels]
 
-				W = tf.Variable(tf.truncated_normal(filter_shape, mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
-				b = tf.Variable(tf.constant(self.initial_bias_value, shape=[out_channels]), name='conv{}_bias'.format(layer))
+				if self.scalar_bias:
+					bias_shape = [1]
+				else:
+					bias_shape = [out_channels]
 
-				if self.add_tensorboard_summary and layer == 0:
+				W = tf.Variable(tf.truncated_normal(filter_shape, mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
+				b = tf.Variable(tf.constant(self.initial_bias_value, shape=bias_shape), name='conv{}_bias'.format(layer))
+
+				if self.add_tensorboard_summary and layer == 0 and self.filter_dims[layer] != (1,1):
 					# visualize first layer filters
 
 					for fltr_indx in range(out_channels):
@@ -227,7 +233,11 @@ class CAE:
 					W = self.conv_weights[layer]
 
 				# init reconstruction bias
-				c = tf.Variable(tf.constant(self.initial_bias_value, shape=[channels]), name='reconstruction_bias_{}'.format(layer))
+				if self.scalar_bias:
+					bias_shape = [1]
+				else:
+					bias_shape = [out_channels]
+				c = tf.Variable(tf.constant(self.initial_bias_value, shape=bias_shape), name='reconstruction_bias_{}'.format(layer))
 				self.reconst_biases.append(c)
 
 
