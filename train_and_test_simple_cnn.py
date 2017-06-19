@@ -18,7 +18,7 @@ from scripts.train_cnn import train_cnn
 
 def main():
 
-	DATASET = "MNIST"
+	DATASET = "CIFAR10"
 
 	if DATASET == "MNIST":
 		# load mnist

@@ -4,6 +4,8 @@ import os
 
 import cifar_10_input
 
+CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
+
 def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only):
 
 	print("Training SCNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
@@ -14,7 +16,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_ite
 			print('...iteration {}'.format(i))
 
 		if data == 'cifar_10':
-			batch_xs, batch_ys = cifar_10_input.distorted_inputs('../cifar10_data/cifar-10-batches-bin', batch_size)
+			batch_xs, batch_ys = cifar_10_input.distorted_inputs(CIFAR_LOCATION, batch_size)
 
 		else:
 			batch_xs, batch_ys = data.train.next_batch(batch_size)
@@ -28,7 +30,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_ite
 		if i % chk_iterations == 0:
 
 			if data == 'cifar_10':
-				test_images, test_labels = cifar_10_input.inputs(False, '../cifar10_data/cifar-10-batches-bin', batch_size)
+				test_images, test_labels = cifar_10_input.inputs(False, CIFAR_LOCATION, batch_size)
 			else:
 				test_images, test_labels = data.test.images, data.test.labels
 
