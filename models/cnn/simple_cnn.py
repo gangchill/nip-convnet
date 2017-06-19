@@ -364,8 +364,8 @@ class SCNN:
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
 		
-		conv_w_d = zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights)
-		conv_b_d = zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases)
+		conv_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
+		conv_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases))
 
 		conv_variable_dict = dict(conv_w_d + conv_b_d)
 

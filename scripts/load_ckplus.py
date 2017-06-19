@@ -70,6 +70,7 @@ def read_data_sets(test_size = 50, one_hot=False):
                             pass
 
     df = pd.DataFrame(data)
+    print("{} CK+ datapoints loaded".format(len(df)))
 
     train_df, test_df = train_test_split(df, test_size = test_size)
 

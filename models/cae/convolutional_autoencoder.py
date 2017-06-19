@@ -118,7 +118,7 @@ class CAE:
 					in_channels = self.hidden_channels[layer - 1]
 				out_channels = self.hidden_channels[layer]
 
-				print 'init layer ', layer, 'conv', ' in-out:', in_channels, out_channels
+				print('init layer ', layer, 'conv', ' in-out:', in_channels, out_channels)
 
 				# initialize weights and biases:
 				filter_shape = [self.filter_dims[layer][0], self.filter_dims[layer][1], in_channels, out_channels]
@@ -141,11 +141,11 @@ class CAE:
 				self.conv_weights.append(W)
 				self.conv_biases.append(b)
 
-				print tf.shape(tmp_tensor)
+				print(tf.shape(tmp_tensor))
 				self.pre_conv_shapes.append(tf.shape(tmp_tensor))
 
 				# PREACTIVATION
-				if self.pooling_type == 'strided_convolution':
+				if self.pooling_type == 'strided_conv':
 					strides = self.strided_conv_strides
 				else:
 					strides = self.std_strides
@@ -213,7 +213,7 @@ class CAE:
 
 				ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross_entropy_error')
 
-			print ce_error
+			print(ce_error)
 
 			self._ce_error = ce_error
 
@@ -263,8 +263,8 @@ class CAE:
 			for layer in range(len(self.filter_dims))[::-1]:
 				# go through the layers in reverse order to reconstruct the image
 
-				print 'layer {} reconstruction'.format(layer)
-				print self.conv_weights[layer]
+				print('layer {} reconstruction'.format(layer))
+				print(self.conv_weights[layer])
 
 				if self.store_model_walkthrough:
 					# store intermediate results
@@ -276,7 +276,7 @@ class CAE:
 				else:
 					channels = self.hidden_channels[layer - 1]
 
-					print 'channels', channels
+					print('channels', channels)
 
 
 				if not self.tie_conv_weights: #  and layer == 0:
@@ -364,8 +364,8 @@ class CAE:
 
 	def store_encoding_weights(self, sess, path_to_file):
 		
-		conv_w_d = zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights)
-		conv_b_d = zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases)
+		conv_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
+		conv_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases))
 
 		conv_variable_dict = dict(conv_w_d + conv_b_d)
 

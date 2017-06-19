@@ -28,15 +28,26 @@ def main():
 	restore_weights_if_existant = False
 	# TODO: adapt filename to the more complex setup 
 
-	# import mnist data set
-	from tensorflow.examples.tutorials.mnist import input_data
-	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+	DATASET = "CKPLUS"
+
+	if DATASET == "MNIST":
+		# load mnist
+		from tensorflow.examples.tutorials.mnist import input_data
+		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		input_size = (28, 28)
+		num_classes = 10
+
+	elif DATASET == "CKPLUS":
+		import scripts.load_ckplus as load_ckplus
+		dataset = load_ckplus.read_data_sets(one_hot=True)
+		input_size = (49, 64)
+		num_classes = load_ckplus.NUM_CLASSES
 
 	# input variables: x (images)
-	x  = tf.placeholder(tf.float32, [None, 784], name='input_digits')
+	x  = tf.placeholder(tf.float32, [None, input_size[0]*input_size[1]], name='input_digits')
 
 	# reshape the input to NHWD format
-	x_image = tf.reshape(x, [-1, 28, 28, 1])
+	x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
@@ -90,17 +101,16 @@ def main():
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)
 
 		else:
-			train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
+			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
-	
+		train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
 
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
+	visualize_ae_representation(sess, x_image, autoencoder, dataset, input_size, 2)
 
 
 	# add logwriter for tensorboard
@@ -163,7 +173,7 @@ def visualize_cae_filters(sess, autoencoder):
 	plt.close(fig)
 
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num_images = 100, use_training_set = False, common_scaling = False):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, input_size, num_images = 100, use_training_set = False, common_scaling = False):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
@@ -182,7 +192,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 	else:
 		dataset = mnist.test.images
 
-	encoding, reconst, error, walkthrough = sess.run([autoencoder.encoding, autoencoder.reconstruction, autoencoder.error, autoencoder.model_walkthrough], feed_dict={input_placeholder: dataset[0:num_images].reshape(num_images, 28, 28, 1)})
+	encoding, reconst, error, walkthrough = sess.run([autoencoder.encoding, autoencoder.reconstruction, autoencoder.error, autoencoder.model_walkthrough], feed_dict={input_placeholder: dataset[0:num_images].reshape(num_images, input_size[0], input_size[1], 1)})
 
 	print('jener error: ', error)
 
@@ -232,12 +242,12 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		# plot input
 		plt.subplot(rows, 1, 1)
-		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 		# plot reconstruction
 		plt.subplot(rows,1 , rows)
-		plt.imshow(reconst[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 		for c in range(hidden_layer_count):
@@ -261,7 +271,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		plt.subplot(4,1,1)
 		# plt.title('input image', fontsize=fontsize)
-		plt.imshow(dataset[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 		print('minimum_filter_value: ', np.min(cae_filters[:,:,0,:]))
@@ -295,7 +305,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		plt.subplot(4,1,4)
 		# plt.title('reconstruction', fontsize=fontsize)
-		plt.imshow(reconst[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 		plt.tight_layout()

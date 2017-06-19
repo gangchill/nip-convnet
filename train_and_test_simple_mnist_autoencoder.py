@@ -21,16 +21,27 @@ def main():
 	sae_weights_dir	= os.path.join(sae_dir, 'weights')
 
 	# restore weights from file if an autoencoder with the same architecture has already been trained before
-	restore_weights_if_existant = True
+	restore_weights_if_existant = False
 
-	# import mnist data set
-	from tensorflow.examples.tutorials.mnist import input_data
-	mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+	DATASET = "CKPLUS"
+
+	if DATASET == "MNIST":
+		# load mnist
+		from tensorflow.examples.tutorials.mnist import input_data
+		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		input_size = (28, 28)
+		num_classes = 10
+
+	elif DATASET == "CKPLUS":
+		import scripts.load_ckplus as load_ckplus
+		dataset = load_ckplus.read_data_sets(one_hot=True)
+		input_size = (49, 64)
+		num_classes = load_ckplus.NUM_CLASSES
 
 	hidden_layer_size = 6*6
 
 	# input variables: x (images)
-	x  = tf.placeholder(tf.float32, [None, 784], name='input_digits')
+	x  = tf.placeholder(tf.float32, [None, input_size[0] * input_size[1]], name='input_digits')
 
 	# construct autoencoder
 	autoencoder = SAE(x, hidden_layer_size)
@@ -59,16 +70,16 @@ def main():
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)			
 
 		else:
-			train_ae(sess, x, autoencoder, mnist, sae_dir, sae_weights_dir, batch_size, max_iterations, chk_iterations)
+			train_ae(sess, x, autoencoder, dataset, sae_dir, sae_weights_dir, batch_size, max_iterations, chk_iterations)
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, x, autoencoder, mnist, sae_dir, sae_weights_dir, batch_size, max_iterations, chk_iterations)
+		train_ae(sess, x, autoencoder, dataset, sae_dir, sae_weights_dir, batch_size, max_iterations, chk_iterations)
 	
 
 	print('Test the training:')
 
-	visualize_ae_representation(sess, x, autoencoder, mnist, 1)
+	visualize_ae_representation(sess, x, autoencoder, dataset, input_size, 1)
 
 
 	# add logwriter for tensorboard
@@ -110,7 +121,7 @@ def train_ae(sess, input_placeholder, autoencoder, mnist, sae_dir, sae_weights_d
 	autoencoder.store_model_to_file(sess, os.path.join(sae_weights_dir, '{}_sae_{}it'.format(autoencoder.hidden_layer_size, max_iterations)))
 	print('...saved model to file')
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num_images):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, input_size, num_images):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
@@ -135,7 +146,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		plt.subplot(1,3,1)
 		plt.title('input image', fontsize=fontsize)
-		plt.imshow(mnist.test.images[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(mnist.test.images[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 
@@ -146,7 +157,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, num
 
 		plt.subplot(1,3,3)
 		plt.title('reconstruction', fontsize=fontsize)
-		plt.imshow(reconst[i].reshape(28, 28), cmap='gray', interpolation='None')
+		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
 
 		plt.tight_layout()

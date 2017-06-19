@@ -113,7 +113,7 @@ def main():
 	print('...finished training the cnn')
 
 	train_cnn(sess, comparison_cnn, mnist, x, y_, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only)
-	print '...finished training comparison cnn'
+	print('...finished training comparison cnn')
 
 	# train the comparison cnn
 
