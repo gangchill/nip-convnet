@@ -5,7 +5,7 @@ import collections
 class SCNN: 
 	# simple convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN'):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -14,6 +14,8 @@ class SCNN:
 
 		self.data = data # we assume data in NHWC format 
 		self.target = target	# labels (assumed to be in one-hot encoding)
+
+		self.one_hot_labels = one_hot_labels
 
 		self.keep_prob = keep_prob # input probability for dropout regularization (set to 1.0 for inference)
 
@@ -38,7 +40,10 @@ class SCNN:
 		self.dense_layer_variables = []
 
 		# add a dense shape for the readout layer
-		self.dense_depths.append(self.target.get_shape().as_list()[1])
+		if one_hot_labels:
+			self.dense_depths.append(self.target.get_shape().as_list()[1])
+		else:
+			self.dense_depths.append(10) # hardcoded for cifar-10
 
 		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
@@ -63,9 +68,9 @@ class SCNN:
 		self._optimize_dense_layers = None
 		self._accuracy		= None
 
-		self.weight_init_stddev 	= 0.1 # 0.000015
-		self.weight_init_mean 		= 0   # 0.0001
-		self.initial_bias_value 	= 0.1 # 0.0001
+		self.weight_init_stddev 	= 0.05 # 0.000015
+		self.weight_init_mean 		= 0.   # 0.0001
+		self.initial_bias_value 	= 0. # 0.0001
 		self.step_size 				= 0.0001 # 0.0001
 
 		self._summaries = []
@@ -142,6 +147,11 @@ class SCNN:
 				# POOLING (2x2 max pooling)
 				if self.pooling_type == 'max_pooling':
 					pool_out = tf.nn.max_pool(conv_act, [1,2,2,1], [1,2,2,1], padding='SAME', name='max_pool_{}'.format(layer))
+					tmp_tensor = pool_out
+
+				elif self.pooling_type == 'max_pooling_k3':
+					# max pooling with larger kernel (as in AlexNet)
+					pool_out = tf.nn.max_pool(conv_act, [1,3,3,1], [1,2,2,1], padding='SAME', name='max_pool_{}'.format(layer))
 					tmp_tensor = pool_out
 
 				else:
@@ -227,7 +237,10 @@ class SCNN:
 		if self._error is None:
 			print('initialize error')
 
-			self._error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
+			if self.one_hot_labels:
+				self._error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
+			else:
+				self._error = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
 
 			if self.add_tensorboard_summary:
 				self._summaries.append(tf.summary.scalar('cross entropy error', self._error))
@@ -264,7 +277,11 @@ class SCNN:
 		if self._accuracy is None:
 			print('initialize accuracy')
 
-			correct_prediction = tf.equal(tf.argmax(self.prediction,1), tf.argmax(self.target,1))
+			if self.one_hot_labels:
+				correct_prediction = tf.equal(tf.argmax(self.prediction,1), tf.argmax(self.target,1))
+			else:
+				correct_prediction = tf.equal(tf.argmax(self.prediction,1), self.target)
+
 			accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 			self._accuracy = accuracy 

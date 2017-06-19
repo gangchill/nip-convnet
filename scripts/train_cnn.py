@@ -2,7 +2,9 @@ import tensorflow 	as tf
 import numpy 		as np 
 import os
 
-def train_cnn(sess, cnn, mnist, x, y, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only):
+import cifar_10_input
+
+def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only):
 
 	print("Training SCNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
@@ -11,7 +13,11 @@ def train_cnn(sess, cnn, mnist, x, y, keep_prob, dropout_k_p, batch_size, max_it
 		if chk_iterations > 100 and i % 100 == 0:
 			print('...iteration {}'.format(i))
 
-		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+		if data == 'cifar_10':
+			batch_xs, batch_ys = cifar_10_input.distorted_inputs('../cifar10_data/cifar-10-batches-bin', batch_size)
+
+		else:
+			batch_xs, batch_ys = data.train.next_batch(batch_size)
 
 		if fine_tuning_only:
 			sess.run(cnn.optimize_dense_layers, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
@@ -21,7 +27,12 @@ def train_cnn(sess, cnn, mnist, x, y, keep_prob, dropout_k_p, batch_size, max_it
 
 		if i % chk_iterations == 0:
 
-			avg_r_e, summary = sess.run([cnn.accuracy, cnn.merged], feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1.0})
+			if data == 'cifar_10':
+				test_images, test_labels = cifar_10_input.inputs(False, '../cifar10_data/cifar-10-batches-bin', batch_size)
+			else:
+				test_images, test_labels = data.test.images, data.test.labels
+
+			avg_r_e, summary = sess.run([cnn.accuracy, cnn.merged], feed_dict={x: test_images, y: test_labels, keep_prob: 1.0})
 
 			print('it {} accuracy {}'.format(i, np.mean(avg_r_e)))
 
