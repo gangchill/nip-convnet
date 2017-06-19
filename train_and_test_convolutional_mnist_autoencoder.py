@@ -39,29 +39,31 @@ def main():
 	x_image = tf.reshape(x, [-1, 28, 28, 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(1,1), (1,1)]
-	hidden_channels = [1, 1] 
-	pooling_type 	= 'max_pooling'
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [8, 16] 
+	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	activation_function = 'lrelu'
 	relu_leak = 0.2 # only for leaky relus
 
-	weight_init_mean 	= 0.001
-	weight_init_stddev 	= 0.0001
-	initial_bias_value  = 0.00000001
+	error_function = 'cross-entropy' # default is cross-entropy
+
+	weight_init_mean 	= 0.
+	weight_init_stddev 	= 0.01
+	initial_bias_value  = 0.000001
 
 	batch_size 		= 100
-	max_iterations 	= 1000
+	max_iterations 	= 101
 	chk_iterations  = 100
-	step_size 		= 0.0000001
+	step_size 		= 0.000001
 
-	tie_conv_weights = False
+	tie_conv_weights = True
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	folder_name = '1x1_conv_test'
-	run_name 	= 'dcae_1x1_{}'.format(weight_file_name)
+	folder_name = 'ce_test'
+	run_name 	= '{}'.format(weight_file_name)
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
@@ -88,17 +90,17 @@ def main():
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)
 
 		else:
-			train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
+			train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size, max_iterations, chk_iterations)
+		train_ae(sess, writer, x, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
 	
 
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	# visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
+	visualize_ae_representation(sess, x_image, autoencoder, mnist, 2)
 
 
 	# add logwriter for tensorboard

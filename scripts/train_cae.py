@@ -2,7 +2,7 @@ import tensorflow 	as tf
 import numpy		as np
 import os
 
-def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, batch_size=100, max_iterations=1000, chk_iterations=500):
+def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, max_iterations=1000, chk_iterations=500):
 
 	print('...checking folder structure')
 	folders = ['models', cae_dir, cae_weights_dir]
@@ -13,6 +13,12 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_
 			os.makedirs(dir_path)
 
 	print("Training for {} iterations with batchsize {}".format(max_iterations, batch_size))
+	print("Error function is {}".format(error_function))
+
+	if error_function == 'mse':
+		optimizer_node = autoencoder.optimize_mse
+	else:
+		optimizer_node = autoencoder.optimize
 
 	for i in range(max_iterations):
 
@@ -29,7 +35,7 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, mnist, cae_dir, cae_
 			writer.add_summary(summary, i)
 
 		batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-		sess.run(autoencoder.optimize, feed_dict={input_placeholder: batch_xs})
+		sess.run(optimizer_node, feed_dict={input_placeholder: batch_xs})
 
 
 	print('...finished training')

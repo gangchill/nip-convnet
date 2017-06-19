@@ -25,13 +25,14 @@ class CAE:
 		self.filter_dims 		= filter_dims 		# height and width of the conv kernels 	for each layer
 		self.hidden_channels 	= hidden_channels	# number of feature maps 				for each layer
 		
+		self.strided_conv_strides 	= [1,2,2,1]
+		self.std_strides 			= [1,1,1,1] 
+
 		if strides is None:
 			if pooling_type == 'strided_conv':
-				self.strides = [[1,2,2,1] for filter in filter_dims]
+				self.strides = [self.strided_conv_strides 	for filter in filter_dims]
 			else:
-				self.strides = [[1,1,1,1] for filter in filter_dims]
-
-		self.scalar_bias = False # use the same bias over all dimensions (simpler model)
+				self.strides = [self.std_strides 			for filter in filter_dims]
 
 		self.pooling_type 			= pooling_type
 		self.activation_function	= activation_function
@@ -44,6 +45,7 @@ class CAE:
 		self.tie_conv_weights = tie_conv_weights
 
 		self.add_tensorboard_summary = add_tensorboard_summary
+		self.track_gradients_in_tensorboard = True
 
 		# init lists that will store weights and biases for the convolution operations
 		self.conv_weights 	= []
@@ -67,10 +69,13 @@ class CAE:
 
 		# private attributes used by the properties
 		self._encoding 				= None
-		self._optimize				= None
 		self._logit_reconstruction 	= None
 		self._reconstruction		= None
 		self._error					= None
+		self._ce_error 				= None
+		self._optimizer 			= None
+		self._optimize				= None
+		self._optimize_mse 			= None
 
 		self._summaries = []
 
@@ -79,6 +84,12 @@ class CAE:
 		with tf.name_scope('CAE'):
 			self.optimize
 			self.error
+
+			if self.track_gradients_in_tensorboard:
+				for i, conv_weight in enumerate(self.conv_weights):
+					self._summaries.append(tf.summary.histogram('c-e loss gradient conv weight {}'.format(i), self.optimizer.compute_gradients(self.ce_error, [conv_weight])))
+				for i, conv_bias in enumerate(self.conv_biases):
+					self._summaries.append(tf.summary.histogram('c-e loss gradient conv bias {}'.format(i), self.optimizer.compute_gradients(self.ce_error, [conv_bias])))
 
 		if self.add_tensorboard_summary:
 			self.merged = tf.summary.merge(self._summaries)
@@ -107,16 +118,18 @@ class CAE:
 					in_channels = self.hidden_channels[layer - 1]
 				out_channels = self.hidden_channels[layer]
 
+				print 'init layer ', layer, 'conv', ' in-out:', in_channels, out_channels
+
 				# initialize weights and biases:
 				filter_shape = [self.filter_dims[layer][0], self.filter_dims[layer][1], in_channels, out_channels]
 
-				if self.scalar_bias:
-					bias_shape = [1]
-				else:
-					bias_shape = [out_channels]
+				bias_shape = [out_channels]
 
 				W = tf.Variable(tf.truncated_normal(filter_shape, mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
 				b = tf.Variable(tf.constant(self.initial_bias_value, shape=bias_shape), name='conv{}_bias'.format(layer))
+
+				self._summaries.append(tf.summary.histogram('ENCODING: layer {} weight'.format(layer), W))
+				self._summaries.append(tf.summary.histogram('ENCODING: layer {} bias'.format(layer), b))
 
 				if self.add_tensorboard_summary and layer == 0 and self.filter_dims[layer] != (1,1):
 					# visualize first layer filters
@@ -128,9 +141,15 @@ class CAE:
 				self.conv_weights.append(W)
 				self.conv_biases.append(b)
 
+				print tf.shape(tmp_tensor)
 				self.pre_conv_shapes.append(tf.shape(tmp_tensor))
 
 				# PREACTIVATION
+				if self.pooling_type == 'strided_convolution':
+					strides = self.strided_conv_strides
+				else:
+					strides = self.std_strides
+
 				conv_preact = tf.add(tf.nn.conv2d(tmp_tensor, W, strides = self.strides[layer], padding='SAME'),  b, name='conv_{}_preactivation'.format(layer))
 
 				if self.add_tensorboard_summary:
@@ -170,7 +189,7 @@ class CAE:
 
 	@property
 	def error(self):
-		# returns the training error node (cross-entropy) used for the training and testing
+		# returns the training error mean_squared error used for the training and testing
 
 		if self._error is None:
 			print('initialize error')
@@ -183,24 +202,52 @@ class CAE:
 		return self._error
 
 	@property
+	def ce_error(self):
+		# cross-entropy error
+		if self._ce_error is None:
+			if self.output_reconstruction_activation == 'scaled_tanh':
+
+				ce_error = -tf.reduce_sum(self.data * tf.log(self.reconstruction), name='cross_entropy_on_scaled_tanh')
+
+			else:
+
+				ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross_entropy_error')
+
+			print ce_error
+
+			self._ce_error = ce_error
+
+		return self._ce_error
+
+	@property
+	def optimizer(self):
+		if self._optimizer is None:
+			print('initialize optimizer')
+
+			self._optimizer = tf.train.GradientDescentOptimizer(self.step_size)
+
+		return self._optimizer
+
+	@property
+	def optimize_mse(self):
+		if self._optimize_mse is None:
+
+			optimizer = self.optimizer
+			self._optimize_mse = optimizer.minimize(self.error)
+
+		return self._mse_optimizer
+
+	@property
 	def optimize(self):
 		# returns the cross-entropy node we use for the optimization
 
 		if self._optimize is None:
-			print('initialize optimizer')
+			print('initialize optimize call')
 
-			# TODO: make step size modifiable
-			step_size = self.step_size
+			ce_error  = self.ce_error
+			optimizer = self.optimizer
 
-			if self.output_reconstruction_activation == 'scaled_tanh':
-
-				ce_error = -tf.reduce_sum(self.data * tf.log(self.reconstruction), name='cross-entropy_on_scaled_tanh')
-
-			else:
-
-				ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross-entropy_error')
-
-			self._optimize = tf.train.GradientDescentOptimizer(step_size).minimize(ce_error)
+			self._optimize = optimizer.minimize(ce_error)
 
 		return self._optimize
 
@@ -216,6 +263,9 @@ class CAE:
 			for layer in range(len(self.filter_dims))[::-1]:
 				# go through the layers in reverse order to reconstruct the image
 
+				print 'layer {} reconstruction'.format(layer)
+				print self.conv_weights[layer]
+
 				if self.store_model_walkthrough:
 					# store intermediate results
 					self.model_walkthrough.append(tmp_tensor)
@@ -226,19 +276,24 @@ class CAE:
 				else:
 					channels = self.hidden_channels[layer - 1]
 
+					print 'channels', channels
 
-				if not self.tie_conv_weights and layer == 0:
+
+				if not self.tie_conv_weights: #  and layer == 0:
+					# TODO: why layer == 0
 					W = tf.Variable(tf.truncated_normal(tf.shape(self.conv_weights[layer]), mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
+					
+					self._summaries.append(tf.summary.histogram('DECODING: layer {} weight'.format(layer), W))
+
 				else:
 					W = self.conv_weights[layer]
 
 				# init reconstruction bias
-				if self.scalar_bias:
-					bias_shape = [1]
-				else:
-					bias_shape = [out_channels]
+				bias_shape = [channels]
 				c = tf.Variable(tf.constant(self.initial_bias_value, shape=bias_shape), name='reconstruction_bias_{}'.format(layer))
 				self.reconst_biases.append(c)
+
+				self._summaries.append(tf.summary.histogram('DECODING: layer {} bias'.format(layer), c))
 
 
 				if self.pooling_type == 'max_pooling':
@@ -248,6 +303,10 @@ class CAE:
 
 				else:
 					# conv2d_transpose without upsampling 
+					if self.pooling_type == 'strided_conv':
+						strides = self.strided_conv_strides
+					else:
+						strides = self.std_strides
 					reconst_preact = tf.add( tf.nn.conv2d_transpose(tmp_tensor, W, self.pre_conv_shapes[layer], self.strides[layer]), c, name='reconstruction_preact_{}'.format(layer))
 
 				self._summaries.append(tf.summary.histogram('layer {} reconstruction preactivations'.format(layer), reconst_preact))
