@@ -33,6 +33,10 @@ def main():
 		input_size = load_ckplus.INPUT_SIZE
 		num_classes = load_ckplus.NUM_CLASSES
 
+	elif DATASET == "CIFAR10":
+		import scripts.cifar_10_input as cifar_10_input
+
+
 
 	# input variables: x (images), y_ (labels), keep_prob (dropout rate)
 	x  = tf.placeholder(tf.float32, [None, input_size[0]*input_size[1]], name='input_digits')
@@ -44,8 +48,17 @@ def main():
 	# reshape the input to NHWD format
 	x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
 
-	# CNN parameters:
 
+	## #### ##
+	# CONFIG # 
+	## #### ##
+
+	use_config_file 	= False
+	config_file_path 	= 'configs/config_example.jeneendung'
+
+	# ------------------------------------------------------
+
+	# ARCHITECTURE
 	# feature extraction parameters
 	filter_dims 	= [(5,5), (5,5)]
 	hidden_channels = [16, 32] 
@@ -56,28 +69,43 @@ def main():
 	# fc-layer parameters:
 	dense_depths = []
 
-	# only optimize dense layers and leave convolutions as they are
-	fine_tuning_only = False
-
-	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
-
+	# TRAINING
 	# training parameters:
 	batch_size 		= 100
 	max_iterations	= 5001
 	chk_iterations 	= 500
 	dropout_k_p		= 0.5
 
-	sess = tf.Session() 
-	sess.run(tf.global_variables_initializer())
+	# only optimize dense layers and leave convolutions as they are
+	fine_tuning_only = False
+
+	if use_config_file:
+		# load config file to class 
+		# config class = ... 
+
+		# batchsize = configclas.. 
+
+	else:
+		# move manual config stuff here
+		pass
+
+	# -------------------------------------------------------
 
 	# construct names for logging
 	log_folder_name = 'cnn_reference_try'
+	log_path = os.path.join('logs', log_folder_name, run_prefix)
 
 	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
 	training_str 		= 'tr' + str(batch_size) + '_' + str(max_iterations) + '_' + str(dropout_k_p)
 	run_prefix 			= 'mnist_cnn_' + architecture_str + training_str
 
-	log_path = os.path.join('logs', log_folder_name, run_prefix)
+
+	# RUN
+
+	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function)
+
+	sess = tf.Session() 
+	sess.run(tf.global_variables_initializer())
 
 	# add logwriter for tensorboard
 	writer = tf.summary.FileWriter(log_path, sess.graph)
