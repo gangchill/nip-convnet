@@ -359,6 +359,9 @@ class CAE:
 		self._summaries.append(tf.summary.image('input', self.data))
 		self._summaries.append(tf.summary.image('reconstruction', self._reconstruction))
 
+		self._summaries.append(tf.summary.histogram('input', self.data))
+		self._summaries.append(tf.summary.histogram('reconstruction', self._reconstruction))
+
 		return self._reconstruction
 
 
