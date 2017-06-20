@@ -61,7 +61,7 @@ def read_data_sets(test_size = 50, one_hot=False):
                             image = scipy.misc.imread(thumb_path).flatten()
 
                             # Normalize pixel values
-                            image = image * (1. / 255)
+                            #image = image * (1. / 255)
 
                             image_dict = dict(enumerate(image))
                             image_dict['emotion'] = emotion - 1
