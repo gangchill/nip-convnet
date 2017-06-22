@@ -28,6 +28,7 @@ class ConfigLoader:
 		for k, v in self.configuration_dict.items():
 			print(k, v)
 
+
 	def store_config_file(self, path='config.ini', config_version='default'):
 
 		# store content of current configuration_dict to file
