@@ -286,7 +286,7 @@ class CAE:
 					self._summaries.append(tf.summary.histogram('DECODING: layer {} weight'.format(layer), W))
 
 				else:
-					W = self.conv_weights[layer]
+					W =  self.conv_weights[layer]
 
 				# init reconstruction bias
 				bias_shape = [channels]

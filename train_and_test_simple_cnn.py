@@ -10,7 +10,12 @@ import os
 
 # import the  SCNN class from simple_.py
 from models.cnn.simple_cnn import SCNN
-from scripts.train_cnn import train_cnn
+
+from scripts.train_cnn 		import train_cnn
+from scripts.cifar_input 	import build_input
+
+from scripts.dataset_conversion import convert_to_dataset
+
 
 ########
 # MAIN #
@@ -18,7 +23,7 @@ from scripts.train_cnn import train_cnn
 
 def main():
 
-	DATASET = "CIFAR10"
+	DATASET = "CIFAR"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -79,8 +84,8 @@ def main():
 	# TRAINING
 	# training parameters:
 	batch_size 		= 128
-	max_iterations	= 5001
-	chk_iterations 	= 500
+	max_iterations	= 1
+	chk_iterations 	= 50
 	dropout_k_p		= 0.5
 
 	# only optimize dense layers and leave convolutions as they are

@@ -28,7 +28,7 @@ def main():
 	restore_weights_if_existant = False
 	# TODO: adapt filename to the more complex setup 
 
-	DATASET = "CKPLUS"
+	DATASET = "MNIST"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -50,31 +50,32 @@ def main():
 	x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [8, 16] 
-	pooling_type 	= 'strided_conv'
+	filter_dims 	= [(1,1), (1,1)]
+	hidden_channels = [1,1] 
+	pooling_type 	= 'none'
 	strides = None # other strides should not work yet
-	activation_function = 'lrelu'
+	activation_function = 'sigmoid'
 	relu_leak = 0.2 # only for leaky relus
 
 	error_function = 'cross-entropy' # default is cross-entropy
 
-	weight_init_mean 	= 0.
-	weight_init_stddev 	= 0.01
-	initial_bias_value  = 0.000001
+	weight_init_mean 	= 1.
+	weight_init_stddev 	= 0.00
+	initial_bias_value  = 0.0000000
 
 	batch_size 		= 100
-	max_iterations 	= 101
-	chk_iterations  = 100
-	step_size 		= 0.000001
+	max_iterations 	= 5
+	chk_iterations  = 1
+	step_size 		= 0.0001
 
 	tie_conv_weights = True
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	folder_name = 'ce_test'
-	run_name 	= '{}'.format(weight_file_name)
+	folder_name = 'scaling_walkthrough'
+	# run_name 	= '{}'.format(weight_file_name)
+	run_name = 'sigmoid_it_05'
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
@@ -110,7 +111,7 @@ def main():
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	visualize_ae_representation(sess, x_image, autoencoder, dataset, input_size, 2)
+	visualize_ae_representation(sess, x_image, autoencoder, dataset, folder_name, run_name, input_size, 2)
 
 
 	# add logwriter for tensorboard
@@ -173,11 +174,11 @@ def visualize_cae_filters(sess, autoencoder):
 	plt.close(fig)
 
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, input_size, num_images = 100, use_training_set = False, common_scaling = False):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, folder_name, run_name, input_size, num_images = 100, use_training_set = False, common_scaling = False, plot_first_layer_filters = False):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
-	folders = ['digit_reconstructions']
+	folders = ['digit_reconstructions', os.path.join('digit_reconstructions', folder_name), os.path.join('digit_reconstructions', folder_name, run_name)]
 	cwd = os.getcwd()
 	for folder in folders:
 		dir_path = os.path.join(cwd, folder)
@@ -244,11 +245,13 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, inp
 		plt.subplot(rows, 1, 1)
 		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
+		plt.colorbar(orientation="horizontal",fraction=0.07)
 
 		# plot reconstruction
 		plt.subplot(rows,1 , rows)
 		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
+		plt.colorbar(orientation="horizontal",fraction=0.07)
 
 		for c in range(hidden_layer_count):
 			hc_size = walkthrough[c].shape[3]
@@ -258,61 +261,62 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, inp
 				plt.subplot(rows,hc_size, (c + 1) * hc_size + r + 1)
 				plt.imshow(walkthrough[c][i,:,:,r], cmap='gray', interpolation='none')
 				plt.axis('off')
+				plt.colorbar(orientation="horizontal",fraction=0.07)
 
 
 		# plt.tight_layout()
-		plt.savefig(os.path.join('digit_reconstructions', 'cae_example{}_feature_maps.png'.format(i)))
+		plt.savefig(os.path.join('digit_reconstructions', folder_name, run_name, '{}_{}_feature_maps.png'.format(run_name,i)))
 		plt.close(fig)
 
 		print('filter + representation')
 		fig = plt.figure(figsize=(10 * num_filters , 40))
 
+		if plot_first_layer_filters:
 
-
-		plt.subplot(4,1,1)
-		# plt.title('input image', fontsize=fontsize)
-		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
-		plt.axis('off')
-
-		print('minimum_filter_value: ', np.min(cae_filters[:,:,0,:]))
-
-		max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
-		max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))
-
-		norm_filters 	= mpl.colors.Normalize(vmin=-max_abs_filters,vmax=max_abs_filters)
-		norm_encodings 	= mpl.colors.Normalize(vmin=-max_abs_encodings,vmax=max_abs_encodings)
-
-
-		for f in range(num_filters):
-
-			plt.subplot(4,num_filters, num_filters + f + 1)
-
-			if common_scaling:
-				plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None', norm=norm_filters)
-			else:
-				plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None')
-
+			plt.subplot(4,1,1)
+			# plt.title('input image', fontsize=fontsize)
+			plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 			plt.axis('off')
 
-			plt.subplot(4,num_filters, 2 * num_filters + f + 1)
+			print('minimum_filter_value: ', np.min(cae_filters[:,:,0,:]))
 
-			if common_scaling:
-				plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None', norm=norm_encodings)
-			else:
-				plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None')
+			max_abs_filters 	= np.max(np.absolute(cae_filters[:,:,0,:]))
+			max_abs_encodings 	= np.max(np.absolute(encoding[i,:,:,:]))
 
+			norm_filters 	= mpl.colors.Normalize(vmin=-max_abs_filters,vmax=max_abs_filters)
+			norm_encodings 	= mpl.colors.Normalize(vmin=-max_abs_encodings,vmax=max_abs_encodings)
+
+
+			for f in range(num_filters):
+
+				plt.subplot(4,num_filters, num_filters + f + 1)
+
+				if common_scaling:
+					plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None', norm=norm_filters)
+				else:
+					plt.imshow(cae_filters[:,:,0,f], cmap='gray', interpolation='None')
+
+				plt.axis('off')
+
+				plt.subplot(4,num_filters, 2 * num_filters + f + 1)
+
+				if common_scaling:
+					plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None', norm=norm_encodings)
+				else:
+					plt.imshow(encoding[i,:,:,f], cmap='gray', interpolation='None')
+
+				plt.axis('off')
+
+			plt.subplot(4,1,4)
+			# plt.title('reconstruction', fontsize=fontsize)
+			plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 			plt.axis('off')
 
-		plt.subplot(4,1,4)
-		# plt.title('reconstruction', fontsize=fontsize)
-		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
-		plt.axis('off')
+			plt.tight_layout()
 
-		plt.tight_layout()
+			plt.savefig(os.path.join('digit_reconstructions', 'cae_example{}.png'.format(i)))
 
-		plt.savefig(os.path.join('digit_reconstructions', 'cae_example{}.png'.format(i)))
-
-		plt.close(fig)
+			plt.close(fig)
 
 
 if __name__ == '__main__':
