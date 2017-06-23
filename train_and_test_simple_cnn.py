@@ -66,7 +66,7 @@ def main():
 	## #### ##
 
 	use_config_file 	= False
-	config_file_path 	= 'configs/config_example.jeneendung'
+	config_file_path 	= 'configs/config.ini'
 
 	# ------------------------------------------------------
 
