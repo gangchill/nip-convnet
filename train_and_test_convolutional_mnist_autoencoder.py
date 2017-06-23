@@ -28,6 +28,12 @@ def main():
 	restore_weights_if_existant = False
 	# TODO: adapt filename to the more complex setup 
 
+
+	## ########### ##
+	# INPUT HANDING #
+	## ########### ##
+
+
 	DATASET = "MNIST"
 
 	if DATASET == "MNIST":
@@ -36,18 +42,39 @@ def main():
 		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
 		input_size = (28, 28)
 		num_classes = 10
+		nhwd_shape = False
 
 	elif DATASET == "CKPLUS":
 		import scripts.load_ckplus as load_ckplus
 		dataset = load_ckplus.read_data_sets(one_hot=True)
 		input_size = (49, 64)
 		num_classes = load_ckplus.NUM_CLASSES
+		nhwd_shape = False
 
-	# input variables: x (images)
-	x  = tf.placeholder(tf.float32, [None, input_size[0]*input_size[1]], name='input_digits')
+	elif DATASET=="CIFAR10":
+		dataset 		= "cifar_10" 	# signals the train_ae function that it needs to load the data via cifar10_input.py
+		input_size 		= (24, 24, 3)
+		num_classes 	= 1
+		nhwd_shape 		= True
 
-	# reshape the input to NHWD format
-	x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
+	if nhwd_shape == False:
+
+		# input variables: x (images), y_ (labels), keep_prob (dropout rate)
+		x  = tf.placeholder(tf.float32, [None, input_size[0]*input_size[1]], name='input_digits')
+		# reshape the input to NHWD format
+		x_image = tf.reshape(x, [-1, input_size[0], input_size[1], 1])
+
+	else: 
+
+		x = tf.placeholder(tf.float32, [None, input_size[0], input_size[1], input_size[2]], name='input_images')
+		x_image = x
+
+
+
+	## #### ##
+	# CONFIG # 
+	## #### ##
+
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(1,1), (1,1)]
@@ -73,9 +100,25 @@ def main():
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, max_iterations, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	folder_name = 'scaling_walkthrough'
-	# run_name 	= '{}'.format(weight_file_name)
-	run_name = 'sigmoid_it_05'
+	log_folder_name = 'cifar_cae_test'
+	run_name 	= '{}'.format(weight_file_name)
+	# run_name = ''
+
+
+	# folder to store the training weights in:
+	model_save_parent_dir = 'weights'
+	save_path = os.path.join(model_save_parent_dir, log_folder_name, run_name)
+	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name)]
+	
+	for directory in check_dirs:
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+
+
+
+	## ###### ##
+	# TRAINING #
+	## ###### ##
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
@@ -86,9 +129,7 @@ def main():
 
 	print("Begin autencoder training")
 	
-
-	
-	writer = tf.summary.FileWriter("logs/{}/{}".format(folder_name, run_name), sess.graph)
+	writer = tf.summary.FileWriter("logs/{}/{}".format(log_folder_name, run_name), sess.graph)
 
 	if restore_weights_if_existant:
 		# only train a new autoencoder if no weights file is found
@@ -102,16 +143,17 @@ def main():
 			autoencoder.load_model_from_file(sess, chkpnt_file_path)
 
 		else:
-			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
+			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations, save_prefix = save_path)
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations)
+		train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, max_iterations, chk_iterations, save_prefix = save_path)
 
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	visualize_ae_representation(sess, x_image, autoencoder, dataset, folder_name, run_name, input_size, 2)
+	if  not DATASET == 'CIFAR10':
+		visualize_ae_representation(sess, x_image, autoencoder, dataset, log_folder_name, run_name, input_size, 2)
 
 
 	# add logwriter for tensorboard

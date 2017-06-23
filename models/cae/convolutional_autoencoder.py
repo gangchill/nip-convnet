@@ -92,7 +92,14 @@ class CAE:
 					self._summaries.append(tf.summary.histogram('c-e loss gradient conv bias {}'.format(i), self.optimizer.compute_gradients(self.ce_error, [conv_bias])))
 
 		if self.add_tensorboard_summary:
-			self.merged = tf.summary.merge(self._summaries)
+			self.update_summaries()
+			
+
+	def add_summary(self, summary):
+		self._summaries.append(summary)
+
+	def update_summaries(self):
+		self.merged = tf.summary.merge(self._summaries)
 
 	@property
 	def encoding(self):
