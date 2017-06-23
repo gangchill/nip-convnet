@@ -85,9 +85,13 @@ class SCNN:
 			self.accuracy
 
 		if self.add_tensorboard_summary:
-			self.merged = tf.summary.merge(self._summaries)
+			self.update_summaries()
 
 		print('...finished initialization')
+
+
+	def update_summaries(self):
+		self.merged = tf.summary.merge(self._summaries)
 
 	@property
 	def encoding(self):
@@ -121,7 +125,7 @@ class SCNN:
 					# visualize first layer filters
 
 					for fltr_indx in range(out_channels):
-						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None]))
+						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), W[None, :,:,:,fltr_indx]))
 
 
 				self.conv_weights.append(W)
