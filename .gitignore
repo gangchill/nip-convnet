@@ -1,8 +1,10 @@
 digit_reconstructions/*
 logs/*
+weights/*
 models/sae/weights
 models/cae/weights
 MNIST_data/*
+cifar10_data/*
 *.pyc
 
 .directory
