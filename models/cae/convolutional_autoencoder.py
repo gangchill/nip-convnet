@@ -142,8 +142,7 @@ class CAE:
 					# visualize first layer filters
 
 					for fltr_indx in range(out_channels):
-						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), tf.reduce_mean(W, 2)[None, :,:,fltr_indx, None]))
-
+						self._summaries.append(tf.summary.image('first layer filter {}'.format(fltr_indx), W[None, :,:,:,fltr_indx]))
 
 				self.conv_weights.append(W)
 				self.conv_biases.append(b)
@@ -384,11 +383,15 @@ class CAE:
 
 		print('Saved encoding weights to {}'.format(save_path))
 
-	def store_model_to_file(self, sess, path_to_file):
+	def store_model_to_file(self, sess, path_to_file, step = None):
 
 		# TODO: add store / save function to the class
 		saver = tf.train.Saver()
-		save_path = saver.save(sess, path_to_file)
+
+		if step is None:
+			save_path = saver.save(sess, path_to_file)
+		else:
+			save_path = saver.save(sess, path_to_file, global_step = step)
 
 		print('Model was saved in {}'.format(save_path))
 

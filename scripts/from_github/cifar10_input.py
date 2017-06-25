@@ -183,7 +183,7 @@ def distorted_inputs(data_dir, batch_size):
                                              lower=0.2, upper=1.8)
 
   # Subtract off the mean and divide by the variance of the pixels.
-  float_image = tf.image.per_image_standardization(distorted_image)
+  float_image = distorted_image / 255. # tf.image.per_image_standardization(distorted_image)
 
   # Set the shapes of tensors.
   float_image.set_shape([height, width, 3])
@@ -242,7 +242,7 @@ def inputs(eval_data, data_dir, batch_size):
                                                          height, width)
 
   # Subtract off the mean and divide by the variance of the pixels.
-  float_image = tf.image.per_image_standardization(resized_image)
+  float_image = resized_image / 255. # tf.image.per_image_standardization(resized_image)
 
   # Set the shapes of tensors.
   float_image.set_shape([height, width, 3])

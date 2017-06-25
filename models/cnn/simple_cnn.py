@@ -343,12 +343,14 @@ class SCNN:
 		save_path = saver.save(sess, path_to_file)
 		return
 
-
-	def store_model_to_file(self, sess, path_to_file):
-		# store the whole model to file
+	def store_model_to_file(self, sess, path_to_file, step = None):
 
 		saver = tf.train.Saver()
-		save_path = saver.save(sess, path_to_file)
+
+		if step is None:
+			save_path = saver.save(sess, path_to_file)
+		else:
+			save_path = saver.save(sess, path_to_file, global_step = step)
 
 		print('Model was saved in {}'.format(save_path))
 

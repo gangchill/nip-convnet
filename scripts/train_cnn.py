@@ -61,7 +61,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_ite
 				current_top_accuracy = avg_accuracy
 
 				if save_prefix is not None:
-					file_path = os.path.join(save_prefix, 'it{}_acc{}'.format(i, current_top_accuracy))
+					file_path = os.path.join(save_prefix, 'it{}'.format(i, current_top_accuracy))
 					print('...save new found best weights to file ')
 					cnn.store_model_to_file(sess, file_path)
 
