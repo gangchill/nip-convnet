@@ -6,7 +6,7 @@ import from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
-def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_iterations, chk_iterations, writer, fine_tuning_only, save_prefix = None):
+def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_prefix = None):
 
 	print("Training SCNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
@@ -26,7 +26,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_ite
 
 	current_top_accuracy = 0
 
-	for i in range(max_iterations):
+	for i in range(init_iteration, max_iterations):
 
 		if chk_iterations > 100 and i % 100 == 0:
 			print('...iteration {}'.format(i))
@@ -61,9 +61,9 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, max_ite
 				current_top_accuracy = avg_accuracy
 
 				if save_prefix is not None:
-					file_path = os.path.join(save_prefix, 'it{}'.format(i, current_top_accuracy))
+					file_path = os.path.join(save_prefix, 'CNN_chkpnt')
 					print('...save new found best weights to file ')
-					cnn.store_model_to_file(sess, file_path)
+					cnn.store_model_to_file(sess, file_path, i)
 
 			writer.add_summary(summary, i)
 
