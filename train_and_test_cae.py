@@ -76,8 +76,8 @@ def main():
 
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5)]
-	hidden_channels = [64] 
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [64, 64] 
 	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
@@ -85,21 +85,21 @@ def main():
 
 	error_function = 'cross-entropy' # default is cross-entropy
 
-	weight_init_mean 	= 0.1
+	weight_init_mean 	= 0.
 	weight_init_stddev 	= 0.05
-	initial_bias_value  = 0.1
+	initial_bias_value  = 0.
 
 	batch_size 		= 128
-	max_iterations 	= 20
-	chk_iterations  = 10
-	step_size 		= 0.00001
+	max_iterations 	= 5001
+	chk_iterations  = 250
+	step_size 		= 0.0000001
 
 	tie_conv_weights = True
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = '00_cae_cifar_test'
+	log_folder_name = '10_cae_cifar'
 	run_name 	= 'cae_weights'.format(weight_file_name)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
@@ -139,7 +139,7 @@ def main():
 		cwd = os.getcwd()
 		chkpnt_file_path = os.path.join(cwd, save_path)
 
-		saver = tf.train.Saver()
+		saver = tf.train.Saver(autoencoder.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
 
 		if latest_checkpoint is not None:
