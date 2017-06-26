@@ -83,16 +83,17 @@ def main():
 	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
 
-	error_function = 'cross-entropy' # default is cross-entropy
+	error_function 	= 'cross-entropy' 	# default is cross-entropy
+	optimizer_type 	= 'ada_grad' 		# default is gradient descent
 
 	weight_init_mean 	= 0.
 	weight_init_stddev 	= 0.05
 	initial_bias_value  = 0.
 
 	batch_size 		= 128
-	max_iterations 	= 5001
-	chk_iterations  = 250
-	step_size 		= 0.0000001
+	max_iterations 	= 1001
+	chk_iterations  = 100
+	step_size 		= 0.001
 
 	tie_conv_weights = True
 
@@ -100,7 +101,7 @@ def main():
 
 
 	log_folder_name = '10_cae_cifar'
-	run_name 	= 'cae_weights'.format(weight_file_name)
+	run_name 	= 'adagrad_test({})'.format(step_size, weight_file_name)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
 
@@ -122,7 +123,7 @@ def main():
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak, optimizer_type = optimizer_type)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())

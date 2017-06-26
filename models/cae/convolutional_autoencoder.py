@@ -6,7 +6,7 @@ from lib.activations import l_relu
 class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent'):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -56,7 +56,9 @@ class CAE:
 		self.weight_init_stddev 	= weight_init_stddev
 		self.weight_init_mean 		= weight_init_mean
 		self.initial_bias_value 	= initial_bias_value
+
 		self.step_size 				= step_size
+		self.optimizer_type = optimizer_type
 
 
 		# init list to store the shapes in the forward pass for the conv2d_transpose operations
@@ -235,18 +237,25 @@ class CAE:
 
 				ce_error = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.data, logits=self.logit_reconstruction, name='cross_entropy_error')
 
-			print(ce_error)
-
 			self._ce_error = ce_error
+
+			if self.add_tensorboard_summary:
+				self._summaries.append(tf.summary.scalar('cross entropy', tf.reduce_mean(self._ce_error)))
 
 		return self._ce_error
 
 	@property
 	def optimizer(self):
 		if self._optimizer is None:
-			print('initialize optimizer')
+			print('initialize {} optimizer'.format(self.optimizer_type))
 
-			self._optimizer = tf.train.GradientDescentOptimizer(self.step_size)
+			if self.optimizer_type == 'ada_grad':
+				self._optimizer = tf.train.AdagradOptimizer(self.step_size)
+
+			else:
+				# default: gradient descent optimizer
+				self._optimizer = tf.train.GradientDescentOptimizer(self.step_size)
+
 
 		return self._optimizer
 
