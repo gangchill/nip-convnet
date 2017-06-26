@@ -99,7 +99,7 @@ class CNN:
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + dense_w_d + dense_b_d)
 
-		print self.encoding_variables_dict
+		print(self.encoding_variables_dict)
 
 		print('...finished initialization')
 

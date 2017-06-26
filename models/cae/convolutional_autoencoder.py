@@ -106,7 +106,7 @@ class CAE:
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + reconst_w_d + reconst_b_d)
 
-		print self.all_variables_dict
+		print(self.all_variables_dict)
 
 		print('Initialization finished')
 			

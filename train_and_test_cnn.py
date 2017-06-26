@@ -175,7 +175,7 @@ def main():
 		saver = tf.train.Saver(cnn.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
 
-		print latest_checkpoint
+		print(latest_checkpoint)
 
 		if latest_checkpoint is not None:
 

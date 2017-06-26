@@ -2,7 +2,7 @@ import tensorflow 	as tf
 import numpy 		as np 
 import os
 
-import from_github.cifar10_input as cifar10_input
+import scripts.from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
