@@ -2,11 +2,11 @@ import tensorflow 	as tf
 import numpy		as np
 import sys, os
 
-import from_github.cifar10_input as cifar10_input
+import scripts.from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
-def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxint):
+def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxsize):
 
 	print('...checking folder structure')
 	folders = ['models', cae_dir, cae_weights_dir]
