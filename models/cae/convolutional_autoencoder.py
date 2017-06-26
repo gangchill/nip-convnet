@@ -93,6 +93,22 @@ class CAE:
 
 		if self.add_tensorboard_summary:
 			self.update_summaries()
+
+
+		# initialize the weights and conv dictionaries used to store the weights
+		# encoding:
+		encoding_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
+		encoding_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases))
+		# decoding:
+		reconst_w_d = list(zip(['reconstruction_W_{}'.format(i) for i,j in enumerate(self.reconst_weights)], self.reconst_weights))
+		reconst_b_d = list(zip(['reconstruction_b_{}'.format(i) for i,j in enumerate(self.reconst_biases )], self.reconst_biases))
+
+		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
+		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + reconst_w_d + reconst_b_d)
+
+		print self.all_variables_dict
+
+		print('Initialization finished')
 			
 
 	def add_summary(self, summary):
@@ -288,7 +304,7 @@ class CAE:
 				if not self.tie_conv_weights: #  and layer == 0:
 					# TODO: why layer == 0
 					W = tf.Variable(tf.truncated_normal(tf.shape(self.conv_weights[layer]), mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
-					
+					self.reconst_weights.append(W)
 					self._summaries.append(tf.summary.histogram('DECODING: layer {} weight'.format(layer), W))
 
 				else:
@@ -372,13 +388,8 @@ class CAE:
 
 
 	def store_encoding_weights(self, sess, path_to_file):
-		
-		conv_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
-		conv_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases))
 
-		conv_variable_dict = dict(conv_w_d + conv_b_d)
-
-		saver = tf.train.Saver(conv_variable_dict)
+		saver = tf.train.Saver(self.encoding_variables_dict)
 		save_path = saver.save(sess, path_to_file)
 
 		print('Saved encoding weights to {}'.format(save_path))
@@ -386,7 +397,7 @@ class CAE:
 	def store_model_to_file(self, sess, path_to_file, step = None):
 
 		# TODO: add store / save function to the class
-		saver = tf.train.Saver()
+		saver = tf.train.Saver(self.all_variables_dict)
 
 		if step is None:
 			save_path = saver.save(sess, path_to_file)
@@ -399,7 +410,7 @@ class CAE:
 
 	def load_model_from_file(self, sess, path_to_file):
 
-		saver = tf.train.Saver()
+		saver = tf.train.Saver(self.all_variables_dict)
 		saver.restore(sess, path_to_file)
 
 		print('Restored model from {}'.format(path_to_file))

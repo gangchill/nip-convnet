@@ -29,9 +29,9 @@ def main():
 	# 'pre_trained_encoding':		 	load encoding weights from an auto-encoder
 	# 'default': 						init weights at random
 
-	initialization_mode = 'last_checkpoint'
+	initialization_mode = 'default'
 
-	pre_trained_conv_weights_directory = 'weights/CAE_CIFAR_03_longer_training/(5,5|5,5-64|64max_pooling-relu_TW)-(128,1e-07,0.0, 0.05, 0.0)'
+	pre_trained_conv_weights_directory = 'weights/00_cae_cifar_test/cae_weights'
 
 
 	DATASET = "CIFAR10"
@@ -96,8 +96,8 @@ def main():
 
 	# ARCHITECTURE
 	# feature extraction parameters
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [64, 64] 
+	filter_dims 	= [(5,5)]
+	hidden_channels = [64] 
 	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
@@ -133,7 +133,7 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = 'cnn_cifar_05_resume_training'
+	log_folder_name = '00_cnn_cifar_pre-trained'
 	run_name 		= 'test' + 'cifar' + architecture_str + training_str
 
 
@@ -218,7 +218,6 @@ def main():
 				cnn.load_encoding_weights(sess, latest_checkpoint)
 
 				print('Initialized the CNN with encoding weights found in {}'.format(latest_checkpoint))
-				initialization_finished = True
 
 
 	if not initialization_finished:

@@ -76,11 +76,11 @@ def main():
 
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5), (5,5)]
-	hidden_channels = [64,64, 64] 
+	filter_dims 	= [(5,5)]
+	hidden_channels = [64] 
 	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
-	activation_function = 'sigmoid'
+	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
 
 	error_function = 'cross-entropy' # default is cross-entropy
@@ -91,7 +91,7 @@ def main():
 
 	batch_size 		= 128
 	max_iterations 	= 20
-	chk_iterations  = 1
+	chk_iterations  = 10
 	step_size 		= 0.00001
 
 	tie_conv_weights = True
@@ -99,8 +99,8 @@ def main():
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = 'cae_cifar_06_resume_training'
-	run_name 	= '{}'.format(weight_file_name)
+	log_folder_name = '00_cae_cifar_test'
+	run_name 	= 'cae_weights'.format(weight_file_name)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
 

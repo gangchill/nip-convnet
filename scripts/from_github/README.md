@@ -11,8 +11,4 @@ to
 
 tf.app.flags.DEFINE_string('data_dir', 'cifar10_data',
 
-- Since our autoencoder has an output range in [0,1], we need to change the output range for the input images as well. We therefore removed the mean subtraction and whitening and rescaled the images to the [0,1] interval. The changes are made in lines 186 and 245 of cifar10_input.py:
-
-
-
-
+- Since our autoencoder has an output range in [0,1], we need to change the output range for the input images as well. We therefore removed the mean subtraction and whitening and rescaled the images to the [0,1] interval. The changes are made in lines 186 and 245 of cifar10_input.py.

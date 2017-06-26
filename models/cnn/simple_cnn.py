@@ -37,6 +37,8 @@ class SCNN:
 		self.dense_depths.extend(dense_depths)
 
 		# list that will store all dense layer variables for fine tuning 
+		self.dense_weights	= []
+		self.dense_biases 	= []
 		self.dense_layer_variables = []
 
 		# add a dense shape for the readout layer
@@ -52,12 +54,9 @@ class SCNN:
 		self.conv_weights 	= []
 		self.conv_biases	= []
 
+		self.dense_weights = []
 
 		self.add_tensorboard_summary = add_tensorboard_summary
-
-		self.conv_weights_dict = {}
-		self.conv_biases_dict = {}
-		self.conv_merged_dict = {}
 
 		# private attributes used by the properties
 		self._encoding 		= None
@@ -86,6 +85,21 @@ class SCNN:
 
 		if self.add_tensorboard_summary:
 			self.update_summaries()
+
+
+		# initialize the weights and conv dictionaries used to store the weights
+		# encoding:
+		encoding_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
+		encoding_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases ))
+
+		dense_w_d = list(zip(['dense_W_{}'.format(i) for i,j in enumerate(self.dense_weights)], self.dense_weights))
+		dense_b_d = list(zip(['dense_b_{}'.format(i) for i,j in enumerate(self.dense_biases )], self.dense_biases ))
+
+
+		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
+		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + dense_w_d + dense_b_d)
+
+		print self.encoding_variables_dict
 
 		print('...finished initialization')
 
@@ -196,6 +210,8 @@ class SCNN:
 				b = tf.Variable(tf.constant(0.1, shape=bias_shape), name='dense_{}_bias'.format(d_ind))
 
 				# save dense variables to list to use them in fine-tuning
+				self.dense_weights.append(W)
+				self.dense_biases.append(b)
 				self.dense_layer_variables.append(W)
 				self.dense_layer_variables.append(b)
 
@@ -293,59 +309,11 @@ class SCNN:
 			if self.add_tensorboard_summary:
 				self._summaries.append(tf.summary.scalar('accuracy', self._accuracy))
 
-
 		return self._accuracy
-
-	def merge_two_dicts(x, y):
-		"""Given two dicts, merge them into a new dict as a shallow copy."""
-		z = x.copy()
-		z.update(y)
-		return z
-
-	# store weights and biases separately in two simple dicts, and do a simple merge to create a new dict of weights and biases
-	def store_model_to_file_v1(self, sess, path_to_file):
-
-		if len(self.conv_weights) > 0:
-			weights = dict(zip(['conv_w_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
-			if weights is not None:
-				self.conv_weights_dict = weights
-
-		if len(self.conv_biases) > 0:
-			biases = dict(zip(['conv_b_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
-			if biases is not None:
-				self.conv_biases_dict = biases
-
-		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
-			self.conv_merged_dict=self.merge_two_dicts(self.conv_weights_dict, self.conv_biases_dict)
-
-		saver = tf.train.Saver(self.conv_merged_dict)
-		save_path = saver.save(sess, path_to_file)
-		return
-
-	# store weights and biases separately in two ordered dicts, and do a merge on same key to create a new dict of pairs of weights and biases
-	def store_model_to_file_v2(self, sess, path_to_file):
-
-		if len(self.conv_weights) > 0:
-			weights = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_weights)], self.conv_weights))
-			if weights is not None:
-				self.conv_weights_dict = weights
-
-		if len(self.conv_biases) > 0:
-			biases = collections.OrderedDict(zip(['conv_wb_' + str(i) for i in enumerate(self.conv_biases)], self.conv_biases))
-			if biases is not None:
-				self.conv_biases_dict = biases
-
-		if self.conv_weights_dict is not None and self.conv_biases_dict is not None:
-			dicts = self.conv_weights_dict, self.conv_biases_dict
-			self.conv_merged_dict={k:[d.get(k) for d in dicts] for k in {k for d in dicts for k in d}}
-
-		saver = tf.train.Saver(self.conv_merged_dict)
-		save_path = saver.save(sess, path_to_file)
-		return
 
 	def store_model_to_file(self, sess, path_to_file, step = None):
 
-		saver = tf.train.Saver()
+		saver = tf.train.Saver(self.all_variables_dict)
 
 		if step is None:
 			save_path = saver.save(sess, path_to_file)
@@ -359,7 +327,7 @@ class SCNN:
 	def load_model_from_file(self, sess, path_to_file):
 
 
-		saver = tf.train.Saver()
+		saver = tf.train.Saver(self.all_variables_dict)
 		saver.restore(sess, path_to_file)
 
 		print('Restored model from {}'.format(path_to_file))
@@ -369,13 +337,8 @@ class SCNN:
 
 		# load the encoding (feature extraction) weights from a given file (init encoding with the weights learned by a DCAE)
 		# similar to the CAE.store_encoding_weights() function
-		
-		conv_w_d = list(zip(['conv_W_{}'.format(i) for i,j in enumerate(self.conv_weights)], self.conv_weights))
-		conv_b_d = list(zip(['conv_b_{}'.format(i) for i,j in enumerate(self.conv_biases )], self.conv_biases))
 
-		conv_variable_dict = dict(conv_w_d + conv_b_d)
-
-		saver = tf.train.Saver(conv_variable_dict)
+		saver = tf.train.Saver(self.encoding_variables_dict)
 		saver.restore(sess, path_to_file)
 
 		print('Restored model from {}'.format(path_to_file))
