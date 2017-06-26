@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# train and test a simple convolutional neural network
+# train and test a convolutional neural network
 # ----------------------------------------------------
 
 import tensorflow as tf 
@@ -11,8 +11,8 @@ import os
 import tarfile
 from six.moves import urllib
 
-# import the  SCNN class from simple_.py
-from models.cnn.simple_cnn import SCNN
+# import the  convolutional neural network class
+from models.cnn.cnn import CNN
 
 from scripts.train_cnn 				import train_cnn
 from scripts.from_github.cifar10 	import maybe_download_and_extract
@@ -155,7 +155,7 @@ def main():
 
 	init_iteration = 0
 
-	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels)
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())

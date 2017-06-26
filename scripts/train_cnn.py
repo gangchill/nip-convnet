@@ -8,7 +8,7 @@ CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
 def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_prefix = None, best_accuracy_so_far = 0):
 
-	print("Training SCNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
+	print("Training CNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
 	if data == 'cifar_10':
 

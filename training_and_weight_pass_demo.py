@@ -5,7 +5,7 @@ import matplotlib as mpl
 import os
 
 # import the autoencoder and cnn class
-from models.cnn.simple_cnn import SCNN
+from models.cnn.cnn import CNN
 from models.cae.convolutional_autoencoder import CAE
 
 # import the training procedures
@@ -55,8 +55,8 @@ def main():
 
 	# currently, the same parameters are used for the training of the cae and the cnn
 	batch_size 		= 100
-	max_iterations	= 6001
-	chk_iterations 	= 300
+	max_iterations	= 11
+	chk_iterations 	= 5
 	dropout_k_p		= 0.5
 	step_size 		= 0.0001
 
@@ -81,10 +81,10 @@ def main():
 	## ######### ##
 
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, strides, pooling_type, activation_function, tie_conv_weights)
-	cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='pre_trained_CNN')
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='pre_trained_CNN')
 
 	# second cnn with the same structure that will be trained independently from the autoencoder
-	comparison_cnn = SCNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='reference_CNN')
+	comparison_cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, scope_name='reference_CNN')
 
 	## ###### ##
 	# TRAINING #

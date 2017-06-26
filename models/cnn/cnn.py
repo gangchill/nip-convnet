@@ -2,8 +2,8 @@ import tensorflow as tf
 import csv, os
 import collections
 
-class SCNN: 
-	# simple convolutional neural network (same structure as cae with added fully-connected layers)
+class CNN: 
+	# convolutional neural network (same structure as cae with added fully-connected layers)
 
 	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True):
 
