@@ -24,8 +24,15 @@ from scripts.from_github.cifar10 	import maybe_download_and_extract
 
 def main():
 
-	# resume training from previous checkpoint if possible
-	restore_last_checkpoint = True
+	# weight_initialization options: 
+	# 'last_checkpoint': 				resume training from latest checkpoint if possible, otherwise default
+	# 'pre_trained_encoding':		 	load encoding weights from an auto-encoder
+	# 'default': 						init weights at random
+
+	initialization_mode = 'last_checkpoint'
+
+	pre_trained_conv_weights_directory = 'weights/CAE_CIFAR_03_longer_training/(5,5|5,5-64|64max_pooling-relu_TW)-(128,1e-07,0.0, 0.05, 0.0)'
+
 
 	DATASET = "CIFAR10"
 
@@ -91,7 +98,7 @@ def main():
 	# feature extraction parameters
 	filter_dims 	= [(5,5), (5,5)]
 	hidden_channels = [64, 64] 
-	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
+	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 
@@ -101,7 +108,7 @@ def main():
 	# TRAINING
 	# training parameters:
 	batch_size 		= 128
-	max_iterations	= 6
+	max_iterations	= 10
 	chk_iterations 	= 1
 	dropout_k_p		= 0.5
 
@@ -126,7 +133,7 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = 'CNN_CIFAR_model_resume_test'
+	log_folder_name = 'cnn_cifar_05_resume_training'
 	run_name 		= 'test' + 'cifar' + architecture_str + training_str
 
 
@@ -157,7 +164,9 @@ def main():
 	writer = tf.summary.FileWriter(log_path, sess.graph)
 
 
-	if restore_last_checkpoint:
+	initialization_finished = False
+
+	if initialization_mode == 'last_checkpoint':
 		# initialize training with weights from a previous training 
 
 		cwd = os.getcwd()
@@ -174,18 +183,45 @@ def main():
 
 			init_iteration = int(latest_checkpoint.split('-')[-1]) + 1
 
+			best_accuracy_so_far = float(latest_checkpoint.split('-')[-2])
+
 			print('iteration is: {}'.format(init_iteration))
+			print('top accuracy is: {}'.format(best_accuracy_so_far))
 
 			saver.restore(sess, latest_checkpoint)
 
-			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
+			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path, best_accuracy_so_far)
+
+			initialization_finished = True
 
 		else:
 			print('No checkpoint was found, beginning with iteration 0')
-			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
+
+	elif initialization_mode == 'pre_trained_encoding':
+
+		if pre_trained_conv_weights_directory is not None:
+
+			print('Trying to load conv weights from file')
+
+			cwd = os.getcwd()
+			chkpnt_file_path = os.path.join(cwd, pre_trained_conv_weights_directory)
+
+			print('Looking for checkpoint in {}'.format(chkpnt_file_path))
+
+			saver = tf.train.Saver()
+			latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
+
+			print('Latest checkpoint is: {}'.format(latest_checkpoint))
+
+			if latest_checkpoint is not None:
+
+				cnn.load_encoding_weights(sess, latest_checkpoint)
+
+				print('Initialized the CNN with encoding weights found in {}'.format(latest_checkpoint))
+				initialization_finished = True
 
 
-	else:
+	if not initialization_finished:
 		# always train a new autoencoder 
 		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
 

@@ -76,33 +76,33 @@ def main():
 
 
 	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [64,64] 
+	filter_dims 	= [(5,5), (5,5), (5,5)]
+	hidden_channels = [64,64, 64] 
 	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	activation_function = 'sigmoid'
 	relu_leak = 0.2 # only for leaky relus
 
 	error_function = 'cross-entropy' # default is cross-entropy
 
-	weight_init_mean 	= 0.
+	weight_init_mean 	= 0.1
 	weight_init_stddev 	= 0.05
-	initial_bias_value  = 0.
+	initial_bias_value  = 0.1
 
 	batch_size 		= 128
-	max_iterations 	= 13
+	max_iterations 	= 20
 	chk_iterations  = 1
-	step_size 		= 0.0000001
+	step_size 		= 0.00001
 
 	tie_conv_weights = True
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = 'CAE_CIFAR_weight_restoring_test'
-	# run_name 	= '{}'.format(weight_file_name)
+	log_folder_name = 'cae_cifar_06_resume_training'
+	run_name 	= '{}'.format(weight_file_name)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
-	run_name = 'that_run_tho'
+	# run_name = 'that_run_tho'
 
 
 	# folder to store the training weights in:
@@ -142,19 +142,19 @@ def main():
 		saver = tf.train.Saver()
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
 
-		print latest_checkpoint
-
 		if latest_checkpoint is not None:
 
 			print('Found checkpoint')
 
-			init_iteration = int(latest_checkpoint.split('-')[-1]) + 1
+			init_iteration 					= int(latest_checkpoint.split('-')[-1]) + 1
+			smallest_reconstruction_error  	= float(latest_checkpoint.split('-')[-2])
 
 			print('iteration is: {}'.format(init_iteration))
+			print('smallest reconstruction error so far was {}'.format(smallest_reconstruction_error))
 
 			saver.restore(sess, latest_checkpoint)
 
-			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, init_iteration, max_iterations, chk_iterations, save_prefix = save_path)
+			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, init_iteration, max_iterations, chk_iterations, save_prefix = save_path, minimal_reconstruction_error = smallest_reconstruction_error)
 
 		else:
 			print('No checkpoint was found, beginning with iteration 0')

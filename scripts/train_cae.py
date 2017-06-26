@@ -6,7 +6,7 @@ import from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
-def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None):
+def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxint):
 
 	print('...checking folder structure')
 	folders = ['models', cae_dir, cae_weights_dir]
@@ -41,8 +41,6 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_w
 		optimizer_node = autoencoder.optimize
 
 
-	minimal_reconstruction_error = sys.maxint
-
 	for i in range(init_iteration, max_iterations):
 
 		if data == 'cifar_10':
@@ -75,7 +73,7 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_w
 				minimal_reconstruction_error = average_reconstruction_error
 
 				if save_prefix is not None:
-					file_path = os.path.join(save_prefix, 'cae_model')
+					file_path = os.path.join(save_prefix, 'cae_model-mre-{}'.format(minimal_reconstruction_error))
 					print('...save new found best weights to file ')
 					autoencoder.store_model_to_file(sess, file_path, i)
 
