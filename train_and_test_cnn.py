@@ -31,10 +31,10 @@ def main():
 
 	initialization_mode = 'default'
 
-	pre_trained_conv_weights_directory = 'weights/00_cae_cifar_test/cae_weights'
+	pre_trained_conv_weights_directory = 'weights/25_cae_mnist_mse/MNIST_mse_relu_scaled_tanh_strided_conv(0.001)'
 
 
-	DATASET = "CIFAR10"
+	DATASET = "MNIST"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -96,20 +96,20 @@ def main():
 
 	# ARCHITECTURE
 	# feature extraction parameters
-	filter_dims 	= [(5,5)]
-	hidden_channels = [64] 
-	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
+	filter_dims 	= [(5,5), (5,5)]
+	hidden_channels = [16, 16] 
+	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 
 	# fc-layer parameters:
-	dense_depths = [384, 192]
+	dense_depths = []
 
 	# TRAINING
 	# training parameters:
 	batch_size 		= 128
-	max_iterations	= 10
-	chk_iterations 	= 1
+	max_iterations	= 1001
+	chk_iterations 	= 100
 	dropout_k_p		= 0.5
 
 	# only optimize dense layers and leave convolutions as they are
@@ -133,9 +133,9 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '00_cnn_cifar_pre-trained'
-	run_name 		= 'test' + 'cifar' + architecture_str + training_str
-
+	log_folder_name = '25_cnn_mnist_mse'
+	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
+	run_name = 'random-init'
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
