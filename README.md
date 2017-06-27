@@ -57,5 +57,24 @@ next steps:
 		* the stacked conv autoencoder paper also suggests a layerwise training, unclear if absolutely needed
 		* in order to implement this, we need to find a way to fix some variables during the training (there seems to be a flag to set weights trainable, otherwise we would maybe need to choose an adaptive learning rate of 0 or sth like that)
 
-Simple TODOS:
-* only save the weights of the encoder for the best test performance (atm the last weights are stored)
+**Experiments:
+The following experiments need to be carried out:
+	
+	- Train CAE:
+		-> MNIST sigmoid / relu / lrelu
+		-> CIFAR sigmoid / relu / lrelu
+		-> CK+   sigmoid / relu / lrelu
+
+	- Train CNN:
+		-> MNIST sigmoid / relu / lrelu
+		-> CIFAR sigmoid / relu / lrelu
+		-> CK+   sigmoid / relu / lrelu
+
+	- Fine-Tuning: ('Test' learned representation)
+		-> compare learned representations from different cae's by fine-tuning a network on top of it)
+			(hopefully shows that they are meaningful)
+		(only 1 (or 2) dense fine-tuning layers, represenation should be as easily seperable as possible)
+
+	- Weight Initialization
+		-> For good working CAE / CNN combinations: compare accuracy with / without pre-training
+		-> If we have good working setups for the CAE where the CNN doesn't seem to give good results for the same encoding architecture, test whether the initialization might help for the cnn (only an idea) 
