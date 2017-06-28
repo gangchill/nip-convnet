@@ -26,12 +26,7 @@ from scripts.train_cnn 				import train_cnn
 from scripts.from_github.cifar10 	import maybe_download_and_extract
 import configs.config as cfg
 
-print(sys_path)
-config_loader = cfg.ConfigLoader()
-config_loader.load_config_file(sys_path+'/configs/config.ini', 'default')
-print ('\n')
-config_dict = config_loader.configuration_dict
-print(config_dict)
+
 
 ########
 # MAIN #
@@ -45,6 +40,13 @@ def main():
 	# 'default': 						init weights at random
 
 	initialization_mode = 'default'
+
+	print(sys_path)
+	config_loader = cfg.ConfigLoader()
+	config_loader.load_config_file(sys_path + '/configs/config.ini', initialization_mode)
+	print('\n')
+	config_dict = config_loader.configuration_dict
+	print(config_dict)
 
 	pre_trained_conv_weights_directory = 'weights/00_cae_cifar_test/cae_weights'
 
