@@ -1,6 +1,14 @@
 # ----------------------------------------------------
 # train and test a convolutional neural network
 # ----------------------------------------------------
+from pathlib import Path
+import sys, os
+for path in Path(__file__).resolve().parents:
+    if path.name == 'nip-convnet':
+        sys_path = str(path)
+        break
+sys.path.append(sys_path)
+print(sys_path)
 
 import tensorflow as tf 
 import numpy as np
@@ -16,7 +24,14 @@ import urllib
 from models.cnn.cnn import CNN
 from scripts.train_cnn 				import train_cnn
 from scripts.from_github.cifar10 	import maybe_download_and_extract
+import configs.config as cfg
 
+print(sys_path)
+config_loader = cfg.ConfigLoader()
+config_loader.load_config_file(sys_path+'/configs/config.ini', 'default')
+print ('\n')
+config_dict = config_loader.configuration_dict
+print(config_dict)
 
 ########
 # MAIN #
@@ -96,24 +111,24 @@ def main():
 
 	# ARCHITECTURE
 	# feature extraction parameters
-	filter_dims 	= [(5,5)]
-	hidden_channels = [64] 
-	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
-	strides = None # other strides should not work yet
-	activation_function = 'relu'
+	filter_dims = config_dict['filter_dims'] # [(5,5)]
+	hidden_channels = config_dict['hidden_channels'] # [64]
+	pooling_type  =  config_dict['pooling_type'] #'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
+	strides = config_dict['strides'] # other strides should not work yet
+	activation_function = config_dict['activation_function']# 'relu'
 
 	# fc-layer parameters:
-	dense_depths = [384, 192]
+	dense_depths = config_dict['dense_depths'] # [384, 192]
 
 	# TRAINING
 	# training parameters:
-	batch_size 		= 128
-	max_iterations	= 10
-	chk_iterations 	= 1
-	dropout_k_p		= 0.5
+	batch_size 		= int(config_dict['batch_size']) # 128
+	max_iterations	= int(config_dict['max_iterations']) # 10
+	chk_iterations 	= int(config_dict['chk_iterations']) # 1
+	dropout_k_p		= float(config_dict['dropout_k_p']) # 0.5
 
 	# only optimize dense layers and leave convolutions as they are
-	fine_tuning_only = False
+	fine_tuning_only = config_dict['fine_tuning_only'] # False
 
 	if use_config_file:
 		# load config file to class 
