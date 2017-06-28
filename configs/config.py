@@ -1,3 +1,12 @@
+from pathlib import Path
+import sys, os
+for path in Path(__file__).resolve().parents:
+    if path.name == 'nip-convnet':
+        sys_path = str(path)
+        break
+sys.path.append(sys_path)
+print(sys_path)
+
 from configobj import ConfigObj
 from collections import OrderedDict
 
@@ -6,7 +15,8 @@ class ConfigLoader:
 	def __init__(self):
 		self.configuration_dict = OrderedDict()
 
-	def load_config_file(self, path='config.ini', config_version='default'):
+
+	def load_config_file(self, path=sys_path+'/configs/config.ini', config_version='default'):
 		config = ConfigObj(path)
 		local_dict = OrderedDict()
 		# load config information from file and store in configuarion_dict
@@ -28,8 +38,7 @@ class ConfigLoader:
 		for k, v in self.configuration_dict.items():
 			print(k, v)
 
-
-	def store_config_file(self, path='custom.ini', config_version='custom'):
+	def store_config_file(self, path=sys_path+'/configs/custom.ini', config_version='custom'):
 
 		# store content of current configuration_dict to file
 		config = ConfigObj()
@@ -52,6 +61,7 @@ class ConfigLoader:
 			config.write()
 		print(config)
 
-c = ConfigLoader()
-c.load_config_file()
-c.store_config_file()
+# config = ConfigLoader()
+# print(config.configuration_dict)
+# config.load_config_file('config.ini', 'default')
+# print(config.configuration_dict)
