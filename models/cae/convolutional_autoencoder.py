@@ -6,7 +6,7 @@ from lib.activations import l_relu
 class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent'):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent', output_reconstruction_activation = 'sigmoid'):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -40,7 +40,7 @@ class CAE:
 
 		self.hl_reconstruction_activation_function = self.activation_function
 
-		self.output_reconstruction_activation	= 'sigmoid'
+		self.output_reconstruction_activation	= output_reconstruction_activation
 
 		self.tie_conv_weights = tie_conv_weights
 
@@ -266,7 +266,7 @@ class CAE:
 			optimizer = self.optimizer
 			self._optimize_mse = optimizer.minimize(self.error)
 
-		return self._mse_optimizer
+		return self._optimize_mse
 
 	@property
 	def optimize(self):
@@ -382,16 +382,11 @@ class CAE:
 
 				self._reconstruction = tf.nn.sigmoid(self.logit_reconstruction, name='reconstruction')
 		
-
-		# stack the first input image and the reconstruction horizontally:
-		#comparison_image = np.hstack([self.data, self._reconstruction])
-		#tf.summary.image('reconstruction comparison', comparison_image)
 		
-		self._summaries.append(tf.summary.image('input', self.data))
-		self._summaries.append(tf.summary.image('reconstruction', self._reconstruction))
+			self._summaries.append(tf.summary.image('input', self.data))
+			self._summaries.append(tf.summary.image('reconstruction', self._reconstruction))
 
-		self._summaries.append(tf.summary.histogram('input', self.data))
-		self._summaries.append(tf.summary.histogram('reconstruction', self._reconstruction))
+			self._summaries.append(tf.summary.histogram('reconstruction_hist', self._reconstruction))
 
 		return self._reconstruction
 

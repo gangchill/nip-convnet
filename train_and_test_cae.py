@@ -33,7 +33,7 @@ def main():
 	## ########### ##
 
 
-	DATASET = "CIFAR10"
+	DATASET = "MNIST"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -77,31 +77,34 @@ def main():
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [64, 64] 
-	pooling_type 	= 'max_pooling'
+	hidden_channels = [16, 16] 
+	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
 
-	error_function 	= 'cross-entropy' 	# default is cross-entropy
-	optimizer_type 	= 'ada_grad' 		# default is gradient descent
+	error_function 	= 'mse' 	# default is cross-entropy
+	optimizer_type 	= 'gradient_descent' 		# default is gradient descent
 
-	weight_init_mean 	= 0.
+	output_reconstruction_activation = 'scaled_tanh'
+
+	weight_init_mean 	= 0.001
 	weight_init_stddev 	= 0.05
-	initial_bias_value  = 0.
+	initial_bias_value  = 0.001
 
 	batch_size 		= 128
 	max_iterations 	= 1001
 	chk_iterations  = 100
-	step_size 		= 0.001
+	step_size 		= 0.1
 
 	tie_conv_weights = True
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = '10_cae_cifar'
-	run_name 	= 'adagrad_test({})'.format(step_size, weight_file_name)
+	log_folder_name = '25_cae_mnist_mse'
+	# run_name 	= '{}'.format(weight_file_name)
+	run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
 
@@ -116,14 +119,13 @@ def main():
 			os.makedirs(directory)
 
 
-
 	## ###### ##
 	# TRAINING #
 	## ###### ##
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak, optimizer_type = optimizer_type)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak, optimizer_type = optimizer_type, output_reconstruction_activation=output_reconstruction_activation)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
