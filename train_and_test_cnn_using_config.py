@@ -150,7 +150,7 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '00_cnn_cifar_pre-trained'
+	log_folder_name = '5.0_CONFIG'
 	run_name 		= 'test' + 'cifar' + architecture_str + training_str
 
 

@@ -25,8 +25,10 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from the last iteration (if the same training setup was used before)
-	restore_last_checkpoint = True
+	restore_last_checkpoint = False
 
+	# store model walkthrough (no CIFAR support yet)
+	visualize_model_walkthrough = False
 
 	## ########### ##
 	# INPUT HANDING #
@@ -56,6 +58,9 @@ def main():
 		num_classes 	= 1
 		nhwd_shape 		= True
 
+	else:
+		print('ERROR: Dataset not available')
+
 	if nhwd_shape == False:
 
 		# input variables: x (images), y_ (labels), keep_prob (dropout rate)
@@ -74,11 +79,12 @@ def main():
 	# CONFIG # 
 	## #### ##
 
+	# TODO Sabbir: begin what needs to be in the config file -----------------------------
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 16] 
-	pooling_type 	= 'strided_conv'
+	hidden_channels = [32, 64, 128] 
+	pooling_type 	= 'max_pooling'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
@@ -94,17 +100,22 @@ def main():
 
 	batch_size 		= 128
 	max_iterations 	= 1001
-	chk_iterations  = 100
+	chk_iterations  = 10
 	step_size 		= 0.1
 
 	tie_conv_weights = True
 
+	# TODO Sabbir: end what needs to be in the config file -----------------------------
+
+
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = '25_cae_mnist_mse'
+	log_folder_name = '40_CAE_deep_CIFAR'
 	# run_name 	= '{}'.format(weight_file_name)
-	run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
+
+	run_name = '{}_{}({}|{})'.format(pooling_type, output_reconstruction_activation, '-'.join(map(str, hidden_channels)), 0.1)
+	# run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
 
@@ -171,7 +182,7 @@ def main():
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	if  not DATASET == 'CIFAR10':
+	if visualize_model_walkthrough and not DATASET == 'CIFAR10':
 		visualize_ae_representation(sess, x_image, autoencoder, dataset, log_folder_name, run_name, input_size, 2)
 
 

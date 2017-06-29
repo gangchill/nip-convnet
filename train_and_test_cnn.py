@@ -17,6 +17,8 @@ from models.cnn.cnn import CNN
 from scripts.train_cnn 				import train_cnn
 from scripts.from_github.cifar10 	import maybe_download_and_extract
 
+import configs.config as cnfg
+
 
 ########
 # MAIN #
@@ -24,15 +26,14 @@ from scripts.from_github.cifar10 	import maybe_download_and_extract
 
 def main():
 
-	# weight_initialization options: 
-	# 'last_checkpoint': 				resume training from latest checkpoint if possible, otherwise default
-	# 'pre_trained_encoding':		 	load encoding weights from an auto-encoder
-	# 'default': 						init weights at random
-
+	# weight_initialization options #
+	# 
+	# 'last_checkpoint'				: 	resume training from latest checkpoint if possible, otherwise default
+	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
+	# 'default'						: 	init weights at random
 	initialization_mode = 'default'
 
 	pre_trained_conv_weights_directory = 'weights/25_cae_mnist_mse/MNIST_mse_relu_scaled_tanh_strided_conv(0.001)'
-
 
 	DATASET = "MNIST"
 
@@ -84,7 +85,6 @@ def main():
 
 	
 
-
 	## #### ##
 	# CONFIG # 
 	## #### ##
@@ -94,11 +94,14 @@ def main():
 
 	# ------------------------------------------------------
 
+
 	# ARCHITECTURE
+
+	# TODO Sabbir: Begin parameters that should be stored in config ----------------
 	# feature extraction parameters
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 16] 
-	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
+	hidden_channels = [16, 32] 
+	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 
@@ -114,11 +117,14 @@ def main():
 
 	# only optimize dense layers and leave convolutions as they are
 	fine_tuning_only = False
+	# TODO Sabbir: End parameters that should be stored in config -------------------
 
+
+	# TODO Sabbir:  -if use_config_file is true, use behaviour from train_and_test_cnn_using_config, loading the parameters from the config file in config_file_path
+	# 				-if false, initialize the variables like above (let us enter the values here (e.g. max_iterations = 1001)) 
 	if use_config_file:
 		# load config file to class 
 		# config class = ... 
-
 		# batchsize = configclas.. 
 		pass
 	else:
@@ -223,6 +229,9 @@ def main():
 	if not initialization_finished:
 		# always train a new autoencoder 
 		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
+
+
+	# TODO Sabbir: store the current config in a config file in the logs/log_folder_name/run_name folder 
 
 	writer.close()
 	sess.close()
