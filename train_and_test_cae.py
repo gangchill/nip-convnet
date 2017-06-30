@@ -25,17 +25,17 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from the last iteration (if the same training setup was used before)
-	restore_last_checkpoint = False
+	restore_last_checkpoint = True
 
 	# store model walkthrough (no CIFAR support yet)
-	visualize_model_walkthrough = False
+	visualize_model_walkthrough = True
 
 	## ########### ##
 	# INPUT HANDING #
 	## ########### ##
 
 
-	DATASET = "MNIST"
+	DATASET = "CIFAR10"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -83,13 +83,13 @@ def main():
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [32, 64, 128] 
-	pooling_type 	= 'max_pooling'
+	hidden_channels = [16, 16]
+	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 	relu_leak = 0.2 # only for leaky relus
 
-	error_function 	= 'mse' 	# default is cross-entropy
+	error_function 	= 'mse' 					# default is cross-entropy
 	optimizer_type 	= 'gradient_descent' 		# default is gradient descent
 
 	output_reconstruction_activation = 'scaled_tanh'
@@ -99,8 +99,8 @@ def main():
 	initial_bias_value  = 0.001
 
 	batch_size 		= 128
-	max_iterations 	= 1001
-	chk_iterations  = 10
+	max_iterations 	= 10001
+	chk_iterations  = 100
 	step_size 		= 0.1
 
 	tie_conv_weights = True
@@ -111,10 +111,12 @@ def main():
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 
-	log_folder_name = '40_CAE_deep_CIFAR'
+	log_folder_name = '02_CIFAR_2enc'
+	run_name = 'old_commit_style'
 	# run_name 	= '{}'.format(weight_file_name)
-
-	run_name = '{}_{}({}|{})'.format(pooling_type, output_reconstruction_activation, '-'.join(map(str, hidden_channels)), 0.1)
+	# run_name = '({}x{})|_{}_{}_{}|{}_{}'.format(activation_function, output_reconstruction_activation, weight_init_mean, weight_init_stddev, initial_bias_value)
+	# run_name = '5x5_d2_smaller_init_{}_{}'.format(activation_function, output_reconstruction_activation)
+	# run_name = '{}_{}({}|{})'.format(pooling_type, output_reconstruction_activation, '-'.join(map(str, hidden_channels)), step_size)
 	# run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'

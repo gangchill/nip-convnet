@@ -28,14 +28,19 @@ def main():
 
 	# weight_initialization options #
 	# 
-	# 'last_checkpoint'				: 	resume training from latest checkpoint if possible, otherwise default
+	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
+	# 'from_folder'					: 	load last checkpoint from folder given in 
 	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
 	# 'default'						: 	init weights at random
-	initialization_mode = 'default'
+
+	initialization_mode = 'resume'
+
+	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' # used if initialization_mode == 'from_folder' (relative path)
 
 	pre_trained_conv_weights_directory = 'weights/25_cae_mnist_mse/MNIST_mse_relu_scaled_tanh_strided_conv(0.001)'
 
-	DATASET = "MNIST"
+
+	DATASET = "CIFAR10"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -94,14 +99,13 @@ def main():
 
 	# ------------------------------------------------------
 
-
 	# ARCHITECTURE
 
 	# TODO Sabbir: Begin parameters that should be stored in config ----------------
 	# feature extraction parameters
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 32] 
-	pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
+	hidden_channels = [16, 16] 
+	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 
@@ -111,8 +115,8 @@ def main():
 	# TRAINING
 	# training parameters:
 	batch_size 		= 128
-	max_iterations	= 1001
-	chk_iterations 	= 100
+	max_iterations	= 51
+	chk_iterations 	= 10
 	dropout_k_p		= 0.5
 
 	# only optimize dense layers and leave convolutions as they are
@@ -139,16 +143,16 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '25_cnn_mnist_mse'
+	log_folder_name = '03_CIFAR_cnn_resume_test'
 	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
-	run_name = 'random-init'
+	run_name = 'random_init'
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
 	# folder to store the training weights in:
 	model_save_parent_dir = 'weights'
 	save_path = os.path.join(model_save_parent_dir, log_folder_name, run_name)
-	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name)]
+	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name), os.path.join(model_save_parent_dir, log_folder_name, run_name, 'best')]
 	
 	for directory in check_dirs:
 		if not os.path.exists(directory):
@@ -172,11 +176,15 @@ def main():
 
 	initialization_finished = False
 
-	if initialization_mode == 'last_checkpoint':
+	if initialization_mode == 'resume' or initialization_mode == 'from_folder':
 		# initialize training with weights from a previous training 
 
 		cwd = os.getcwd()
-		chkpnt_file_path = os.path.join(cwd, save_path)
+
+		if initialization_mode == 'from_folder':
+			chkpnt_file_path = os.path.join(cwd, model_weights_directory)
+		else:
+			chkpnt_file_path = os.path.join(cwd, save_path)
 
 		saver = tf.train.Saver(cnn.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
@@ -192,7 +200,11 @@ def main():
 			best_accuracy_so_far = float(latest_checkpoint.split('-')[-2])
 
 			print('iteration is: {}'.format(init_iteration))
-			print('top accuracy is: {}'.format(best_accuracy_so_far))
+			print('accuracy is: {}'.format(best_accuracy_so_far))
+
+			if initialization_mode == 'from_folder':
+				print('retrieved weights from checkpoint, begin with new iteration 0')
+				init_iteration = 0
 
 			saver.restore(sess, latest_checkpoint)
 
@@ -202,6 +214,7 @@ def main():
 
 		else:
 			print('No checkpoint was found, beginning with iteration 0')
+
 
 	elif initialization_mode == 'pre_trained_encoding':
 

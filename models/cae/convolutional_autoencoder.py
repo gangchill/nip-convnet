@@ -108,8 +108,6 @@ class CAE:
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + reconst_w_d + reconst_b_d)
 
-		print(self.all_variables_dict)
-
 		print('Initialization finished')
 			
 
@@ -143,7 +141,7 @@ class CAE:
 					in_channels = self.hidden_channels[layer - 1]
 				out_channels = self.hidden_channels[layer]
 
-				print('init layer ', layer, 'conv', ' in-out:', in_channels, out_channels)
+				# print('init layer ', layer, 'conv', ' in-out:', in_channels, out_channels)
 
 				# initialize weights and biases:
 				filter_shape = [self.filter_dims[layer][0], self.filter_dims[layer][1], in_channels, out_channels]
@@ -165,7 +163,6 @@ class CAE:
 				self.conv_weights.append(W)
 				self.conv_biases.append(b)
 
-				print(tf.shape(tmp_tensor))
 				self.pre_conv_shapes.append(tf.shape(tmp_tensor))
 
 				# PREACTIVATION
@@ -294,8 +291,8 @@ class CAE:
 			for layer in range(len(self.filter_dims))[::-1]:
 				# go through the layers in reverse order to reconstruct the image
 
-				print('layer {} reconstruction'.format(layer))
-				print(self.conv_weights[layer])
+				#print('layer {} reconstruction'.format(layer))
+				#print(self.conv_weights[layer])
 
 				if self.store_model_walkthrough:
 					# store intermediate results
@@ -307,7 +304,7 @@ class CAE:
 				else:
 					channels = self.hidden_channels[layer - 1]
 
-					print('channels', channels)
+					# print('channels', channels)
 
 
 				if not self.tie_conv_weights: #  and layer == 0:

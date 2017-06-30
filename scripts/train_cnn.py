@@ -26,6 +26,10 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 
 	current_top_accuracy = best_accuracy_so_far
 
+	# create two different savers (always store the model from the last 5 check iterations and the current model with the best accuracy)
+	chk_it_saver 	= tf.train.Saver(cnn.all_variables_dict)
+	best_it_saver 	= tf.train.Saver(cnn.all_variables_dict, max_to_keep = 1)
+
 	for i in range(init_iteration, max_iterations):
 
 		if chk_iterations > 100 and i % 100 == 0:
@@ -55,15 +59,21 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 
 			print('it {} accuracy {}'.format(i, avg_accuracy))
 
+			# always keep the models from the last 5 iterations stored
+			if save_prefix is not None:
+					file_path = os.path.join(save_prefix, 'CNN-acc-{}'.format(avg_accuracy))
+					print('...save new found best weights to file ')
+					cnn.store_model_to_file(sess, file_path, i, saver=chk_it_saver)
+
 			if avg_accuracy > current_top_accuracy:
 				print('...new top accuracy found')
 
 				current_top_accuracy = avg_accuracy
 
 				if save_prefix is not None:
-					file_path = os.path.join(save_prefix, 'CNN-acc-{}'.format(current_top_accuracy))
+					file_path = os.path.join(save_prefix, 'best', 'CNN-acc-{}'.format(current_top_accuracy))
 					print('...save new found best weights to file ')
-					cnn.store_model_to_file(sess, file_path, i)
+					cnn.store_model_to_file(sess, file_path, i, saver=best_it_saver)
 
 			writer.add_summary(summary, i)
 

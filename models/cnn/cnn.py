@@ -99,7 +99,7 @@ class CNN:
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + dense_w_d + dense_b_d)
 
-		print(self.encoding_variables_dict)
+		# print(self.encoding_variables_dict)
 
 		print('...finished initialization')
 
@@ -204,7 +204,7 @@ class CNN:
 				weight_shape = [tmp_tensor.get_shape().as_list()[1], layer_size]
 				bias_shape = [layer_size]
 
-				print('weight_shape: ', weight_shape)
+				# print('weight_shape: ', weight_shape)
 
 				W = tf.Variable(tf.truncated_normal(weight_shape, stddev=0.1), name='dense_{}_weights'.format(d_ind))
 				b = tf.Variable(tf.constant(0.1, shape=bias_shape), name='dense_{}_bias'.format(d_ind))
@@ -311,9 +311,10 @@ class CNN:
 
 		return self._accuracy
 
-	def store_model_to_file(self, sess, path_to_file, step = None):
+	def store_model_to_file(self, sess, path_to_file, step = None, saver = None):
 
-		saver = tf.train.Saver(self.all_variables_dict)
+		if saver == None:
+			saver = tf.train.Saver(self.all_variables_dict)
 
 		if step is None:
 			save_path = saver.save(sess, path_to_file)
