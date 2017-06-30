@@ -62,7 +62,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 			# always keep the models from the last 5 iterations stored
 			if save_prefix is not None:
 					file_path = os.path.join(save_prefix, 'CNN-acc-{}'.format(avg_accuracy))
-					print('...save new found best weights to file ')
+					print('...save current iteration weights to file ')
 					cnn.store_model_to_file(sess, file_path, i, saver=chk_it_saver)
 
 			if avg_accuracy > current_top_accuracy:

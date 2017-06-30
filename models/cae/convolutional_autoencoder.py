@@ -405,7 +405,7 @@ class CAE:
 		else:
 			save_path = saver.save(sess, path_to_file, global_step = step)
 
-		print('Model was saved in {}'.format(save_path))
+		# print('Model was saved in {}'.format(save_path))
 
 		return save_path
 

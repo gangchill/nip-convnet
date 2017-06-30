@@ -37,7 +37,7 @@ def main():
 
 	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' # used if initialization_mode == 'from_folder' (relative path)
 
-	pre_trained_conv_weights_directory = 'weights/25_cae_mnist_mse/MNIST_mse_relu_scaled_tanh_strided_conv(0.001)'
+	pre_trained_conv_weights_directory = 'weights/02_CIFAR_2enc/old_commit_style'
 
 
 	DATASET = "CIFAR10"
@@ -104,19 +104,19 @@ def main():
 	# TODO Sabbir: Begin parameters that should be stored in config ----------------
 	# feature extraction parameters
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 16] 
+	hidden_channels = [64, 64] 
 	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
 
 	# fc-layer parameters:
-	dense_depths = []
+	dense_depths = [384, 192]
 
 	# TRAINING
 	# training parameters:
 	batch_size 		= 128
-	max_iterations	= 51
-	chk_iterations 	= 10
+	max_iterations	= 10001
+	chk_iterations 	= 100
 	dropout_k_p		= 0.5
 
 	# only optimize dense layers and leave convolutions as they are
@@ -143,9 +143,9 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '03_CIFAR_cnn_resume_test'
+	log_folder_name = '03_CIFAR_cnn_wider'
 	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
-	run_name = 'random_init'
+	run_name = architecture_str + training_str
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
