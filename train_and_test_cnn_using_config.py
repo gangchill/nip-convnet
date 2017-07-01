@@ -39,15 +39,6 @@ def main():
 	# 'pre_trained_encoding':		 	load encoding weights from an auto-encoder
 	# 'default': 						init weights at random
 
-	initialization_mode = 'default'
-
-	print(sys_path)
-	config_loader = cfg.ConfigLoader()
-	config_loader.load_config_file(sys_path + '/configs/config.ini', initialization_mode)
-	print('\n')
-	config_dict = config_loader.configuration_dict
-	print(config_dict)
-
 	pre_trained_conv_weights_directory = 'weights/00_cae_cifar_test/cae_weights'
 
 
@@ -105,42 +96,59 @@ def main():
 	## #### ##
 	# CONFIG # 
 	## #### ##
-
+	initialization_mode = 'default'
 	use_config_file 	= False
-	config_file_path 	= 'configs/config.ini'
-
+	config_file_path 	= '/configs/config.ini'
+	print(sys_path)
+	config_loader = cfg.ConfigLoader()
+	config_loader.load_config_file(sys_path + config_file_path, initialization_mode)
+	print('\n')
+	config_dict = config_loader.configuration_dict
+	print(config_dict)
 	# ------------------------------------------------------
 
 	# ARCHITECTURE
-	# feature extraction parameters
-	filter_dims = config_dict['filter_dims'] # [(5,5)]
-	hidden_channels = config_dict['hidden_channels'] # [64]
-	pooling_type  =  config_dict['pooling_type'] #'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
-	strides = config_dict['strides'] # other strides should not work yet
-	activation_function = config_dict['activation_function']# 'relu'
-
-	# fc-layer parameters:
-	dense_depths = config_dict['dense_depths'] # [384, 192]
-
-	# TRAINING
-	# training parameters:
-	batch_size 		= int(config_dict['batch_size']) # 128
-	max_iterations	= int(config_dict['max_iterations']) # 10
-	chk_iterations 	= int(config_dict['chk_iterations']) # 1
-	dropout_k_p		= float(config_dict['dropout_k_p']) # 0.5
-
-	# only optimize dense layers and leave convolutions as they are
-	fine_tuning_only = config_dict['fine_tuning_only'] # False
+	# feature extraction parameter
 
 	if use_config_file:
-		# load config file to class 
-		# config class = ... 
+		filter_dims = config_dict['filter_dims'] # [(5,5)]
+		hidden_channels = config_dict['hidden_channels'] # [64]
+		pooling_type  =  config_dict['pooling_type'] #'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
+		strides = config_dict['strides'] # other strides should not work yet
+		activation_function = config_dict['activation_function']# 'relu'
 
-		# batchsize = configclas.. 
-		pass
+		# fc-layer parameters:
+		dense_depths = config_dict['dense_depths'] # [384, 192]
+
+		# TRAINING
+		# training parameters:
+		batch_size 		= int(config_dict['batch_size']) # 128
+		max_iterations	= int(config_dict['max_iterations']) # 10
+		chk_iterations 	= int(config_dict['chk_iterations']) # 1
+		dropout_k_p		= float(config_dict['dropout_k_p']) # 0.5
+
+		# only optimize dense layers and leave convolutions as they are
+		fine_tuning_only = config_dict['fine_tuning_only'] # False
 	else:
 		# move manual config stuff here
-		pass
+		filter_dims = [(5,5)]
+		hidden_channels = [64]
+		pooling_type  = 'max_pooling' # dont change, std::bac_alloc otherwise (TODO: understand why)
+		strides = None # other strides should not work yet
+		activation_function = 'relu'
+
+		# fc-layer parameters:
+		dense_depths = [384, 192]
+
+		# TRAINING
+		# training parameters:
+		batch_size 		= 128
+		max_iterations	= 10
+		chk_iterations 	= 1
+		dropout_k_p		= 0.5
+
+		# only optimize dense layers and leave convolutions as they are
+		fine_tuning_only = False
 
 	# -------------------------------------------------------
 
@@ -241,6 +249,8 @@ def main():
 		# always train a new autoencoder 
 		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
 
+	config_file_path 	= 'logs/runs.ini'
+	config_loader.store_config_file(config_file_path, 'run_name')
 	writer.close()
 	sess.close()
 
