@@ -96,7 +96,7 @@ def main():
 	## #### ##
 	# CONFIG # 
 	## #### ##
-	initialization_mode = 'default'
+	initialization_mode = 'cnn_default'
 	use_config_file 	= False
 	config_file_path 	= '/configs/config.ini'
 	print(sys_path)
@@ -249,7 +249,7 @@ def main():
 		# always train a new autoencoder 
 		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
 
-	config_file_path 	= 'logs/runs.ini'
+	config_file_path 	= 'logs/run_name.ini'
 	config_loader.store_config_file(config_file_path, 'run_name')
 	writer.close()
 	sess.close()

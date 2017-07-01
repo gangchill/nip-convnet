@@ -17,7 +17,7 @@ class ConfigLoader:
 		self.configuration_dict = OrderedDict()
 
 
-	def load_config_file(self, path=sys_path+'/configs/config.ini', config_version='default'):
+	def load_config_file(self, path=sys_path+'/configs/config.ini', config_version='cnn_default'):
 		config = ConfigObj(path)
 		local_dict = OrderedDict()
 		# load config information from file and store in configuarion_dict
