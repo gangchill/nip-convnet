@@ -104,6 +104,8 @@ def main():
 	dropout_k_p		= 0.5
 	step_size 		= 0.000001
 
+	step_size_cnn   = 0.01
+
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
 	log_folder_name = 'weight_pass_demo'
@@ -141,7 +143,7 @@ def main():
 	## ######### ##
 
 	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak)
-	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, scope_name='pre_trained_CNN')
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, scope_name='pre_trained_CNN', step_size = step_size_cnn)
 
 	# second cnn with the same structure that will be trained independently from the autoencoder
 	comparison_cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, scope_name='reference_CNN')
