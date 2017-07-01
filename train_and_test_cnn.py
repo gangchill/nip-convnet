@@ -32,7 +32,7 @@ def main():
 	custom_run_name = None
 	DATASET = "CIFAR10"
 	initialization_mode = 'default'
-	use_config_file 	= False
+	use_config_file 	= True
 
 	# initialization_mode:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
@@ -162,7 +162,7 @@ def main():
 		max_iterations			= int(config_dict['max_iterations'])
 		chk_iterations 			= int(config_dict['chk_iterations'])
 		dropout_k_p				= float(config_dict['dropout_k_p']) 
-		fine_tuning_only 		= config_dict['fine_tuning_only']
+		fine_tuning_only 		= bool(int(config_dict['fine_tuning_only']))
 		step_size				= float(config_dict['step_size'])
 
 		print('Config succesfully loaded')
