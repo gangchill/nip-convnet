@@ -61,7 +61,7 @@ class ConfigLoader:
 			config[config_version]['chk_iterations'] 		= self.configuration_dict.get('chk_iterations')
 			config[config_version]['dropout_k_p'] 			= self.configuration_dict.get('dropout_k_p')
 			config[config_version]['fine_tuning_only'] 		= self.configuration_dict.get('fine_tuning_only')
-			config[config_version]['ste_size'] 				= self.configuration_dict.get('step_size')
+			config[config_version]['step_size'] 				= self.configuration_dict.get('step_size')
 			config.write()
 		# print(config)
 

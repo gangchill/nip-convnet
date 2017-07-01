@@ -28,9 +28,9 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '07_CNN'
+	log_folder_name = '44_MNIST'
 	custom_run_name = None
-	DATASET = "CIFAR10"
+	DATASET = "MNIST"
 	initialization_mode = 'default'
 	use_config_file 	= True
 
@@ -136,7 +136,7 @@ def main():
 		config_dict['max_iterations'] 		= max_iterations
 		config_dict['chk_iterations'] 		= chk_iterations
 		config_dict['dropout_k_p'] 			= dropout_k_p 
-		config_dict['fine_tuning_only'] 	= fine_tuning_only
+		config_dict['fine_tuning_only'] 	= int(fine_tuning_only)
 		config_dict['step_size'] 			= step_size
 
 		config_loader.configuration_dict = config_dict
