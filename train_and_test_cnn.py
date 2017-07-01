@@ -29,7 +29,7 @@ def main():
 	# INITIALIZATION OPTIONS #
 	## #################### ##
 
-	DATASET = "MNIST"
+	DATASET = "CIFAR10"
 
 	# weight initialization:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
@@ -114,8 +114,8 @@ def main():
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 101
-		chk_iterations 	= 5
+		max_iterations	= 1001
+		chk_iterations 	= 100
 		dropout_k_p		= 0.5
 
 		# only optimize dense layers and leave convolutions as they are
@@ -170,10 +170,10 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '06_CONFIG'
+	log_folder_name = '07_CNN'
 	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
 	# run_name = architecture_str + training_str
-	run_name = 'simple_cnn'
+	run_name = 'simple_cnn_higher_lr_longer'
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
