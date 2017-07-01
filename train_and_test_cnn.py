@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
-
 import tarfile
 from six.moves import urllib
 
@@ -30,7 +29,7 @@ def main():
 	# INITIALIZATION OPTIONS #
 	## #################### ##
 
-	DATASET = "CIFAR10"
+	DATASET = "MNIST"
 
 	# weight initialization:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
@@ -105,7 +104,7 @@ def main():
 		# ARCHITECTURE
 		# feature extraction parameters
 		filter_dims 	= [(5,5), (5,5)]
-		hidden_channels = [1, 1] 
+		hidden_channels = [64, 64] 
 		pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 		strides = None # other strides should not work yet
 		activation_function = 'relu'
@@ -115,7 +114,7 @@ def main():
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 10
+		max_iterations	= 101
 		chk_iterations 	= 5
 		dropout_k_p		= 0.5
 
@@ -171,10 +170,10 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '05_config_test'
+	log_folder_name = '06_CONFIG'
 	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
 	# run_name = architecture_str + training_str
-	run_name = 'first_try'
+	run_name = 'simple_cnn'
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
