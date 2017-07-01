@@ -56,13 +56,15 @@ class CNN:
 
 		self.dense_weights = []
 
-		self.add_tensorboard_summary = add_tensorboard_summary
+		self.add_tensorboard_summary 		= add_tensorboard_summary
+		self.track_gradients_in_tensorboard = True
 
 		# private attributes used by the properties
 		self._encoding 		= None
 		self._logits 		= None
 		self._prediction 	= None
 		self._error			= None
+		self._optimizer  	= None
 		self._optimize 		= None
 		self._optimize_dense_layers = None
 		self._accuracy		= None
@@ -70,7 +72,7 @@ class CNN:
 		self.weight_init_stddev 	= 0.05 		# 0.000015
 		self.weight_init_mean 		= 0.   		# 0.0001
 		self.initial_bias_value 	= 0. 		# 0.0001
-		self.step_size 				= 0.0001 	# 0.0001
+		self.step_size 				= 0.1 		# 0.0001
 
 		self._summaries = []
 		
@@ -79,6 +81,13 @@ class CNN:
 		with tf.name_scope(scope_name):
 			self.optimize
 			self.optimize_dense_layers
+
+			if self.track_gradients_in_tensorboard:
+				for i, conv_weight in enumerate(self.conv_weights):
+					self._summaries.append(tf.summary.histogram('c-e loss gradient conv weight {}'.format(i), self.optimizer.compute_gradients(self.error, [conv_weight])))
+				for i, conv_bias in enumerate(self.conv_biases):
+					self._summaries.append(tf.summary.histogram('c-e loss gradient conv bias {}'.format(i), self.optimizer.compute_gradients(self.error, [conv_bias])))
+
 
 		with tf.name_scope('accuracy_' + scope_name):
 			self.accuracy
@@ -268,6 +277,16 @@ class CNN:
 		return self._error
 
 	@property
+	def optimizer(self):
+
+		if self._optimizer is None:
+			print('init optimizer')
+
+			self._optimizer = tf.train.GradientDescentOptimizer(self.step_size)
+
+		return self._optimizer
+
+	@property
 	def optimize(self):
 		# minimize the error function tuning all variables
 
@@ -275,7 +294,7 @@ class CNN:
 
 			print('init optimization')
 
-			self._optimize = tf.train.AdamOptimizer(self.step_size).minimize(self.error)
+			self._optimize = self.optimizer.minimize(self.error)
 
 		return self._optimize
 

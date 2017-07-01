@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import os
-
 import tarfile
 from six.moves import urllib
 
@@ -17,7 +16,7 @@ from models.cnn.cnn import CNN
 from scripts.train_cnn 				import train_cnn
 from scripts.from_github.cifar10 	import maybe_download_and_extract
 
-import configs.config as cnfg
+import configs.config as cfg
 
 
 ########
@@ -26,21 +25,25 @@ import configs.config as cnfg
 
 def main():
 
-	# weight_initialization options #
-	# 
+	## #################### ##
+	# INITIALIZATION OPTIONS #
+	## #################### ##
+
+	DATASET = "CIFAR10"
+
+	# weight initialization:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
 	# 'from_folder'					: 	load last checkpoint from folder given in 
 	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
 	# 'default'						: 	init weights at random
-
-	initialization_mode = 'resume'
-
+	initialization_mode = 'default'
 	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' # used if initialization_mode == 'from_folder' (relative path)
-
 	pre_trained_conv_weights_directory = 'weights/02_CIFAR_2enc/old_commit_style'
 
-
-	DATASET = "CIFAR10"
+	# load architecture / training configurations from file
+	use_config_file 	= False
+	config_file_path 	= 'configs/simple_cnn_config.ini'
+		
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -94,46 +97,70 @@ def main():
 	# CONFIG # 
 	## #### ##
 
-	use_config_file 	= False
-	config_file_path 	= 'configs/config.ini'
+	config_loader = cfg.ConfigLoader()
 
-	# ------------------------------------------------------
+	if not use_config_file:
 
-	# ARCHITECTURE
+		# ARCHITECTURE
+		# feature extraction parameters
+		filter_dims 	= [(5,5), (5,5)]
+		hidden_channels = [64, 64] 
+		pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
+		strides = None # other strides should not work yet
+		activation_function = 'relu'
+		# fc-layer parameters:
+		dense_depths = [384, 192]
 
-	# TODO Sabbir: Begin parameters that should be stored in config ----------------
-	# feature extraction parameters
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [64, 64] 
-	pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
-	strides = None # other strides should not work yet
-	activation_function = 'relu'
+		# TRAINING
+		# training parameters:
+		batch_size 		= 128
+		max_iterations	= 1001
+		chk_iterations 	= 100
+		dropout_k_p		= 0.5
 
-	# fc-layer parameters:
-	dense_depths = [384, 192]
+		# only optimize dense layers and leave convolutions as they are
+		fine_tuning_only = False
 
-	# TRAINING
-	# training parameters:
-	batch_size 		= 128
-	max_iterations	= 10001
-	chk_iterations 	= 100
-	dropout_k_p		= 0.5
+		# store to config dict:
+		config_dict = {}
+		config_dict['filter_dims'] 			= filter_dims
+		config_dict['hidden_channels'] 		= hidden_channels
+		config_dict['pooling_type']  		= pooling_type
+		config_dict['strides'] 				= strides
+		config_dict['activation_function'] 	= activation_function
+		config_dict['dense_depths'] 		= dense_depths
+		config_dict['batch_size'] 			= batch_size
+		config_dict['max_iterations'] 		= max_iterations
+		config_dict['chk_iterations'] 		= chk_iterations
+		config_dict['dropout_k_p'] 			= dropout_k_p 
+		config_dict['fine_tuning_only'] 	= fine_tuning_only
 
-	# only optimize dense layers and leave convolutions as they are
-	fine_tuning_only = False
-	# TODO Sabbir: End parameters that should be stored in config -------------------
+		config_loader.configuration_dict = config_dict
 
-
-	# TODO Sabbir:  -if use_config_file is true, use behaviour from train_and_test_cnn_using_config, loading the parameters from the config file in config_file_path
-	# 				-if false, initialize the variables like above (let us enter the values here (e.g. max_iterations = 1001)) 
-	if use_config_file:
-		# load config file to class 
-		# config class = ... 
-		# batchsize = configclas.. 
-		pass
 	else:
-		# move manual config stuff here
-		pass
+		# load config from file 
+		print('Loading config from file {}'.format(config_file_path))
+		config_loader.load_config_file(config_file_path, 'CNN')
+		config_dict = config_loader.configuration_dict
+
+		if config_dict is None:
+			print('Loading not succesful')
+			sys.exit()
+
+		# init all config variables variables from the file
+		filter_dims 			= config_dict['filter_dims']
+		hidden_channels 		= config_dict['hidden_channels'] 
+		pooling_type  			= config_dict['pooling_type'] 
+		strides 				= config_dict['strides']
+		activation_function 	= config_dict['activation_function']
+		dense_depths 			= config_dict['dense_depths']
+		batch_size 				= int(config_dict['batch_size'])
+		max_iterations			= int(config_dict['max_iterations'])
+		chk_iterations 			= int(config_dict['chk_iterations'])
+		dropout_k_p				= float(config_dict['dropout_k_p']) 
+		fine_tuning_only 		= config_dict['fine_tuning_only']
+
+		print('Config succesfully loaded')
 
 	# -------------------------------------------------------
 
@@ -143,9 +170,10 @@ def main():
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 
-	log_folder_name = '03_CIFAR_cnn_wider'
+	log_folder_name = '07_CNN'
 	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
-	run_name = architecture_str + training_str
+	# run_name = architecture_str + training_str
+	run_name = 'simple_cnn_higher_lr_longer'
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
@@ -173,6 +201,8 @@ def main():
 	# add logwriter for tensorboard
 	writer = tf.summary.FileWriter(log_path, sess.graph)
 
+	# store config file in the folder
+	config_loader.store_config_file(os.path.join(log_path, 'config.ini'), 'CNN')
 
 	initialization_finished = False
 
