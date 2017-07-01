@@ -13,6 +13,7 @@ from functools import reduce
 # import the simple autoencoder class from SAE.py
 from models.cae.convolutional_autoencoder import CAE
 from scripts.train_cae import train_ae
+import configs.config as cfg
 
 ########
 # MAIN #
@@ -30,10 +31,13 @@ def main():
 	# store model walkthrough (no CIFAR support yet)
 	visualize_model_walkthrough = True
 
+	# load architecture / training configurations from file
+	use_config_file 	= False
+	config_file_path 	= 'configs/simple_cae_config.ini'
+
 	## ########### ##
 	# INPUT HANDING #
 	## ########### ##
-
 
 	DATASET = "CIFAR10"
 
@@ -81,6 +85,72 @@ def main():
 
 	# TODO Sabbir: begin what needs to be in the config file -----------------------------
 
+	config_loader = cfg.ConfigLoader()
+
+	if not use_config_file:
+
+		# ARCHITECTURE
+		# feature extraction parameters
+		filter_dims 	= [(5,5), (5,5)]
+		hidden_channels = [64, 64]
+		pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
+		strides = None # other strides should not work yet
+		activation_function = 'relu'
+		# fc-layer parameters:
+		dense_depths = [384, 192]
+
+		# TRAINING
+		# training parameters:
+		batch_size 		= 128
+		max_iterations	= 1001
+		chk_iterations 	= 100
+		dropout_k_p		= 0.5
+
+		# only optimize dense layers and leave convolutions as they are
+		fine_tuning_only = False
+
+		# store to config dict:
+		config_dict = {}
+		config_dict['filter_dims'] 			= filter_dims
+		config_dict['hidden_channels'] 		= hidden_channels
+		config_dict['pooling_type']  		= pooling_type
+		config_dict['strides'] 				= strides
+		config_dict['activation_function'] 	= activation_function
+		config_dict['dense_depths'] 		= dense_depths
+		config_dict['batch_size'] 			= batch_size
+		config_dict['max_iterations'] 		= max_iterations
+		config_dict['chk_iterations'] 		= chk_iterations
+		config_dict['dropout_k_p'] 			= dropout_k_p
+		config_dict['fine_tuning_only'] 	= fine_tuning_only
+
+		config_loader.configuration_dict = config_dict
+
+	else:
+		# load config from file
+		print('Loading config from file {}'.format(config_file_path))
+		config_loader.load_config_file(config_file_path, 'CNN')
+		config_dict = config_loader.configuration_dict
+
+		if config_dict is None:
+			print('Loading not succesful')
+			sys.exit()
+
+		# init all config variables variables from the file
+		filter_dims 			= config_dict['filter_dims']
+		hidden_channels 		= config_dict['hidden_channels']
+		pooling_type  			= config_dict['pooling_type']
+		strides 				= config_dict['strides']
+		activation_function 	= config_dict['activation_function']
+		dense_depths 			= config_dict['dense_depths']
+		batch_size 				= int(config_dict['batch_size'])
+		max_iterations			= int(config_dict['max_iterations'])
+		chk_iterations 			= int(config_dict['chk_iterations'])
+		dropout_k_p				= float(config_dict['dropout_k_p'])
+		fine_tuning_only 		= config_dict['fine_tuning_only']
+
+		print('Config succesfully loaded')
+
+	# -------------------------------------------------------
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
 	hidden_channels = [100, 150]
