@@ -72,10 +72,10 @@ class CNN:
 		self.weight_init_stddev 	= 0.05 		# 0.000015
 		self.weight_init_mean 		= 0.   		# 0.0001
 		self.initial_bias_value 	= 0. 		# 0.0001
-		self.step_size 				= self.step_size 		# 0.0001
+		self.step_size 				= step_size	# 0.0001
 
 		self._summaries = []
-		
+
 
 		print('Initializing simple CNN')
 		with tf.name_scope(scope_name):

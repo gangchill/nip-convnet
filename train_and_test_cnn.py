@@ -163,6 +163,7 @@ def main():
 		chk_iterations 			= int(config_dict['chk_iterations'])
 		dropout_k_p				= float(config_dict['dropout_k_p']) 
 		fine_tuning_only 		= config_dict['fine_tuning_only']
+		step_size				= float(config_dict['step_size'])
 
 		print('Config succesfully loaded')
 
