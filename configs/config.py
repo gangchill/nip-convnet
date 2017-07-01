@@ -31,8 +31,8 @@ class ConfigLoader:
 		local_dict['max_iterations'] 		=  config[config_version]['max_iterations'],
 		local_dict['chk_iterations'] 		=  config[config_version]['chk_iterations'],
 		local_dict['dropout_k_p'] 			=  config[config_version]['dropout_k_p'],
-		local_dict['fine_tuning_only'] 		=  config[config_version]['fine_tuning_only']
-		local_dict['step_size'] 			= config[config_version]['step_size']
+		local_dict['fine_tuning_only'] 		=  config[config_version]['fine_tuning_only'],
+		local_dict['step_size'] 			= config[config_version]['step_size'],
 
 		for k, v in local_dict.items():
 			self.configuration_dict[k] = min(v)
