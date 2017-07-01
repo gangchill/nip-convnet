@@ -55,13 +55,13 @@ class ConfigLoader:
 			local_dict['chk_iterations'] =  config[config_version]['chk_iterations'],
 			local_dict['dropout_k_p'] =  config[config_version]['dropout_k_p'],
 			local_dict['fine_tuning_only'] =  config[config_version]['fine_tuning_only'],
-			local_dict['step_size'] =  config[config_version]['step_size']
+			local_dict['step_size'] =  config[config_version]['step_size'],
 		else:
 			print("Unknown config version")
 
 		if valid_config==1:
 			for k, v in local_dict.items():
-				self.configuration_dict[k] = min(v)
+				self.configuration_dict[k] = v[0]
 
 			print('Succesfully loaded config file, values are:')
 			for k, v in self.configuration_dict.items():
@@ -75,7 +75,8 @@ class ConfigLoader:
 		config[config_version] = {}
 		if config_version.upper()=='CAE':
 			if self.configuration_dict and len(self.configuration_dict)==17:
-				config[config_version]['filter_dims'] = [int(i) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['filter_dims_x'] = [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['filter_dims_y'] = [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['hidden_channels'] = self.configuration_dict.get('hidden_channels')
 				config[config_version]['pooling_type'] = self.configuration_dict.get('pooling_type')
 				config[config_version]['strides'] = self.configuration_dict.get('strides')
@@ -99,7 +100,8 @@ class ConfigLoader:
 
 		if config_version.upper()=='CNN':
 			if self.configuration_dict and len(self.configuration_dict)==12:
-				config[config_version]['filter_dims'] = [int(i) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['filter_dims_x'] = [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['filter_dims_y'] = [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['hidden_channels'] = self.configuration_dict.get('hidden_channels')
 				config[config_version]['pooling_type'] = self.configuration_dict.get('pooling_type')
 				config[config_version]['strides'] = self.configuration_dict.get('strides')
@@ -122,3 +124,4 @@ config = ConfigLoader()
 print(config.configuration_dict)
 config.load_config_file('simple_cnn_config.ini', 'CNN')
 print(config.configuration_dict)
+config.store_config_file('custom_cnn.ini', 'CNN')
