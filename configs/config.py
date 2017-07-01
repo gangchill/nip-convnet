@@ -36,6 +36,7 @@ class ConfigLoader:
 		for k, v in local_dict.items():
 			self.configuration_dict[k] = min(v)
 
+		print('Succesfully loaded config file, values are:')
 		for k, v in self.configuration_dict.items():
 			print(k, v)
 
@@ -60,7 +61,7 @@ class ConfigLoader:
 			config[config_version]['dropout_k_p'] = self.configuration_dict.get('dropout_k_p')
 			config[config_version]['fine_tuning_only'] = self.configuration_dict.get('fine_tuning_only')
 			config.write()
-		print(config)
+		# print(config)
 
 # config = ConfigLoader()
 # print(config.configuration_dict)

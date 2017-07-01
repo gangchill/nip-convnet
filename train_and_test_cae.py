@@ -83,7 +83,7 @@ def main():
 
 	# AUTOENCODER SPECIFICATIONS
 	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [16, 16]
+	hidden_channels = [100, 150]
 	pooling_type 	= 'strided_conv'
 	strides = None # other strides should not work yet
 	activation_function = 'relu'
@@ -99,8 +99,8 @@ def main():
 	initial_bias_value  = 0.001
 
 	batch_size 		= 128
-	max_iterations 	= 10001
-	chk_iterations  = 100
+	max_iterations 	= 100001
+	chk_iterations  = 500
 	step_size 		= 0.1
 
 	tie_conv_weights = True
