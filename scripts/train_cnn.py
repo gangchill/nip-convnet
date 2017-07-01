@@ -42,6 +42,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 			batch_xs, batch_ys = data.train.next_batch(batch_size)
 
 		if fine_tuning_only:
+			print('ATTENTION: Fine-TUNING-ONLY')
 			sess.run(cnn.optimize_dense_layers, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
 		else:
 			sess.run(cnn.optimize, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})

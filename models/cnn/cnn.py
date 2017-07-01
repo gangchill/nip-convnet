@@ -74,6 +74,8 @@ class CNN:
 		self.initial_bias_value 	= 0. 		# 0.0001
 		self.step_size 				= step_size	# 0.0001
 
+		self._losses = []
+
 		self._summaries = []
 
 
