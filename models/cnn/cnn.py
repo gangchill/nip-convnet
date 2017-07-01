@@ -5,7 +5,7 @@ import collections
 class CNN: 
 	# convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -72,7 +72,7 @@ class CNN:
 		self.weight_init_stddev 	= 0.05 		# 0.000015
 		self.weight_init_mean 		= 0.   		# 0.0001
 		self.initial_bias_value 	= 0. 		# 0.0001
-		self.step_size 				= 0.1 		# 0.0001
+		self.step_size 				= self.step_size 		# 0.0001
 
 		self._summaries = []
 		

@@ -28,21 +28,23 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-
+	log_folder_name = '07_CNN'
+	custom_run_name = None
 	DATASET = "CIFAR10"
+	initialization_mode = 'default'
+	use_config_file 	= False
 
-	# weight initialization:
+	# initialization_mode:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
 	# 'from_folder'					: 	load last checkpoint from folder given in 
 	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
 	# 'default'						: 	init weights at random
-	initialization_mode = 'default'
-	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' # used if initialization_mode == 'from_folder' (relative path)
-	pre_trained_conv_weights_directory = 'weights/02_CIFAR_2enc/old_commit_style'
-
-	# load architecture / training configurations from file
-	use_config_file 	= False
-	config_file_path 	= 'configs/simple_cnn_config.ini'
+	
+	# paths
+	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' 		# from_folder
+	pre_trained_conv_weights_directory = 'weights/02_CIFAR_2enc/old_commit_style'	# pre_trained_encoding
+	
+	config_file_path 	= 'configs/simple_cnn_config.ini'							# use_config_file
 		
 
 	if DATASET == "MNIST":
@@ -117,6 +119,7 @@ def main():
 		max_iterations	= 1001
 		chk_iterations 	= 100
 		dropout_k_p		= 0.5
+		step_size 		= 0.1
 
 		# only optimize dense layers and leave convolutions as they are
 		fine_tuning_only = False
@@ -134,6 +137,7 @@ def main():
 		config_dict['chk_iterations'] 		= chk_iterations
 		config_dict['dropout_k_p'] 			= dropout_k_p 
 		config_dict['fine_tuning_only'] 	= fine_tuning_only
+		config_dict['step_size'] 			= step_size
 
 		config_loader.configuration_dict = config_dict
 
@@ -169,11 +173,10 @@ def main():
 	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
-
-	log_folder_name = '07_CNN'
-	# run_name 		= 'reference_net' + 'test' + 'cifar' + architecture_str + training_str
-	# run_name = architecture_str + training_str
-	run_name = 'simple_cnn_higher_lr_longer'
+	if custom_run_name is None:
+		run_name = architecture_str + training_str
+	else:
+		run_name = custom_run_name
 
 	log_path = os.path.join('logs', log_folder_name, run_name)
 
@@ -193,7 +196,7 @@ def main():
 
 	init_iteration = 0
 
-	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels)
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
