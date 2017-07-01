@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys, os
+import sys
 for path in Path(__file__).resolve().parents:
     if path.name == 'nip-convnet':
         sys_path = str(path)
