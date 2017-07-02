@@ -118,23 +118,23 @@ def main():
 
 		# store to config dict:
 		config_dict = {}
-		config_dict['filter_dims'] 						= filter_dims
-		config_dict['hidden_channels'] 					= hidden_channels
-		config_dict['pooling_type']  					= pooling_type
-		config_dict['strides'] 							= strides
-		config_dict['activation_function'] 				= activation_function
-		config_dict['relu_leak'] 						= relu_leak
-		config_dict['error_function'] 					= error_function
-		config_dict['optimizer_type'] 					= optimizer_type
+		config_dict['filter_dims'] = filter_dims
+		config_dict['hidden_channels'] = hidden_channels
+		config_dict['pooling_type'] = pooling_type
+		config_dict['strides'] = strides
+		config_dict['activation_function'] = activation_function
+		config_dict['relu_leak'] = relu_leak
+		config_dict['error_function'] = error_function
+		config_dict['optimizer_type'] = optimizer_type
 		config_dict['output_reconstruction_activation'] = output_reconstruction_activation
-		config_dict['weight_init_mean'] 				= weight_init_mean
-		config_dict['weight_init_stddev'] 				= weight_init_stddev
-		config_dict['initial_bias_value'] 				= initial_bias_value
-		config_dict['batch_size'] 						= batch_size
-		config_dict['max_iterations'] 					= max_iterations
-		config_dict['chk_iterations'] 					= chk_iterations
-		config_dict['step_size'] 						= step_size
-		config_dict['tie_conv_weights'] 				= int(tie_conv_weights)
+		config_dict['weight_init_mean'] = weight_init_mean
+		config_dict['weight_init_stddev'] = weight_init_stddev
+		config_dict['initial_bias_value'] = initial_bias_value
+		config_dict['batch_size'] = batch_size
+		config_dict['max_iterations'] = max_iterations
+		config_dict['chk_iterations'] = chk_iterations
+		config_dict['step_size'] = step_size
+		config_dict['tie_conv_weights'] = int(tie_conv_weights)
 
 		config_loader.configuration_dict = config_dict
 
@@ -149,23 +149,23 @@ def main():
 			sys.exit()
 
 		# init all config variables variables from the file
-		filter_dims 						= config_dict['filter_dims']
-		hidden_channels 					= config_dict['hidden_channels']
-		pooling_type  						= config_dict['pooling_type']
-		strides 							= config_dict['strides']
-		activation_function 				= config_dict['activation_function']
-		relu_leak 							= float(config_dict['relu_leak'])
-		error_function						= config_dict['error_function']
-		optimizer_type 						= config_dict['optimizer_type']
-		output_reconstruction_activation 	= config_dict['output_reconstruction_activation']
-		weight_init_mean 					= float(config_dict['weight_init_mean'])
-		weight_init_stddev 					= float(config_dict['weight_init_stddev'])
-		initial_bias_value 					= float(config_dict['initial_bias_value'])
-		batch_size 							= int(config_dict['batch_size'])
-		max_iterations						= int(config_dict['max_iterations'])
-		chk_iterations 						= int(config_dict['chk_iterations'])
-		step_size							= float(config_dict['step_size'])
-		tie_conv_weights					= bool(int(config_dict['tie_conv_weights']))
+		filter_dims = config_dict['filter_dims']
+		hidden_channels = config_dict['hidden_channels']
+		pooling_type = config_dict['pooling_type']
+		strides = config_dict['strides']
+		activation_function = config_dict['activation_function']
+		relu_leak = float(config_dict['relu_leak'])
+		error_function = config_dict['error_function']
+		optimizer_type = config_dict['optimizer_type']
+		output_reconstruction_activation = config_dict['output_reconstruction_activation']
+		weight_init_mean = float(config_dict['weight_init_mean'])
+		weight_init_stddev = float(config_dict['weight_init_stddev'])
+		initial_bias_value = float(config_dict['initial_bias_value'])
+		batch_size = int(config_dict['batch_size'])
+		max_iterations = int(config_dict['max_iterations'])
+		chk_iterations = int(config_dict['chk_iterations'])
+		step_size = float(config_dict['step_size'])
+		tie_conv_weights = bool(int(config_dict['tie_conv_weights']))
 
 		print('Config succesfully loaded')
 
