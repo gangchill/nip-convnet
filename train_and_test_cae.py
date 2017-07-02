@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import os
+import os, sys
 from functools import reduce
 
 
@@ -35,6 +35,8 @@ def main():
 	use_config_file 	= False
 	config_file_path 	= 'configs/simple_cae_config.ini'
 
+	log_folder_name = '44_MNIST'
+	custom_run_name = None
 	## ########### ##
 	# INPUT HANDING #
 	## ########### ##
@@ -89,25 +91,30 @@ def main():
 
 	if not use_config_file:
 
-		# ARCHITECTURE
-		# feature extraction parameters
+		# -------------------------------------------------------
+		# AUTOENCODER SPECIFICATIONS
 		filter_dims 	= [(5,5), (5,5)]
-		hidden_channels = [64, 64]
-		pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
+		hidden_channels = [100, 150]
+		pooling_type 	= 'strided_conv'
 		strides = None # other strides should not work yet
 		activation_function = 'relu'
-		# fc-layer parameters:
-		dense_depths = [384, 192]
+		relu_leak = 0.2 # only for leaky relus
 
-		# TRAINING
-		# training parameters:
+		error_function 	= 'mse' 					# default is cross-entropy
+		optimizer_type 	= 'gradient_descent' 		# default is gradient descent
+
+		output_reconstruction_activation = 'scaled_tanh'
+
+		weight_init_mean 	= 0.001
+		weight_init_stddev 	= 0.05
+		initial_bias_value  = 0.001
+
 		batch_size 		= 128
-		max_iterations	= 1001
-		chk_iterations 	= 100
-		dropout_k_p		= 0.5
+		max_iterations 	= 100001
+		chk_iterations  = 500
+		step_size 		= 0.1
 
-		# only optimize dense layers and leave convolutions as they are
-		fine_tuning_only = False
+		tie_conv_weights = True
 
 		# store to config dict:
 		config_dict = {}
@@ -116,19 +123,25 @@ def main():
 		config_dict['pooling_type']  		= pooling_type
 		config_dict['strides'] 				= strides
 		config_dict['activation_function'] 	= activation_function
-		config_dict['dense_depths'] 		= dense_depths
+		config_dict['relu_leak'] 			= relu_leak
+		config_dict['error_function'] 		= error_function
+		config_dict['optimizer_type'] 		= optimizer_type
+		config_dict['output_reconstruction_activation'] = output_reconstruction_activation
+		config_dict['weight_init_mean'] 	= weight_init_mean
+		config_dict['weight_init_stddev'] 	= weight_init_stddev
+		config_dict['initial_bias_value'] 	= initial_bias_value
 		config_dict['batch_size'] 			= batch_size
 		config_dict['max_iterations'] 		= max_iterations
 		config_dict['chk_iterations'] 		= chk_iterations
-		config_dict['dropout_k_p'] 			= dropout_k_p
-		config_dict['fine_tuning_only'] 	= fine_tuning_only
+		config_dict['step_size'] 			= step_size
+		config_dict['tie_conv_weights'] 	= int(tie_conv_weights)
 
 		config_loader.configuration_dict = config_dict
 
 	else:
 		# load config from file
 		print('Loading config from file {}'.format(config_file_path))
-		config_loader.load_config_file(config_file_path, 'CNN')
+		config_loader.load_config_file(config_file_path, 'CAE')
 		config_dict = config_loader.configuration_dict
 
 		if config_dict is None:
@@ -136,53 +149,32 @@ def main():
 			sys.exit()
 
 		# init all config variables variables from the file
-		filter_dims 			= config_dict['filter_dims']
-		hidden_channels 		= config_dict['hidden_channels']
-		pooling_type  			= config_dict['pooling_type']
-		strides 				= config_dict['strides']
-		activation_function 	= config_dict['activation_function']
-		dense_depths 			= config_dict['dense_depths']
-		batch_size 				= int(config_dict['batch_size'])
-		max_iterations			= int(config_dict['max_iterations'])
-		chk_iterations 			= int(config_dict['chk_iterations'])
-		dropout_k_p				= float(config_dict['dropout_k_p'])
-		fine_tuning_only 		= config_dict['fine_tuning_only']
+		filter_dims 					= config_dict['filter_dims']
+		hidden_channels 				= config_dict['hidden_channels']
+		pooling_type  				= config_dict['pooling_type']
+		strides 						= config_dict['strides']
+		activation_function 			= config_dict['activation_function']
+		relu_leak 					= float(config_dict['relu_leak'])
+		error_function				= config_dict['error_function']
+		optimizer_type 				= config_dict['optimizer_type']
+		output_reconstruction_activation 	= config_dict['output_reconstruction_activation']
+		weight_init_mean 				= float(config_dict['weight_init_mean'])
+		weight_init_stddev 			= float(config_dict['weight_init_stddev'])
+		initial_bias_value 			= float(config_dict['initial_bias_value'])
+		batch_size 					= int(config_dict['batch_size'])
+		max_iterations				= int(config_dict['max_iterations'])
+		chk_iterations 				= int(config_dict['chk_iterations'])
+		step_size						= float(config_dict['step_size'])
+		tie_conv_weights				= bool(int(config_dict['tie_conv_weights']))
 
 		print('Config succesfully loaded')
 
-	# -------------------------------------------------------
-	# AUTOENCODER SPECIFICATIONS
-	filter_dims 	= [(5,5), (5,5)]
-	hidden_channels = [100, 150]
-	pooling_type 	= 'strided_conv'
-	strides = None # other strides should not work yet
-	activation_function = 'relu'
-	relu_leak = 0.2 # only for leaky relus
-
-	error_function 	= 'mse' 					# default is cross-entropy
-	optimizer_type 	= 'gradient_descent' 		# default is gradient descent
-
-	output_reconstruction_activation = 'scaled_tanh'
-
-	weight_init_mean 	= 0.001
-	weight_init_stddev 	= 0.05
-	initial_bias_value  = 0.001
-
-	batch_size 		= 128
-	max_iterations 	= 100001
-	chk_iterations  = 500
-	step_size 		= 0.1
-
-	tie_conv_weights = True
-
 	# TODO Sabbir: end what needs to be in the config file -----------------------------
-
 
 	weight_file_name = get_weight_file_name(filter_dims, hidden_channels, pooling_type, activation_function, tie_conv_weights, batch_size, step_size, weight_init_mean, weight_init_stddev, initial_bias_value)
 
-
-	log_folder_name = '02_CIFAR_2enc'
-	run_name = 'old_commit_style'
+	# log_folder_name = '02_CIFAR_2enc'
+	# run_name = 'old_commit_style'
 	# run_name 	= '{}'.format(weight_file_name)
 	# run_name = '({}x{})|_{}_{}_{}|{}_{}'.format(activation_function, output_reconstruction_activation, weight_init_mean, weight_init_stddev, initial_bias_value)
 	# run_name = '5x5_d2_smaller_init_{}_{}'.format(activation_function, output_reconstruction_activation)
@@ -190,7 +182,19 @@ def main():
 	# run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
+# -------------------------------------------------------
 
+# construct names for logging
+
+	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
+	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(tie_conv_weights)
+
+	if custom_run_name is None:
+		run_name = architecture_str + training_str
+	else:
+		run_name = custom_run_name
+
+	log_path = os.path.join('logs', log_folder_name, run_name)
 
 	# folder to store the training weights in:
 	model_save_parent_dir = 'weights'
@@ -216,6 +220,9 @@ def main():
 	print("Begin autencoder training")
 	
 	writer = tf.summary.FileWriter("logs/{}/{}".format(log_folder_name, run_name), sess.graph)
+
+	# store config file in the folder
+	config_loader.store_config_file(os.path.join(log_path, 'config.ini'), 'CAE')
 
 	init_iteration = 0
 

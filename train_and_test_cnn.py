@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import os
+import os, sys
 import tarfile
 from six.moves import urllib
 
