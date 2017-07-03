@@ -100,7 +100,7 @@ def main():
 		# AUTOENCODER SPECIFICATIONS
 		filter_dims 	= [(5,5), (5,5)]
 		hidden_channels = [64, 64]
-		pooling_type 	= 'strided_conv'
+		pooling_type 	= 'max_pooling'
 		strides = None # other strides should not work yet
 		activation_function = 'relu'
 		relu_leak = 0.2 # only for leaky relus
@@ -115,9 +115,9 @@ def main():
 		initial_bias_value  = 0.001
 
 		batch_size 		= 128
-		max_iterations 	= 5001
+		max_iterations 	= 10001
 		chk_iterations  = 100
-		step_size 		= 0.1
+		step_size 		= 0.001
 
 		tie_conv_weights = True
 
@@ -191,7 +191,7 @@ def main():
 
 	# construct names for logging
 
-	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
+	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function + '_' + pooling_type
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(tie_conv_weights)
 
 	if custom_run_name is None:

@@ -28,11 +28,11 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '44_MNIST'
-	custom_run_name = None
+	log_folder_name = '90_MNIST_CNN_batch_average'
+	custom_run_name = 'pre-trained_full'
 	DATASET = "MNIST"
 	initialization_mode = 'default'
-	use_config_file 	= True
+	use_config_file 	= False
 
 	# initialization_mode:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
@@ -42,10 +42,9 @@ def main():
 	
 	# paths
 	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' 		# from_folder
-	pre_trained_conv_weights_directory = 'weights/02_CIFAR_2enc/old_commit_style'	# pre_trained_encoding
+	pre_trained_conv_weights_directory = 'weights/67_CAE_MNIST/a55_55-64_64-relutr128__True/best'# pre_trained_encoding
 	
 	config_file_path 	= 'configs/simple_cnn_config.ini'							# use_config_file
-		
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -119,7 +118,7 @@ def main():
 		max_iterations	= 1001
 		chk_iterations 	= 100
 		dropout_k_p		= 0.5
-		step_size 		= 0.1
+		step_size 		= 0.01
 
 		# only optimize dense layers and leave convolutions as they are
 		fine_tuning_only = False
