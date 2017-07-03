@@ -17,7 +17,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 		coord = tf.train.Coordinator()
 
 		image_batch, label_batch = cifar10_input.distorted_inputs(CIFAR_LOCATION, batch_size)
-		test_image_node, test_label_node = cifar10_input.inputs(False, CIFAR_LOCATION, test_batch_size)
+		test_image_node, test_label_node = cifar10_input.inputs(True, CIFAR_LOCATION, test_batch_size)
 
 		# add the some test images to the summary 
 		cnn._summaries.append(tf.summary.image('some example input', test_image_node))
@@ -67,10 +67,16 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 
 		if i % chk_iterations == 0:
 
-			# batch the test data (prevent memory overflow)
-			num_batches 	= total_test_images / test_batch_size + 1
-			last_batch_size = total_test_images % test_batch_size
+			print total_test_images, test_batch_size
 
+			# batch the test data (prevent memory overflow)
+			last_batch_size = total_test_images % test_batch_size
+			num_batches 	= total_test_images / test_batch_size + int(last_batch_size > 0)
+			
+			if last_batch_size == 0:
+				last_batch_size = test_batch_size
+
+			print('---> Test Iteration')
 			print('Test batch size is {}'.format(test_batch_size))
 			print('We want to average over {} test images in total'.format(total_test_images))
 			print('This gives us {} batches, the last one having only {} images'.format(num_batches, last_batch_size))

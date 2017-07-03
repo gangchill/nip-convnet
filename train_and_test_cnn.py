@@ -10,6 +10,8 @@ import os, sys
 import tarfile
 from six.moves import urllib
 
+import matplotlib.pyplot as plt
+
 # import the  convolutional neural network class
 from models.cnn.cnn import CNN
 
@@ -18,6 +20,7 @@ from scripts.from_github.cifar10 	import maybe_download_and_extract
 
 import configs.config as cfg
 
+from tensorflow.python.framework import dtypes
 
 ########
 # MAIN #
@@ -28,8 +31,8 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '77_CNN_MNIST'
-	custom_run_name = None
+	log_folder_name = '0000001_dtype_int'
+	custom_run_name = '6k'
 	DATASET = "MNIST_SMALL"
 
 	initialization_mode = 'default'
@@ -42,8 +45,8 @@ def main():
 	# 'default'						: 	init weights at random
 	
 	# paths
-	model_weights_directory = 'weights/02_CIFAR_cnn_pre_training/random-init' 		# from_folder
-	pre_trained_conv_weights_directory = 'weights/67_CAE_MNIST/a55_55-64_64-relutr128__True/best'# pre_trained_encoding
+	model_weights_directory = 'weights/55_CNN_CIFAR/a55_55-64_64-relutr128__0.5/best' 		# from_folder
+	pre_trained_conv_weights_directory = 'weights/67_CAE_MNIST/a55_55-64_64-relu_max_poolingtr128__True/best'# pre_trained_encoding
 	
 	config_file_path 	= 'configs/simple_cnn_config.ini'							# use_config_file
 
@@ -57,18 +60,18 @@ def main():
 		nhwd_shape = False
 
 	elif DATASET == "MNIST_SMALL":
-		N = 1000
+		N = 6000
 
 		# load mnist
 		from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
 		from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
 		from tensorflow.examples.tutorials.mnist import input_data
 
-		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True, dtype=dtypes.uint8)
 
-		small_training_dataset = DataSet(complete_dataset.train._images[:N], complete_dataset.train._labels[:N], reshape=False)
+		small_training_dataset = DataSet(complete_dataset.train.images[:N], complete_dataset.train.labels[:N], reshape=False)
 
-		dataset = Datasets(train=small_training_dataset, validation = complete_dataset.validation, test=complete_dataset.test)
+		dataset = Datasets(train= small_training_dataset, validation = complete_dataset.validation, test=complete_dataset.test)
 
 		input_size = (28, 28)
 		num_classes = 10
@@ -138,7 +141,7 @@ def main():
 		max_iterations	= 1001
 		chk_iterations 	= 100
 		dropout_k_p		= 0.5
-		
+
 		step_size 		= 0.1
 		decay_steps		= 10000
 		decay_rate		= 0.1
