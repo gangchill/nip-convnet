@@ -65,9 +65,14 @@ class CAE:
 		self.pre_conv_shapes = []
 
 		self.store_model_walkthrough = store_model_walkthrough
+
 		if self.store_model_walkthrough:
+			print('MODEL WALKTHROUGH ENABLED')
 			# initialize list that stores all the intermediate tensors in a forward path (probably high memory consumption, set flag to False if any problems occur)
 			self.model_walkthrough = []
+
+		else:
+			print('model walkthrough disabled')
 
 		# private attributes used by the properties
 		self._encoding 				= None
@@ -395,10 +400,10 @@ class CAE:
 
 		print('Saved encoding weights to {}'.format(save_path))
 
-	def store_model_to_file(self, sess, path_to_file, step = None):
+	def store_model_to_file(self, sess, path_to_file, step = None, saver = None):
 
-		# TODO: add store / save function to the class
-		saver = tf.train.Saver(self.all_variables_dict)
+		if saver is None:
+			saver = tf.train.Saver(self.all_variables_dict)
 
 		if step is None:
 			save_path = saver.save(sess, path_to_file)

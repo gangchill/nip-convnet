@@ -26,22 +26,27 @@ def main():
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 	# restore weights from the last iteration (if the same training setup was used before)
-	restore_last_checkpoint = True
+	# restore_last_checkpoint = True
+	initialization_mode = 'resume' # resume - default - from_file
+
+	model_weights_dir = 'test'
 
 	# store model walkthrough (no CIFAR support yet)
-	visualize_model_walkthrough = True
+	visualize_model_walkthrough = False
 
 	# load architecture / training configurations from file
 	use_config_file 	= False
 	config_file_path 	= 'configs/simple_cae_config.ini'
 
-	log_folder_name = '44_MNIST'
+	DATASET = "MNIST"
+
+	log_folder_name = '67_CAE_MNIST'
 	custom_run_name = None
+
 	## ########### ##
 	# INPUT HANDING #
 	## ########### ##
 
-	DATASET = "CIFAR10"
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -94,7 +99,7 @@ def main():
 		# -------------------------------------------------------
 		# AUTOENCODER SPECIFICATIONS
 		filter_dims 	= [(5,5), (5,5)]
-		hidden_channels = [100, 150]
+		hidden_channels = [64, 64]
 		pooling_type 	= 'strided_conv'
 		strides = None # other strides should not work yet
 		activation_function = 'relu'
@@ -110,8 +115,8 @@ def main():
 		initial_bias_value  = 0.001
 
 		batch_size 		= 128
-		max_iterations 	= 100001
-		chk_iterations  = 500
+		max_iterations 	= 5001
+		chk_iterations  = 100
 		step_size 		= 0.1
 
 		tie_conv_weights = True
@@ -182,9 +187,9 @@ def main():
 	# run_name = '{}_{}_{}_{}_{}({})'.format(DATASET, error_function, activation_function, output_reconstruction_activation,pooling_type, weight_init_mean)
 	# run_name = 'relu_small_learning_rate_101_{}'.format(weight_file_name)
 	# run_name = 'that_run_tho'
-# -------------------------------------------------------
+	# -------------------------------------------------------
 
-# construct names for logging
+	# construct names for logging
 
 	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
 	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(tie_conv_weights)
@@ -199,7 +204,7 @@ def main():
 	# folder to store the training weights in:
 	model_save_parent_dir = 'weights'
 	save_path = os.path.join(model_save_parent_dir, log_folder_name, run_name)
-	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name)]
+	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name), os.path.join(model_save_parent_dir, log_folder_name, run_name, 'best')]
 	
 	for directory in check_dirs:
 		if not os.path.exists(directory):
@@ -212,7 +217,7 @@ def main():
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = True, relu_leak = relu_leak, optimizer_type = optimizer_type, output_reconstruction_activation=output_reconstruction_activation)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = visualize_model_walkthrough, relu_leak = relu_leak, optimizer_type = optimizer_type, output_reconstruction_activation=output_reconstruction_activation)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
@@ -226,11 +231,15 @@ def main():
 
 	init_iteration = 0
 
-	if restore_last_checkpoint:
+	if initialization_mode == 'resume' or initialization_mode == 'from_folder':
 		# initialize training with weights from a previous training 
 
 		cwd = os.getcwd()
-		chkpnt_file_path = os.path.join(cwd, save_path)
+
+		if initialization_mode == 'resume':
+			chkpnt_file_path = os.path.join(cwd, save_path)
+		else: 
+			chkpnt_file_path = os.path.join(cwd, model_weights_dir)
 
 		saver = tf.train.Saver(autoencoder.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
@@ -244,6 +253,10 @@ def main():
 
 			print('iteration is: {}'.format(init_iteration))
 			print('smallest reconstruction error so far was {}'.format(smallest_reconstruction_error))
+
+			if initialization_mode == 'from_folder':
+				print('retrieved weights from checkpoint, begin with new iteration 0')
+				init_iteration = 0
 
 			saver.restore(sess, latest_checkpoint)
 

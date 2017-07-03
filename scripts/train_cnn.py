@@ -27,7 +27,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 	current_top_accuracy = best_accuracy_so_far
 
 	# create two different savers (always store the model from the last 5 check iterations and the current model with the best accuracy)
-	chk_it_saver 	= tf.train.Saver(cnn.all_variables_dict)
+	chk_it_saver 	= tf.train.Saver(cnn.all_variables_dict, max_to_keep = 1)
 	best_it_saver 	= tf.train.Saver(cnn.all_variables_dict, max_to_keep = 1)
 
 	for i in range(init_iteration, max_iterations):

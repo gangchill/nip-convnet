@@ -42,7 +42,7 @@ class ConfigLoader:
 			local_dict['tie_conv_weights'] =  config[config_version]['tie_conv_weights']
 
 
-		if config_version.upper()=='CNN':
+		elif config_version.upper()=='CNN':
 			valid_config=1
 			local_dict['filter_dims'] =  list(zip(map(lambda x:int(x),config[config_version]['filter_dims_x']), map(lambda x:int(x),config[config_version]['filter_dims_y']))),
 			local_dict['hidden_channels'] =  list(map(int, config[config_version]['hidden_channels'])),
@@ -57,7 +57,7 @@ class ConfigLoader:
 			local_dict['fine_tuning_only'] =  config[config_version]['fine_tuning_only'],
 			local_dict['step_size'] =  config[config_version]['step_size'],
 		else:
-			print("Unknown config version")
+			print("Unknown config version (loading)")
 
 		if valid_config==1:
 			for k, v in local_dict.items():
@@ -98,7 +98,7 @@ class ConfigLoader:
 			else:
 				print('# of configurations need to be 17!')
 
-		if config_version.upper()=='CNN':
+		elif config_version.upper()=='CNN':
 			if self.configuration_dict and len(self.configuration_dict)==12:
 				config[config_version]['filter_dims_x'] = [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['filter_dims_y'] = [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
@@ -118,7 +118,7 @@ class ConfigLoader:
 			else:
 				print('# of configurations need to be 12!')
 		else:
-			print("Unknown config version")
+			print("Unknown config version (storing)")
 
 # config = ConfigLoader()
 # print(config.configuration_dict)

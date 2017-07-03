@@ -9,7 +9,7 @@ CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxsize):
 
 	print('...checking folder structure')
-	folders = ['models', cae_dir, cae_weights_dir]
+	folders = ['models', cae_dir, cae_weights_dir, os.path.join(cae_weights_dir)]
 	cwd = os.getcwd()
 	for folder in folders:
 		dir_path = os.path.join(cwd, folder)
@@ -41,6 +41,11 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_w
 		optimizer_node = autoencoder.optimize
 
 
+	# create two different savers (always store the model from the last 5 check iterations and the current model with the best accuracy)
+	chk_it_saver 	= tf.train.Saver(autoencoder.all_variables_dict, max_to_keep = 1)
+	best_it_saver 	= tf.train.Saver(autoencoder.all_variables_dict, max_to_keep = 1)
+
+
 	for i in range(init_iteration, max_iterations):
 
 		if data == 'cifar_10':
@@ -67,15 +72,20 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_w
 
 			print('it {} avg_re {}'.format(i, average_reconstruction_error))
 
+			if save_prefix is not None:
+				file_path = os.path.join(save_prefix, 'cae_model-mre-{}'.format(minimal_reconstruction_error))
+				print('...save iteration weights to file ')
+				autoencoder.store_model_to_file(sess, file_path, i, saver=chk_it_saver)
+
 			if average_reconstruction_error < minimal_reconstruction_error:
 				print('...found new weight configuration with minimal reconstruction error')
 
 				minimal_reconstruction_error = average_reconstruction_error
 
 				if save_prefix is not None:
-					file_path = os.path.join(save_prefix, 'cae_model-mre-{}'.format(minimal_reconstruction_error))
+					file_path = os.path.join(save_prefix, 'best', 'cae_model-mre-{}'.format(minimal_reconstruction_error))
 					print('...save new found best weights to file ')
-					autoencoder.store_model_to_file(sess, file_path, i)
+					autoencoder.store_model_to_file(sess, file_path, i, saver=best_it_saver)
 
 
 			writer.add_summary(summary, i)
