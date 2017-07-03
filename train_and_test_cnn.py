@@ -28,9 +28,9 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '44_MNIST'
+	log_folder_name = '77_CNN_MNIST'
 	custom_run_name = None
-	DATASET = "MNIST"
+	DATASET = "MNIST_SMALL"
 	initialization_mode = 'default'
 	use_config_file 	= True
 
@@ -51,6 +51,25 @@ def main():
 		# load mnist
 		from tensorflow.examples.tutorials.mnist import input_data
 		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		input_size = (28, 28)
+		num_classes = 10
+		one_hot_labels = True
+		nhwd_shape = False
+
+	elif DATASET == "MNIST_SMALL":
+		N = 1000
+
+		# load mnist
+		from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
+		from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
+		from tensorflow.examples.tutorials.mnist import input_data
+
+		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+		small_training_dataset = DataSet(complete_dataset.train._images[:N], complete_dataset.train._labels[:N], reshape=False)
+
+		dataset = Datasets(train=small_training_dataset, validation = complete_dataset.validation, test=complete_dataset.test)
+
 		input_size = (28, 28)
 		num_classes = 10
 		one_hot_labels = True
