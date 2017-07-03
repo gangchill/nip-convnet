@@ -28,9 +28,10 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '90_MNIST_CNN_batch_average'
-	custom_run_name = 'pre-trained_full'
-	DATASET = "MNIST"
+	log_folder_name = '77_CNN_MNIST'
+	custom_run_name = None
+	DATASET = "MNIST_SMALL"
+
 	initialization_mode = 'default'
 	use_config_file 	= False
 
@@ -50,6 +51,25 @@ def main():
 		# load mnist
 		from tensorflow.examples.tutorials.mnist import input_data
 		dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+		input_size = (28, 28)
+		num_classes = 10
+		one_hot_labels = True
+		nhwd_shape = False
+
+	elif DATASET == "MNIST_SMALL":
+		N = 1000
+
+		# load mnist
+		from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
+		from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
+		from tensorflow.examples.tutorials.mnist import input_data
+
+		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+		small_training_dataset = DataSet(complete_dataset.train._images[:N], complete_dataset.train._labels[:N], reshape=False)
+
+		dataset = Datasets(train=small_training_dataset, validation = complete_dataset.validation, test=complete_dataset.test)
+
 		input_size = (28, 28)
 		num_classes = 10
 		one_hot_labels = True
@@ -118,7 +138,10 @@ def main():
 		max_iterations	= 1001
 		chk_iterations 	= 100
 		dropout_k_p		= 0.5
-		step_size 		= 0.01
+		
+		step_size 		= 0.1
+		decay_steps		= 10000
+		decay_rate		= 0.1
 
 		# only optimize dense layers and leave convolutions as they are
 		fine_tuning_only = False
@@ -137,6 +160,8 @@ def main():
 		config_dict['dropout_k_p'] 			= dropout_k_p 
 		config_dict['fine_tuning_only'] 	= int(fine_tuning_only)
 		config_dict['step_size'] 			= step_size
+		config_dict['decay_steps']			= decay_steps
+		config_dict['decay_rate']			= decay_rate
 
 		config_loader.configuration_dict = config_dict
 
@@ -163,6 +188,8 @@ def main():
 		dropout_k_p				= float(config_dict['dropout_k_p']) 
 		fine_tuning_only 		= bool(int(config_dict['fine_tuning_only']))
 		step_size				= float(config_dict['step_size'])
+		decay_steps				= int(config_dict['decay_steps'])
+		decay_rate				= float(config_dict['decay_rate'])
 
 		print('Config succesfully loaded')
 
@@ -196,7 +223,7 @@ def main():
 
 	init_iteration = 0
 
-	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size)
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size, decay_steps = decay_steps, decay_rate = decay_rate)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())

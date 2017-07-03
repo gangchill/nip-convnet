@@ -56,6 +56,8 @@ class ConfigLoader:
 			local_dict['dropout_k_p'] =  config[config_version]['dropout_k_p'],
 			local_dict['fine_tuning_only'] =  config[config_version]['fine_tuning_only'],
 			local_dict['step_size'] =  config[config_version]['step_size'],
+			local_dict['decay_steps'] =  config[config_version]['decay_steps'],
+			local_dict['decay_rate'] =  config[config_version]['decay_rate'],
 		else:
 			print("Unknown config version (loading)")
 

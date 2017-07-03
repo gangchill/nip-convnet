@@ -5,7 +5,7 @@ import collections
 class CNN: 
 	# convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1, decay_steps = 10000, decay_rate = 0.1):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -74,10 +74,14 @@ class CNN:
 		self.initial_bias_value 	= 0. 		# 0.0001
 		self.step_size 				= step_size	# 0.0001
 
+		self.decay_steps = decay_steps
+		self.decay_rate = decay_rate
+
 		self._losses = []
 
 		self._summaries = []
 
+		self.global_step = 0
 
 		print('Initializing simple CNN')
 		with tf.name_scope(scope_name):
@@ -284,7 +288,18 @@ class CNN:
 		if self._optimizer is None:
 			print('init optimizer')
 
-			self._optimizer = tf.train.GradientDescentOptimizer(self.step_size)
+			if self.decay_steps:
+				# Decay the learning rate exponentially based on the number of steps.
+				lr = tf.train.exponential_decay(self.step_size,
+						self.global_step,
+						self.decay_steps, # 10000
+						self.decay_rate, # 0.1
+						staircase=True)
+			else:
+				lr = self.step_size
+
+			self._summaries.append(tf.summary.scalar('learning_rate', lr))
+			self._optimizer = tf.train.GradientDescentOptimizer(lr)
 
 		return self._optimizer
 
@@ -298,6 +313,7 @@ class CNN:
 
 			self._optimize = self.optimizer.minimize(self.error)
 
+		self.global_step += 1
 		return self._optimize
 
 	@property
