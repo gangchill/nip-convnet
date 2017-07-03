@@ -2,6 +2,7 @@
 # train and test a convolutional neural network
 # ----------------------------------------------------
 
+from tensorflow.python.framework import dtypes
 import tensorflow as tf 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,9 +68,9 @@ def main():
 		from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
 		from tensorflow.examples.tutorials.mnist import input_data
 
-		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True, dtype=dtypes.uint8)
+		complete_dataset = input_data.read_data_sets("MNIST_data/", one_hot=True,)
 
-		small_training_dataset = DataSet(complete_dataset.train.images[:N], complete_dataset.train.labels[:N], reshape=False)
+		small_training_dataset = DataSet(complete_dataset.train._images[:N], complete_dataset.train._labels[:N], dtype=dtypes.uint8, reshape=False)
 
 		dataset = Datasets(train= small_training_dataset, validation = complete_dataset.validation, test=complete_dataset.test)
 
