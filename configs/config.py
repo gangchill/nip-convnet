@@ -101,7 +101,7 @@ class ConfigLoader:
 				print('# of configurations need to be 17!')
 
 		elif config_version.upper()=='CNN':
-			if self.configuration_dict and len(self.configuration_dict)==12:
+			if self.configuration_dict and len(self.configuration_dict)==14:
 				config[config_version]['filter_dims_x'] = [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['filter_dims_y'] = [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['hidden_channels'] = self.configuration_dict.get('hidden_channels')
@@ -115,10 +115,12 @@ class ConfigLoader:
 				config[config_version]['dropout_k_p'] = self.configuration_dict.get('dropout_k_p')
 				config[config_version]['fine_tuning_only'] = self.configuration_dict.get('fine_tuning_only')
 				config[config_version]['step_size'] = self.configuration_dict.get('step_size')
+				config[config_version]['decay_steps'] = self.configuration_dict.get('decay_steps')
+				config[config_version]['decay_rate'] = self.configuration_dict.get('decay_rate')
 				config.write()
 				print(config)
 			else:
-				print('# of configurations need to be 12!')
+				print('# of configurations need to be 14!')
 		else:
 			print("Unknown config version (storing)")
 
