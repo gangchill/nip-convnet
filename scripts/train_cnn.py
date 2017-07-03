@@ -10,6 +10,8 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 
 	print("Training CNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
+	cnn.global_step = init_iteration
+
 	if data == 'cifar_10':
 
 		coord = tf.train.Coordinator()
