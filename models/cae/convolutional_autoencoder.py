@@ -195,6 +195,9 @@ class CAE:
 					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
 					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
 
+				elif self.activation_function == 'scaled_tanh':
+					conv_act = tf.add(tf.nn.tanh(conv_preact) / 2, 0.5, name='conv_{}_activation'.format(layer))
+
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
 
@@ -355,6 +358,9 @@ class CAE:
 
 					elif self.hl_reconstruction_activation_function == 'lrelu':
 						reconst_act = l_relu(reconst_preact, leak = self.relu_leak, name='reconst_act')
+
+					elif self.hl_reconstruction_activation_function == 'scaled_tanh':
+						reconst_act = tf.add(tf.nn.tanh(reconst_preact) / 2, 0.5, name='reconst_act')
 
 					else:
 						reconst_act = tf.nn.sigmoid(reconst_preact ,name='reconst_act')
