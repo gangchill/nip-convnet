@@ -173,7 +173,8 @@ class CNN:
 
 					alive_neurons = tf.count_nonzero(conv_act, name='active_neuron_number_{}'.format(layer))
 					self._summaries.append(tf.summary.scalar('nb of relu neurons alive in layer {}'.format(layer), alive_neurons))
-
+				elif self.activation_function == 'scaled_tanh':
+					conv_act = tf.add(tf.nn.tanh(conv_preact) / 2, 0.5, 'conv_{}_activation'.format(layer))
 				else:
 					conv_act = tf.nn.sigmoid(conv_preact, name='conv_{}_activation'.format(layer))
 
