@@ -32,7 +32,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 			total_test_images = min(num_test_images, 10000)
 
 	else:
-		max_test_images = data.test.images.shape[0]
+		max_test_images = data.validation.images.shape[0]
 		if num_test_images <= 0:
 			total_test_images = max_test_images
 		else:
@@ -96,7 +96,7 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 					test_images, test_labels = sess.run([test_image_node, test_label_node])
 
 				else:
-					test_images, test_labels = data.test.next_batch(current_batch_size)
+					test_images, test_labels = data.validation.next_batch(current_batch_size)
 
 				avg_accuracy, summary = sess.run([cnn.accuracy, cnn.merged], feed_dict={x: test_images, y: test_labels, keep_prob: 1.0})
 

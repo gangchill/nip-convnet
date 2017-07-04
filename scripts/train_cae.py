@@ -64,7 +64,7 @@ def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_w
 				test_images, test_labels = sess.run([test_image_node, test_label_node])
 
 			else:
-				test_images, test_labels = data.test.images[:1000], data.test.labels[:1000]
+				test_images, test_labels = data.validation.images[:1000], data.validation.labels[:1000]
 
 
 			summary, reconstruction_error = sess.run([autoencoder.merged, autoencoder.error], feed_dict={input_placeholder: test_images})
