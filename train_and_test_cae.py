@@ -25,6 +25,8 @@ def main():
 	cae_dir 		= os.path.join('models', 'cae')
 	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
+	
+
 	# restore weights from the last iteration (if the same training setup was used before)
 	# restore_last_checkpoint = True
 	initialization_mode = 'resume' # resume - default - from_file
@@ -35,12 +37,12 @@ def main():
 	visualize_model_walkthrough = False
 
 	# load architecture / training configurations from file
-	use_config_file 	= False
-	config_file_path 	= 'configs/simple_cae_config.ini'
+	use_config_file 	= True
+	config_file_path 	= 'configs/cae_2l_sigmoid.ini'
 
 	DATASET = "MNIST"
 
-	log_folder_name = '67_CAE_MNIST'
+	log_folder_name = '07_CAE_MNIST_SIGMOID'
 	custom_run_name = None
 
 	## ########### ##

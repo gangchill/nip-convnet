@@ -32,11 +32,11 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '0000001_dtype_int'
-	custom_run_name = '6k'
+	log_folder_name = '1k_MNIST'
+	custom_run_name = 'pre-trained'
 	DATASET = "MNIST_SMALL"
 
-	initialization_mode = 'default'
+	initialization_mode = 'resume'
 	use_config_file 	= False
 
 	# initialization_mode:
@@ -61,7 +61,7 @@ def main():
 		nhwd_shape = False
 
 	elif DATASET == "MNIST_SMALL":
-		N = 6000
+		N = 1000
 
 		# load mnist
 		from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
@@ -139,8 +139,8 @@ def main():
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 1001
-		chk_iterations 	= 100
+		max_iterations	= 10001
+		chk_iterations 	= 1000
 		dropout_k_p		= 0.5
 
 		step_size 		= 0.1

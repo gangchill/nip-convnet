@@ -28,7 +28,9 @@ class CAE:
 		self.strided_conv_strides 	= [1,2,2,1]
 		self.std_strides 			= [1,1,1,1] 
 
-		if strides is None:
+		print 'JENE STRIDES:', strides
+
+		if str(strides) == 'None':
 			if pooling_type == 'strided_conv':
 				self.strides = [self.strided_conv_strides 	for filter in filter_dims]
 			else:
