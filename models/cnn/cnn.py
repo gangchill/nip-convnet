@@ -69,7 +69,7 @@ class CNN:
 		self._optimize_dense_layers = None
 		self._accuracy		= None
 
-		self.weight_init_stddev 	= 0.05 		# 0.000015
+		self.weight_init_stddev 	= 0.2 		# 0.000015
 		self.weight_init_mean 		= 0.   		# 0.0001
 		self.initial_bias_value 	= 0. 		# 0.0001
 		self.step_size 				= step_size	# 0.0001
@@ -113,7 +113,6 @@ class CNN:
 
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + dense_w_d + dense_b_d)
-
 		# print(self.encoding_variables_dict)
 
 		print('...finished initialization')
@@ -344,8 +343,8 @@ class CNN:
 
 			self._accuracy = accuracy 
 
-			if self.add_tensorboard_summary:
-				self._summaries.append(tf.summary.scalar('accuracy', self._accuracy))
+			#f self.add_tensorboard_summary:
+			#	self._summaries.append(tf.summary.scalar('accuracy', self._accuracy))
 
 		return self._accuracy
 

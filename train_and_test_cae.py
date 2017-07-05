@@ -21,34 +21,37 @@ import configs.config as cfg
 
 def main():
 
-	# directory containing the autoencoder file
-	cae_dir 		= os.path.join('models', 'cae')
-	cae_weights_dir	= os.path.join(cae_dir, 'weights')
+	# TODO: add the following parameters to the config file and add a command line argument parsing in the following way:
+	# pytho train_and_test_cae.py config_argument
+	# if config_argument == True:  set use_config_file to True and load config file from the config path specified here as config_file_path
+	# if config_argument == False: use all the values as defined in this file
+	# if config_argument == (a relative file path) : set use_config_file to True and load from the relative file path
 
-	
-
-	# restore weights from the last iteration (if the same training setup was used before)
-	# restore_last_checkpoint = True
-	initialization_mode = 'resume' # resume - default - from_file
-
-	model_weights_dir = 'test'
-
-	# store model walkthrough (no CIFAR support yet)
-	visualize_model_walkthrough = False
+	DATASET = "MNIST"
 
 	# load architecture / training configurations from file
 	use_config_file 	= True
 	config_file_path 	= 'configs/cae_2l_sigmoid.ini'
 
-	DATASET = "MNIST"
+	# TODO: add to config file (begin) -----------------------------------------------
+	# important: these values need to be restored from file directly here, which means if a config file is specified, it needs to be loaded already here
+
+	# restore weights from the last iteration (if the same training setup was used before)
+	# restore_last_checkpoint = True
+	initialization_mode = 'resume' # resume - default - from_file
+	model_weights_dir = 'test'
+
+	# store model walkthrough (no CIFAR support yet)
+	visualize_model_walkthrough = False
 
 	log_folder_name = '07_CAE_MNIST_SIGMOID'
 	custom_run_name = None
 
+	# TODO: add to config file (end) -------------------------------------------------
+
 	## ########### ##
 	# INPUT HANDING #
 	## ########### ##
-
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -105,6 +108,10 @@ def main():
 		x = tf.placeholder(tf.float32, [None, input_size[0], input_size[1], input_size[2]], name='input_images')
 		x_image = x
 
+
+	# directory containing the autoencoder file
+	cae_dir 		= os.path.join('models', 'cae')
+	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 
 	## #### ##

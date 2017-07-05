@@ -32,24 +32,32 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '1k_MNIST'
-	custom_run_name = 'pre-trained'
+	log_folder_name = '1k_MNIST_CNN_evaluation'
+	custom_run_name = 'sigmoid_pre-trained' # 'sigmoid_pre-trained'
 	DATASET = "MNIST_SMALL"
 
-	initialization_mode = 'resume'
+	# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
+	# 													training   set, (CIFAR10)     }
+	# the test set should only be used for the final evaluation of a models performance
+	evaluate_using_test_set = False
+	evaluation_set_size 	= -1 			# set negative value for the whole set or restrain set size 
+	evaluation_batch_size 	= 512    		# batch size used for testing
+
 	use_config_file 	= False
 
+	initialization_mode = 'from_folder'
 	# initialization_mode:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
 	# 'from_folder'					: 	load last checkpoint from folder given in 
 	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
 	# 'default'						: 	init weights at random
-	
-	# paths
-	model_weights_directory = 'weights/55_CNN_CIFAR/a55_55-64_64-relutr128__0.5/best' 		# from_folder
-	pre_trained_conv_weights_directory = 'weights/67_CAE_MNIST/a55_55-64_64-relu_max_poolingtr128__True/best'# pre_trained_encoding
-	
-	config_file_path 	= 'configs/simple_cnn_config.ini'							# use_config_file
+	# ------------------------------
+	# from_folder:
+	model_weights_directory = 'weights/1k_MNIST_CNN/sigmoid/best' 		
+	# pre_trained_encoding
+	pre_trained_conv_weights_directory = 'weights/07_CAE_MNIST_SIGMOID/a55_55-32_32-sigmoid_max_poolingtr128__True/best'
+	# use_config_file
+	config_file_path 	= 'configs/simple_cnn_config.ini'	
 
 	if DATASET == "MNIST":
 		# load mnist
@@ -129,21 +137,21 @@ def main():
 		# ARCHITECTURE
 		# feature extraction parameters
 		filter_dims 	= [(5,5), (5,5)]
-		hidden_channels = [64, 64] 
+		hidden_channels = [32, 32] 
 		pooling_type  = 'strided_conv' # dont change, std::bac_alloc otherwise (TODO: understand why)
 		strides = None # other strides should not work yet
-		activation_function = 'relu'
+		activation_function = 'sigmoid'
 		# fc-layer parameters:
 		dense_depths = [384, 192]
 
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 10001
-		chk_iterations 	= 1000
+		max_iterations	= 2
+		chk_iterations 	= 1
 		dropout_k_p		= 0.5
 
-		step_size 		= 0.1
+		step_size 		= 0.
 		decay_steps		= 10000
 		decay_rate		= 0.1
 
@@ -201,11 +209,11 @@ def main():
 
 	# construct names for logging
 
-	architecture_str 	= 'a'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
-	training_str 		= 'tr' + str(batch_size) + '_' + '_' + str(dropout_k_p)
+	architecture_str 	= '(a)'  + '_'.join(map(lambda x: str(x[0]) + str(x[1]), filter_dims)) + '-' + '_'.join(map(str, hidden_channels)) + '-' + activation_function
+	training_str 		= '(tr)' + str(batch_size) + '_' + '_' + str(dropout_k_p)
 	
 	if custom_run_name is None:
-		run_name = architecture_str + training_str
+		run_name = architecture_str + '|' + training_str
 	else:
 		run_name = custom_run_name
 
@@ -272,7 +280,7 @@ def main():
 
 			saver.restore(sess, latest_checkpoint)
 
-			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path, best_accuracy_so_far)
+			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path, best_accuracy_so_far, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set)
 
 			initialization_finished = True
 
@@ -305,7 +313,7 @@ def main():
 
 	if not initialization_finished:
 		# always train a new autoencoder 
-		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path)
+		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set)
 
 
 	# TODO Sabbir: store the current config in a config file in the logs/log_folder_name/run_name folder 
