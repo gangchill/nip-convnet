@@ -238,7 +238,7 @@ class CAE:
 		if self._ce_error is None:
 			if self.output_reconstruction_activation == 'scaled_tanh':
 
-				ce_error = -tf.reduce_sum(self.data * tf.log(self.reconstruction), name='cross_entropy_on_scaled_tanh')
+				ce_error = -tf.reduce_sum(self.data * tf.log(tf.clip_by_value(self.reconstruction, 1e-10, 1.0)), name='cross_entropy_on_scaled_tanh')
 
 			else:
 
@@ -247,7 +247,7 @@ class CAE:
 			self._ce_error = ce_error
 
 			if self.add_tensorboard_summary:
-				self._summaries.append(tf.summary.scalar('cross entropy', tf.reduce_mean(self._ce_error)))
+				self._summaries.append(tf.summary.scalar('avg cross entropy', tf.reduce_mean(self._ce_error)))
 
 		return self._ce_error
 

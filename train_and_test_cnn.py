@@ -32,8 +32,8 @@ def main():
 	## #################### ##
 	# INITIALIZATION OPTIONS #
 	## #################### ##
-	log_folder_name = '1k_MNIST_CNN_evaluation'
-	custom_run_name = 'sigmoid_pre-trained' # 'sigmoid_pre-trained'
+	log_folder_name = '1k_MNIST_CNN'
+	custom_run_name = 'sigmoid_pre-trained_dof_smaller_lr' # 'sigmoid_pre-trained'
 	DATASET = "MNIST_SMALL"
 
 	# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
@@ -45,7 +45,7 @@ def main():
 
 	use_config_file 	= False
 
-	initialization_mode = 'from_folder'
+	initialization_mode = 'pre-trained'
 	# initialization_mode:
 	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
 	# 'from_folder'					: 	load last checkpoint from folder given in 
@@ -147,11 +147,11 @@ def main():
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 2
-		chk_iterations 	= 1
+		max_iterations	= 2001
+		chk_iterations 	= 100
 		dropout_k_p		= 0.5
 
-		step_size 		= 0.
+		step_size 		= 0.01
 		decay_steps		= 10000
 		decay_rate		= 0.1
 
