@@ -81,7 +81,11 @@ class CNN:
 
 		self._summaries = []
 
-		self.global_step = 0
+
+		self.global_step = tf.Variable(0, dtype=tf.int32, name='global_step', trainable=False)
+		self.increment_global_step_op = tf.assign(self.global_step, self.global_step+1)
+		self.global_step_setter_input 	= tf.placeholder(tf.int32, shape=[])
+		self.set_global_step_op 		= tf.assign(self.global_step, self.global_step_setter_input)
 
 		print('Initializing simple CNN')
 		with tf.name_scope(scope_name):
@@ -110,9 +114,11 @@ class CNN:
 		dense_w_d = list(zip(['dense_W_{}'.format(i) for i,j in enumerate(self.dense_weights)], self.dense_weights))
 		dense_b_d = list(zip(['dense_b_{}'.format(i) for i,j in enumerate(self.dense_biases )], self.dense_biases ))
 
+		# g_s_d = {'global_step': self.global_step}
 
 		self.encoding_variables_dict = dict(encoding_w_d + encoding_b_d)
 		self.all_variables_dict = dict(encoding_w_d + encoding_b_d + dense_w_d + dense_b_d)
+
 		# print(self.encoding_variables_dict)
 
 		print('...finished initialization')

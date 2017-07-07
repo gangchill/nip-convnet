@@ -100,8 +100,8 @@ def main():
 		## #################### ##
 		# INITIALIZATION OPTIONS #
 		## #################### ##
-		log_folder_name = '1k_MNIST_CNN_eval'
-		custom_run_name = 'sigmoid_pre-trained' # 'sigmoid_pre-trained'
+		log_folder_name = '001_lr_decay'
+		custom_run_name = 'test' # 'sigmoid_pre-trained'
 		DATASET = "MNIST_SMALL"
 
 		# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
@@ -111,7 +111,7 @@ def main():
 		evaluation_set_size 	= 1024 			# set negative value for the whole set or restrain set size 
 		evaluation_batch_size 	= 512    		# batch size used for testing
 
-		use_config_file 	= True
+		use_config_file 	= False
 
 		initialization_mode = 'resume'
 		# initialization_mode:
@@ -230,12 +230,12 @@ def main():
 		# TRAINING
 		# training parameters:
 		batch_size 		= 128
-		max_iterations	= 2001
-		chk_iterations 	= 100
+		max_iterations	= 31
+		chk_iterations 	= 1
 		dropout_k_p		= 0.5
 
-		step_size 		= 0.01
-		decay_steps		= 10000
+		step_size 		= 0.1
+		decay_steps		= 2
 		decay_rate		= 0.1
 
 		# only optimize dense layers and leave convolutions as they are

@@ -10,7 +10,8 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 
 	print("Training CNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
-	cnn.global_step = init_iteration
+	sess.run(cnn.set_global_step_op, feed_dict = {cnn.global_step_setter_input: init_iteration})
+	print('Set gobal step to {}'.format(init_iteration))
 
 	if data == 'cifar_10':
 
@@ -74,9 +75,9 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 			batch_xs, batch_ys = data.train.next_batch(batch_size)
 
 		if fine_tuning_only:
-			sess.run(cnn.optimize_dense_layers, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
+			sess.run([cnn.optimize_dense_layers, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
 		else:
-			sess.run(cnn.optimize, feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
+			sess.run([cnn.optimize, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
 
 
 		if i % chk_iterations == 0:
