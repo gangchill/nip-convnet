@@ -29,36 +29,119 @@ from tensorflow.python.framework import dtypes
 
 def main():
 
+	## ############## ##
+	# ARGUMENT PARSING # 
+	## ############## ##
+	arguments = sys.argv
+
+	if len(arguments) == 8:
+		print('-----------------------------------------------------------------------------')
+		print('{} started with {} arguments, they are interpreted as:'.format(arguments[0], len(arguments)))
+
+		# 1: Datset
+		DATASET = arguments[1]
+		print('Dataset         : {}'.format(DATASET))
+
+		# 2: config file path
+		use_config_file 	= True
+		config_file_path 	= arguments[2] 
+		print('Config path 	: {}'.format(config_file_path))
+
+		# 3: initialization options
+		initialization_mode = str(arguments[3])
+
+		# 3: path for pre-trained weights
+		init_weights_path = str(arguments[4])
+
+		if initialization_mode == 'pre_trained_encoding':
+			pre_trained_conv_weights_directory = init_weights_path
+			print('Init mode 	: pre-trained')
+		elif initialization_mode == 'from_folder':
+			model_weights_directory = init_weights_path
+			print('Init mode 	: from_folder')
+		elif initialization_mode == 'resume':
+			print('Init mode 	: resume')
+		else:
+			print('Init mode 	: random initialization (default)')
+
+		# 4: Log folder
+		log_folder_name = arguments[5]
+		print('Log folder  	: {}'.format(log_folder_name))
+
+		# 5: run name
+		custom_run_name = arguments[6]
+		if str(custom_run_name) == 'None':
+			custom_run_name = None
+			print('run name 	: default')
+		else:
+			print('run name 	: {}'.format(custom_run_name))
+
+		# 6: evaluate using test set
+		test_evaluation = arguments[7]
+		if str(test_evaluation) == 'true':
+			evaluate_using_test_set = True 
+			evaluation_set_size 	= -1		
+			evaluation_batch_size 	= 512 
+			print('(!ATTENTION!): evaluation using test set')
+		else:
+			evaluate_using_test_set = False
+			evaluation_set_size 	= 1024 			
+			evaluation_batch_size 	= 512    		
+			if DATASET == 'CIFAR10':
+				print('evaluation using the training set')
+			else:
+				print('evaluation using the eval set')
+
+		print('-----------------------------------------------------------------------------')
+
+	
+	elif len(arguments) == 1:
+		print('Using default settings from file')
+		## #################### ##
+		# INITIALIZATION OPTIONS #
+		## #################### ##
+		log_folder_name = '1k_MNIST_CNN_eval'
+		custom_run_name = 'sigmoid_pre-trained' # 'sigmoid_pre-trained'
+		DATASET = "MNIST_SMALL"
+
+		# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
+		# 													training   set, (CIFAR10)     }
+		# the test set should only be used for the final evaluation of a models performance
+		evaluate_using_test_set = False
+		evaluation_set_size 	= 1024 			# set negative value for the whole set or restrain set size 
+		evaluation_batch_size 	= 512    		# batch size used for testing
+
+		use_config_file 	= True
+
+		initialization_mode = 'resume'
+		# initialization_mode:
+		# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
+		# 'from_folder'					: 	load last checkpoint from folder given in 
+		# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
+		# 'default'						: 	init weights at random
+		# ------------------------------
+		# from_folder:
+		model_weights_directory = 'weights/1k_MNIST_CNN/sigmoid/best' 		
+		# pre_trained_encoding
+		pre_trained_conv_weights_directory = 'weights/07_CAE_MNIST_SIGMOID_debug/a55_55-64_64-sigmoid_max_poolingtr128__True'
+		# use_config_file
+		config_file_path 	= 'configs/simple_cnn_config.ini'	
+
+	else:
+		print('Wrong number of arguments!')
+		print('Usage: {} dataset config_file_path init_mode pre-trained_weights_path log_folder run_name test_set_bool'.format(arguments[0]))
+		print('dataset 					: (MNIST | MNIST_SMALL | CIFAR10 | CKPLUS)')
+		print('config_file_path 		: relative path to config file to use')
+		print('init_mode 				: (resume | from_folder | pre_trained_encoding | default')
+		print('pre-trained_weights_path : (None : resume training | relative path to pre-trained conv weights')
+		print('log_folder 				: log folder name (used in logs/ and weights/ subdirectories)')
+		print('run_name 				: (None : auto generated run name | custom run name')
+		print('test_set_bool 			: (true (Attention: str, bash-style lower case): use test set for validation | else: use training set to monitor progress')
+
+
 	## #################### ##
-	# INITIALIZATION OPTIONS #
+	# DATASET INITIALIZATION #
 	## #################### ##
-	log_folder_name = '1k_MNIST_CNN'
-	custom_run_name = 'sigmoid_pre-trained_dof_smaller_lr' # 'sigmoid_pre-trained'
-	DATASET = "MNIST_SMALL"
-
-	# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
-	# 													training   set, (CIFAR10)     }
-	# the test set should only be used for the final evaluation of a models performance
-	evaluate_using_test_set = False
-	evaluation_set_size 	= -1 			# set negative value for the whole set or restrain set size 
-	evaluation_batch_size 	= 512    		# batch size used for testing
-
-	use_config_file 	= False
-
-	initialization_mode = 'pre-trained'
-	# initialization_mode:
-	# 'resume'						: 	resume training from latest checkpoint in weights/log_folder_name/run_name if possible, otherwise default
-	# 'from_folder'					: 	load last checkpoint from folder given in 
-	# 'pre_trained_encoding'		:	load encoding weights from an auto-encoder
-	# 'default'						: 	init weights at random
-	# ------------------------------
-	# from_folder:
-	model_weights_directory = 'weights/1k_MNIST_CNN/sigmoid/best' 		
-	# pre_trained_encoding
-	pre_trained_conv_weights_directory = 'weights/07_CAE_MNIST_SIGMOID/a55_55-32_32-sigmoid_max_poolingtr128__True/best'
-	# use_config_file
-	config_file_path 	= 'configs/simple_cnn_config.ini'	
-
 	if DATASET == "MNIST":
 		# load mnist
 		from tensorflow.examples.tutorials.mnist import input_data
@@ -285,7 +368,11 @@ def main():
 			initialization_finished = True
 
 		else:
-			print('No checkpoint was found, beginning with iteration 0')
+			if initialization_mode == 'resume':
+				print('No checkpoint was found, beginning with iteration 0')
+			else:
+				print('No checkpoint found, check the given folder!')
+				sys.exit(1)
 
 
 	elif initialization_mode == 'pre_trained_encoding':
@@ -309,6 +396,10 @@ def main():
 				cnn.load_encoding_weights(sess, latest_checkpoint)
 
 				print('Initialized the CNN with encoding weights found in {}'.format(latest_checkpoint))
+
+		else:
+			print('no pre-trained weights file found ,check the given folder!')
+			sys.exit(1)
 
 
 	if not initialization_finished:

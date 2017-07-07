@@ -21,33 +21,85 @@ import configs.config as cfg
 
 def main():
 
-	# TODO: add the following parameters to the config file and add a command line argument parsing in the following way:
-	# pytho train_and_test_cae.py config_argument
-	# if config_argument == True:  set use_config_file to True and load config file from the config path specified here as config_file_path
-	# if config_argument == False: use all the values as defined in this file
-	# if config_argument == (a relative file path) : set use_config_file to True and load from the relative file path
+	## ############## ##
+	# ARGUMENT PARSING #
+	## ############## ##
 
-	DATASET = "MNIST"
+	arguments = sys.argv
 
-	# load architecture / training configurations from file
-	use_config_file 	= True
-	config_file_path 	= 'configs/cae_2l_sigmoid.ini'
+	if len(arguments) == 6:
+		print('-----------------------------------------------------------------------------')
+		print('{} started with {} arguments, they are interpreted as:'.format(arguments[0], len(arguments)))
 
-	# TODO: add to config file (begin) -----------------------------------------------
-	# important: these values need to be restored from file directly here, which means if a config file is specified, it needs to be loaded already here
+		# 1: Datset
+		DATASET = arguments[1]
+		print('Dataset         : {}'.format(DATASET))
 
-	# restore weights from the last iteration (if the same training setup was used before)
-	# restore_last_checkpoint = True
-	initialization_mode = 'resume' # resume - default - from_file
-	model_weights_dir = 'test'
+		# 2: config file path
+		use_config_file 	= True
+		config_file_path 	= arguments[2] 
+		print('Config path 	: {}'.format(config_file_path))
 
-	# store model walkthrough (no CIFAR support yet)
-	visualize_model_walkthrough = False
+		# 3: weight initialization
+		init_weigts_path = str(arguments[3])
+		if init_weigts_path == 'None':
+			initialization_mode = 'resume'
+			print('Init mode 	: resume')
+		else:
+			initialization_mode = 'from_file'
+			model_weights_dir = init_weigts_path
+			print('Init mode 	: from_file')
 
-	log_folder_name = '07_CAE_MNIST_SIGMOID'
-	custom_run_name = None
+		# 4: Log folder
+		log_folder_name = arguments[4]
+		print('Log folder  	: {}'.format(log_folder_name))
 
-	# TODO: add to config file (end) -------------------------------------------------
+		# 5: run name
+		custom_run_name = arguments[5]
+		if str(custom_run_name) == 'None':
+			custom_run_name = None
+			print('run name 	: default')
+		else:
+			print('run name 	: {}'.format(custom_run_name))
+
+		print('-----------------------------------------------------------------------------')
+
+		visualize_model_walkthrough = False
+
+	
+	elif len(arguments) == 1:
+		print('Using default settings from file')
+
+		DATASET = "MNIST"
+
+		# load architecture / training configurations from file
+		use_config_file 	= False
+		config_file_path 	= 'configs/cae_2l_sigmoid.ini'
+
+		# important: these values need to be restored from file directly here, which means if a config file is specified, it needs to be loaded already here
+
+		# restore weights from the last iteration (if the same training setup was used before)
+		# restore_last_checkpoint = True
+		initialization_mode = 'resume' # resume - default - from_file
+		model_weights_dir = 'test'
+
+		# store model walkthrough (no CIFAR support yet)
+		visualize_model_walkthrough = False
+
+		log_folder_name = '07_CAE_MNIST_SIGMOID_debug'
+		custom_run_name = None
+
+	else:
+		print('Wrong number of arguments!')
+		print('Usage: {} dataset config_file_path pre-trained_weights_path log_folder run_name test_set_bool'.format(arguments[0]))
+		print('dataset 					: (MNIST | MNIST_SMALL | CIFAR10 | CKPLUS)')
+		print('config_file_path 		: relative path to config file to use')
+		print('init_weights_path 	 	: (None : resume training | path to old checkpoint to init from')
+		print('log_folder 				: log folder name (used in logs/ and weights/ subdirectories)')
+		print('run_name 				: (None : auto generated run name | custom run name')
+		print('-----------------------------------------------------------------------------')
+
+		sys.exit(1)
 
 	## ########### ##
 	# INPUT HANDING #
@@ -130,22 +182,22 @@ def main():
 		hidden_channels = [64, 64]
 		pooling_type 	= 'max_pooling'
 		strides = None # other strides should not work yet
-		activation_function = 'relu'
+		activation_function = 'sigmoid'
 		relu_leak = 0.2 # only for leaky relus
 
 		error_function 	= 'mse' 					# default is cross-entropy
 		optimizer_type 	= 'gradient_descent' 		# default is gradient descent
 
-		output_reconstruction_activation = 'scaled_tanh'
+		output_reconstruction_activation = 'sigmoid'
 
 		weight_init_mean 	= 0.001
 		weight_init_stddev 	= 0.05
 		initial_bias_value  = 0.001
 
 		batch_size 		= 128
-		max_iterations 	= 10001
-		chk_iterations  = 100
-		step_size 		= 0.001
+		max_iterations 	= 100001
+		chk_iterations  = 500
+		step_size 		= 0.1
 
 		tie_conv_weights = True
 
