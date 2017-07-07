@@ -27,7 +27,9 @@ def main():
 
 	arguments = sys.argv
 
-	if len(arguments) == 6:
+	
+
+	if len(arguments) == 7:
 		print('-----------------------------------------------------------------------------')
 		print('{} started with {} arguments, they are interpreted as:'.format(arguments[0], len(arguments)))
 
@@ -62,6 +64,9 @@ def main():
 		else:
 			print('run name 	: {}'.format(custom_run_name))
 
+		# 6: regularization factor
+		regularization_factor = float(arguments[6])
+
 		print('-----------------------------------------------------------------------------')
 
 		visualize_model_walkthrough = False
@@ -89,14 +94,17 @@ def main():
 		log_folder_name = '07_CAE_MNIST_SIGMOID_debug'
 		custom_run_name = None
 
+		regularization_factor = 0.001
+
 	else:
 		print('Wrong number of arguments!')
-		print('Usage: {} dataset config_file_path pre-trained_weights_path log_folder run_name test_set_bool'.format(arguments[0]))
+		print('Usage: {} dataset config_file_path pre-trained_weights_path log_folder run_name regularization_factor'.format(arguments[0]))
 		print('dataset 					: (MNIST | MNIST_SMALL | CIFAR10 | CKPLUS)')
 		print('config_file_path 		: relative path to config file to use')
 		print('init_weights_path 	 	: (None : resume training | path to old checkpoint to init from')
 		print('log_folder 				: log folder name (used in logs/ and weights/ subdirectories)')
 		print('run_name 				: (None : auto generated run name | custom run name')
+		print('regularization_factor	: (<= 0: do nothing | > 0: factor for L1 regularization of the hidden representation') 
 		print('-----------------------------------------------------------------------------')
 
 		sys.exit(1)
@@ -297,7 +305,7 @@ def main():
 
 
 	# construct autoencoder (5x5 filters, 3 feature maps)
-	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = visualize_model_walkthrough, relu_leak = relu_leak, optimizer_type = optimizer_type, output_reconstruction_activation=output_reconstruction_activation)
+	autoencoder = CAE(x_image, filter_dims, hidden_channels, step_size, weight_init_stddev, weight_init_mean, initial_bias_value, strides, pooling_type, activation_function, tie_conv_weights, store_model_walkthrough = visualize_model_walkthrough, relu_leak = relu_leak, optimizer_type = optimizer_type, output_reconstruction_activation=output_reconstruction_activation, regularization_factor=regularization_factor)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())

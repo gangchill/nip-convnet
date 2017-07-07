@@ -6,7 +6,7 @@ from lib.activations import l_relu
 class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent', output_reconstruction_activation = 'sigmoid'):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent', output_reconstruction_activation = 'sigmoid', regularization_factor = 0):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -27,8 +27,6 @@ class CAE:
 		
 		self.strided_conv_strides 	= [1,2,2,1]
 		self.std_strides 			= [1,1,1,1] 
-
-		print 'JENE STRIDES:', strides
 
 		if str(strides) == 'None':
 			if pooling_type == 'strided_conv':
@@ -61,6 +59,14 @@ class CAE:
 
 		self.step_size 				= step_size
 		self.optimizer_type = optimizer_type
+
+		# sparsity regularization (L1 norm):
+		if regularization_factor < 0:
+			regularization_factor = 0
+		self.regularization_factor = regularization_factor
+		self.regularization_terms = []
+		if regularization_factor > 0:
+			print('regularization factor is {}'.format(regularization_factor))
 
 
 		# init list to store the shapes in the forward pass for the conv2d_transpose operations
@@ -134,7 +140,9 @@ class CAE:
 
 			tmp_tensor = self.data
 
-			for layer in range(len(self.filter_dims)):
+			depth =  len(self.filter_dims)
+
+			for layer in range(depth):
 
 				# CONVOLUTION
 				if layer == 0:
@@ -213,6 +221,11 @@ class CAE:
 
 			self._encoding = tmp_tensor
 
+			# append L1 norm of hidden representation to enforce sparsity in the hidden representation
+			encoding_norm = tf.norm(self._encoding, ord=1, name='L1_encoding_norm')
+			self.regularization_terms.append(encoding_norm)
+			self._summaries.append(tf.summary.scalar('encoding L1 norm', encoding_norm))
+
 			if self.add_tensorboard_summary:
 				self._summaries.append(tf.summary.histogram('encoding histogram', self._encoding))
 
@@ -225,10 +238,17 @@ class CAE:
 		if self._error is None:
 			print('initialize error')
 
-			self._error = tf.reduce_mean(tf.squared_difference(self.reconstruction, self.data), name='mean-squared_error')
+			mse = tf.reduce_mean(tf.squared_difference(self.reconstruction, self.data), name='mean-squared_error')
+
+			self._error = mse 
+
+			# add regularization to the total error
+			for reg_term in self.regularization_terms:
+				self._error += self.regularization_factor * reg_term
 
 			if self.add_tensorboard_summary:
-				self._summaries.append(tf.summary.scalar('mean squared error', self._error))
+				self._summaries.append(tf.summary.scalar('total_error_with_regularization', self._error))
+				self._summaries.append(tf.summary.scalar('mean squared error', mse))
 
 		return self._error
 
