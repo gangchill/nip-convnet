@@ -1,14 +1,31 @@
-#!/bin/bash          
+#!/bin/bash
 echo '## ########## ##'
 echo '# CAE TRAINING #'    
 echo '## ########## ##'
 
+# an example for several working MNIST CAE trainings
+LOG_FOLDER="CAE_MNIST_demo"
+
+# TANH CAE without regularization
 DATASET="MNIST"
-CONFIG_FILE_PATH="configs/CAE/cae_2l_sigmoid.ini"
+CONFIG_FILE_PATH="configs/CAE/cae_2l_tanh.ini"
 PT_WEIGHTS_PATH="None"
-LOG_FOLDER="14_CAE_regularization"
-REGULARIZATION_FACTOR="0.000001"
+REGULARIZATION_FACTOR="0."
+RUN_NAME="scaled_tanh_0.5-$REGULARIZATION_FACTOR"
+python train_and_test_cae.py $DATASET $CONFIG_FILE_PATH $PT_WEIGHTS_PATH $LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $REGULARIZATION_FACTOR
 
-RUN_NAME="sigmoid_bigger_lr$REGULARIZATION_FACTOR"
+# TANH CAE with small regularization
+DATASET="MNIST"
+CONFIG_FILE_PATH="configs/CAE/cae_2l_tanh.ini"
+PT_WEIGHTS_PATH="None"
+REGULARIZATION_FACTOR="0.00000001"
+RUN_NAME="scaled_tanh_0.5-$REGULARIZATION_FACTOR"
+python train_and_test_cae.py $DATASET $CONFIG_FILE_PATH $PT_WEIGHTS_PATH $LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $REGULARIZATION_FACTOR
 
+# TANH CAE with higher regularization value
+DATASET="MNIST"
+CONFIG_FILE_PATH="configs/CAE/cae_2l_tanh.ini"
+PT_WEIGHTS_PATH="None"
+REGULARIZATION_FACTOR="0.0000001"
+RUN_NAME="scaled_tanh_0.5-$REGULARIZATION_FACTOR"
 python train_and_test_cae.py $DATASET $CONFIG_FILE_PATH $PT_WEIGHTS_PATH $LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $REGULARIZATION_FACTOR
