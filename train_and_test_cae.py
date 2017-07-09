@@ -14,6 +14,7 @@ from functools import reduce
 from models.cae.convolutional_autoencoder import CAE
 from scripts.train_cae import train_ae
 import configs.config as cfg
+from scripts.from_github.cifar10 	import maybe_download_and_extract
 
 ########
 # MAIN #
@@ -169,6 +170,8 @@ def main():
 		input_size 		= (24, 24, 3)
 		num_classes 	= 1
 		nhwd_shape 		= True
+
+		maybe_download_and_extract()
 
 	else:
 		print('ERROR: Dataset not available')
