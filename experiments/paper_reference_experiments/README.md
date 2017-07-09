@@ -1,0 +1,1 @@
+The experiments in this folder are intend to recreate the results of 'Masci, J., Meier, U., Cireşan, D. and Schmidhuber, J., 2011. Stacked convolutional auto-encoders for hierarchical feature extraction. Artificial Neural Networks and Machine Learning–ICANN 2011, pp.52-59.' (available at https://pdfs.semanticscholar.org/1c6d/990c80e60aa0b0059415444cdf94b3574f0f.pdf) 
