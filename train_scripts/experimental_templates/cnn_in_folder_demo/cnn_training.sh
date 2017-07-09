@@ -1,7 +1,7 @@
 #!/bin/bash          
-echo '## ################################### ##'
-echo '# DENSE LAYER OPTIMIZATION SANITY CHECK #'
-echo '## ################################### ##'
+echo '## ############################# ##'
+echo '# In-Folder CNN Training Template #'
+echo '## ############################# ##'
 
 # current folder:
 PARENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
