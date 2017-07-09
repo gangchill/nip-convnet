@@ -34,7 +34,7 @@ def main():
 	## ############## ##
 	arguments = sys.argv
 
-	if len(arguments) == 8:
+	if 8 <= len(arguments) <= 9:
 		print('-----------------------------------------------------------------------------')
 		print('{} started with {} arguments, they are interpreted as:'.format(arguments[0], len(arguments)))
 
@@ -50,7 +50,7 @@ def main():
 		# 3: initialization options
 		initialization_mode = str(arguments[3])
 
-		# 3: path for pre-trained weights
+		# 4: path for pre-trained weights
 		init_weights_path = str(arguments[4])
 
 		if initialization_mode == 'pre_trained_encoding':
@@ -64,11 +64,11 @@ def main():
 		else:
 			print('Init mode 	: random initialization (default)')
 
-		# 4: Log folder
+		# 5: Log folder
 		log_folder_name = arguments[5]
 		print('Log folder  	: {}'.format(log_folder_name))
 
-		# 5: run name
+		# 6: run name
 		custom_run_name = arguments[6]
 		if str(custom_run_name) == 'None':
 			custom_run_name = None
@@ -76,7 +76,7 @@ def main():
 		else:
 			print('run name 	: {}'.format(custom_run_name))
 
-		# 6: evaluate using test set
+		# 7: evaluate using test set
 		test_evaluation = arguments[7]
 		if str(test_evaluation) == 'true':
 			evaluate_using_test_set = True 
@@ -92,6 +92,22 @@ def main():
 			else:
 				print('evaluation using the eval set')
 
+		# 8: weights and log folder prefix (optional, default is the nip-convnet root)
+		if len(arguments) == 9:
+			root_dir_path = arguments[8]
+
+			if str(root_dir_path) == 'None':
+				root_dir_path = None
+			else:
+				if not os.path.exists(root_dir_path):
+					print('Given root directory {} is not valid, please enter an existing folder.'.format(root_dir_path))
+					root_dir_path = None
+
+				else:
+					print('Custom root directory {} given, logs and weights will be saved in there.'.format(root_dir_path))
+		else:
+			root_dir_path = None
+
 		print('-----------------------------------------------------------------------------')
 
 	
@@ -103,6 +119,8 @@ def main():
 		log_folder_name = '001_lr_decay'
 		custom_run_name = 'test' # 'sigmoid_pre-trained'
 		DATASET = "MNIST_SMALL"
+
+		root_dir_path = None
 
 		# choose whether to use the real test set or the { 	validation set, (MNIST | CK+)
 		# 													training   set, (CIFAR10)     }
@@ -310,10 +328,21 @@ def main():
 	else:
 		run_name = custom_run_name
 
-	log_path = os.path.join('logs', log_folder_name, run_name)
+
+
+	# LOG AND WEIGHTS FOLDER:
+
+	if root_dir_path is not None:
+		log_folder_parent_dir = os.path.join(root_dir_path, 'logs')
+	else:
+		log_folder_parent_dir = 'logs' 
+	log_path = os.path.join(log_folder_parent_dir, log_folder_name, run_name)
 
 	# folder to store the training weights in:
-	model_save_parent_dir = 'weights'
+	if root_dir_path is not None:
+		model_save_parent_dir = os.path.join(root_dir_path, 'weights')
+	else:
+		model_save_parent_dir = 'weights'
 	save_path = os.path.join(model_save_parent_dir, log_folder_name, run_name)
 	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name), os.path.join(model_save_parent_dir, log_folder_name, run_name, 'best')]
 	
@@ -328,7 +357,7 @@ def main():
 
 	init_iteration = 0
 
-	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size, decay_steps = decay_steps, decay_rate = decay_rate)
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size, decay_steps = decay_steps, decay_rate = decay_rate, weight_init_stddev = weight_init_stddev, weight_init_mean = weight_init_mean, initial_bias_value = initial_bias_value)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())

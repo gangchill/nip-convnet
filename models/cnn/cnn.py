@@ -71,7 +71,7 @@ class CNN:
 
 		self.weight_init_stddev 	= weight_init_stddev # 0.2 		
 		self.weight_init_mean 		= weight_init_mean   # 0.   	
-		self.initial_bias_value 	= initial_bial_value # 0. 
+		self.initial_bias_value 	= initial_bias_value # 0. 
 		self.step_size 				= step_size			 # 0.0001
 
 		self.decay_steps = decay_steps
