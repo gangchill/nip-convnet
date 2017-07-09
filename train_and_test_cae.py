@@ -363,9 +363,9 @@ def main():
 		cwd = os.getcwd()
 
 		if initialization_mode == 'resume':
-			chkpnt_file_path = os.path.join(cwd, save_path)
+			chkpnt_file_path = save_path
 		else: 
-			chkpnt_file_path = os.path.join(cwd, model_weights_dir)
+			chkpnt_file_path = model_weights_dir
 
 		saver = tf.train.Saver(autoencoder.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
