@@ -27,9 +27,8 @@ def main():
 
 	arguments = sys.argv
 
-	
 
-	if len(arguments) == 7:
+	if 7 <= len(arguments) <= 8:
 		print('-----------------------------------------------------------------------------')
 		print('{} started with {} arguments, they are interpreted as:'.format(arguments[0], len(arguments)))
 
@@ -71,6 +70,22 @@ def main():
 
 		visualize_model_walkthrough = False
 
+		# 7: weights and log folder prefix (default is the nip-convnet root)
+		if len(arguments) == 8:
+			root_dir_path = arguments[7]
+
+			if str(root_dir_path) == 'None':
+				root_dir_path = None
+			else:
+				if not os.path.exists(root_dir_path):
+					print('Given root directory {} is not valid, please enter an existing folder.'.format(root_dir_path))
+					root_dir_path = None
+
+				else:
+					print('Custom root directory {} given, logs and weights will be saved in there.'.format(root_dir_path))
+		else:
+			root_dir_path = None
+
 	
 	elif len(arguments) == 1:
 		print('Using default settings from file')
@@ -95,6 +110,8 @@ def main():
 		custom_run_name = None
 
 		regularization_factor = 0.001
+
+		root_dir_path = None
 
 	else:
 		print('Wrong number of arguments!')
@@ -171,7 +188,6 @@ def main():
 
 	# directory containing the autoencoder file
 	cae_dir 		= os.path.join('models', 'cae')
-	cae_weights_dir	= os.path.join(cae_dir, 'weights')
 
 
 	## #### ##
@@ -287,12 +303,34 @@ def main():
 	else:
 		run_name = custom_run_name
 
-	log_path = os.path.join('logs', log_folder_name, run_name)
+	if root_dir_path is not None:
+		log_folder_parent_dir = os.path.join(root_dir_path, 'logs')
+	else:
+		log_folder_parent_dir = 'logs' 
+
+	log_path = os.path.join(log_folder_parent_dir, log_folder_name, run_name)
 
 	# folder to store the training weights in:
-	model_save_parent_dir = 'weights'
+	if root_dir_path is not None:
+		model_save_parent_dir = os.path.join(root_dir_path, 'weights')
+	else:
+		model_save_parent_dir = 'weights'
+
+
+	# CHECK FOLDER STRUCTURE
 	save_path = os.path.join(model_save_parent_dir, log_folder_name, run_name)
-	check_dirs = [model_save_parent_dir, os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name), os.path.join(model_save_parent_dir, log_folder_name, run_name), os.path.join(model_save_parent_dir, log_folder_name, run_name, 'best')]
+	check_dirs = [	\
+					# weights directories
+					model_save_parent_dir, \
+					os.path.join(model_save_parent_dir, log_folder_name), \
+					os.path.join(model_save_parent_dir, log_folder_name), \
+					os.path.join(model_save_parent_dir, log_folder_name, run_name), \
+					os.path.join(model_save_parent_dir, log_folder_name, run_name, 'best'), \
+					# log directories
+					log_folder_parent_dir, \
+					os.path.join(log_folder_parent_dir, log_folder_name), \
+					log_path \
+					]
 	
 	for directory in check_dirs:
 		if not os.path.exists(directory):
@@ -312,7 +350,7 @@ def main():
 
 	print("Begin autencoder training")
 	
-	writer = tf.summary.FileWriter("logs/{}/{}".format(log_folder_name, run_name), sess.graph)
+	writer = tf.summary.FileWriter(log_path, sess.graph)
 
 	# store config file in the folder
 	config_loader.store_config_file(os.path.join(log_path, 'config.ini'), 'CAE')
@@ -348,16 +386,16 @@ def main():
 
 			saver.restore(sess, latest_checkpoint)
 
-			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size, init_iteration, max_iterations, chk_iterations, save_prefix = save_path, minimal_reconstruction_error = smallest_reconstruction_error)
+			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, weight_file_name, error_function, batch_size, init_iteration, max_iterations, chk_iterations, save_prefix = save_path, minimal_reconstruction_error = smallest_reconstruction_error)
 
 		else:
 			print('No checkpoint was found, beginning with iteration 0')
-			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size,init_iteration,  max_iterations, chk_iterations, save_prefix = save_path)
+			train_ae(sess, writer, x, autoencoder, dataset, cae_dir, weight_file_name, error_function, batch_size,init_iteration,  max_iterations, chk_iterations, save_prefix = save_path)
 
 
 	else:
 		# always train a new autoencoder 
-		train_ae(sess, writer, x, autoencoder, dataset, cae_dir, cae_weights_dir, weight_file_name, error_function, batch_size,init_iteration,  max_iterations, chk_iterations, save_prefix = save_path)
+		train_ae(sess, writer, x, autoencoder, dataset, cae_dir, weight_file_name, error_function, batch_size,init_iteration,  max_iterations, chk_iterations, save_prefix = save_path)
 
 	# print('Test the training:')
 

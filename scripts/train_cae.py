@@ -6,16 +6,7 @@ import scripts.from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
-def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, cae_weights_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxsize):
-
-	print('...checking folder structure')
-	folders = ['models', cae_dir, cae_weights_dir, os.path.join(cae_weights_dir)]
-	cwd = os.getcwd()
-	for folder in folders:
-		dir_path = os.path.join(cwd, folder)
-		if not os.path.exists(dir_path):
-			os.makedirs(dir_path)
-
+def train_ae(sess, writer,  input_placeholder, autoencoder, data, cae_dir, weight_file_name, error_function = 'cross_entropy', batch_size=100, init_iteration = 0, max_iterations=1000, chk_iterations=500, save_prefix = None, minimal_reconstruction_error = sys.maxsize):
 
 	if data == 'cifar_10':
 
