@@ -13,13 +13,13 @@ TRAINING_ROOT_DIR=$PARENT_DIR
 # This is supposed to be a template/demo, make a copy of it if you want to change anything
 
 # LOG FOLDER, logs are stored in logs/$LOG_FOLDER, weights in weights/$LOG_FOLDER
-LOG_FOLDER="CAE_MNIST_demo"
+LOG_FOLDER="CAE_MNIST_template_demo"
 
 # General settings, all additional settings can be adjusted in the config file
 DATASET="MNIST"									# currently available datasets: "MNIST", "MNIST_SMALL", "CIFAR10", "CKPLUS"
-CONFIG_FILE_PATH="configs/CAE/cae_2l_tanh.ini"	# config file, some examples are stored in nip-convnet/configs
+CONFIG_FILE_PATH="$PARENT_DIR/cae_2l_tanh.ini"	# config file, some examples are stored in nip-convnet/configs
 WEIGHTS_PATH="None"								# replace "None" with a path to a tensorflow checkpoint to initialize the weights with this checkpoint
 REGULARIZATION_FACTOR="0."						# L1 regularization factor on the encoding representation
 
-RUN_NAME="your_run_name" # change to custom run name if desired, "None" uses the generated run name defined in train_and_test_cae.py
+RUN_NAME="short_demo" # change to custom run name if desired, "None" uses the generated run name defined in train_and_test_cae.py
 python train_and_test_cae.py $DATASET $CONFIG_FILE_PATH $WEIGHTS_PATH $LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $REGULARIZATION_FACTOR $TRAINING_ROOT_DIR
