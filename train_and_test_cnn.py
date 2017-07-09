@@ -238,6 +238,10 @@ def main():
 		decay_steps		= 2
 		decay_rate		= 0.1
 
+		weight_init_stddev 	= 0.2
+		weight_init_mean 	= 0.
+		initial_bias_value 	= 0.
+
 		# only optimize dense layers and leave convolutions as they are
 		fine_tuning_only = False
 
@@ -257,6 +261,9 @@ def main():
 		config_dict['step_size'] 			= step_size
 		config_dict['decay_steps']			= decay_steps
 		config_dict['decay_rate']			= decay_rate
+		config_dict['weight_init_stddev'] 	= weight_init_stddev
+		config_dict['weight_init_mean']		= weight_init_mean
+		config_dict['initial_bias_value']	= initial_bias_value
 
 		config_loader.configuration_dict = config_dict
 
@@ -285,6 +292,9 @@ def main():
 		step_size				= float(config_dict['step_size'])
 		decay_steps				= int(config_dict['decay_steps'])
 		decay_rate				= float(config_dict['decay_rate'])
+		weight_init_stddev 		= float(config_dict['weight_init_stddev'])
+		weight_init_mean 		= float(config_dict['weight_init_mean'])
+		initial_bias_value 		= float(config_dict['initial_bias_value'])
 
 		print('Config succesfully loaded')
 

@@ -5,7 +5,7 @@ import collections
 class CNN: 
 	# convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1, decay_steps = 10000, decay_rate = 0.1):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1, decay_steps = 10000, decay_rate = 0.1, weight_init_stddev = 0.2, weight_init_mean = 0, initial_bias_value = 0):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -69,10 +69,10 @@ class CNN:
 		self._optimize_dense_layers = None
 		self._accuracy		= None
 
-		self.weight_init_stddev 	= 0.2 		# 0.000015
-		self.weight_init_mean 		= 0.   		# 0.0001
-		self.initial_bias_value 	= 0. 		# 0.0001
-		self.step_size 				= step_size	# 0.0001
+		self.weight_init_stddev 	= weight_init_stddev # 0.2 		
+		self.weight_init_mean 		= weight_init_mean   # 0.   	
+		self.initial_bias_value 	= initial_bial_value # 0. 
+		self.step_size 				= step_size			 # 0.0001
 
 		self.decay_steps = decay_steps
 		self.decay_rate = decay_rate
