@@ -16,7 +16,6 @@ class ConfigLoader:
 	def __init__(self):
 		self.configuration_dict = OrderedDict()
 
-
 	def load_config_file(self, path=sys_path+'/configs/simple_cae_config.ini', config_version='CAE'):
 		config = ConfigObj(path)
 		local_dict = OrderedDict()
@@ -58,6 +57,31 @@ class ConfigLoader:
 			local_dict['step_size'] =  config[config_version]['step_size'],
 			local_dict['decay_steps'] =  config[config_version]['decay_steps'],
 			local_dict['decay_rate'] =  config[config_version]['decay_rate'],
+
+		# LOAD CNN ARCHITECTURE
+		elif config_version.upper()=='CNN_ARC':
+			valid_config = 1
+
+			local_dict['filter_dims'] 			=  list(zip(map(lambda x:int(x),config[config_version]['filter_dims_x']), map(lambda x:int(x),config[config_version]['filter_dims_y']))),
+			local_dict['hidden_channels'] 		=  list(map(int, config[config_version]['hidden_channels'])),
+			local_dict['pooling_type'] 			=  config[config_version]['pooling_type'],
+			local_dict['activation_function'] 	=  config[config_version]['activation_function'],
+			local_dict['dense_depths'] 			=  list(map(int, config[config_version]['dense_depths'])),
+
+		# LOAD CNN TRAINING
+		elif config_version.upper() == 'CNN_TR':
+			valid_config = 1
+
+			local_dict['batch_size'] 		=  config[config_version]['batch_size'],
+			local_dict['max_iterations'] 	=  config[config_version]['max_iterations'],
+			local_dict['chk_iterations'] 	=  config[config_version]['chk_iterations'],
+			local_dict['dropout_k_p'] 		=  config[config_version]['dropout_k_p'],
+			local_dict['fine_tuning_only'] 	=  config[config_version]['fine_tuning_only'],
+			local_dict['step_size'] 		=  config[config_version]['step_size'],
+			local_dict['decay_steps'] 		=  config[config_version]['decay_steps'],
+			local_dict['decay_rate'] 		=  config[config_version]['decay_rate'],
+			local_dict['test_set_bool'] 	=  config[config_version]['test_set_bool'],
+
 		else:
 			print("Unknown config version (loading)")
 
@@ -121,6 +145,45 @@ class ConfigLoader:
 				print(config)
 			else:
 				print('# of configurations need to be 14!')
+
+		# STORE CNN ARCHITECTURE
+		elif config_version.upper() == 'CNN_ARC':
+
+			if self.configuration_dict: # TODO: split into two dictionaries and do a lenght check? # and len(self.configuration_dict)==5:
+				config[config_version]['filter_dims_x'] = [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['filter_dims_y'] = [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
+				config[config_version]['hidden_channels'] = self.configuration_dict.get('hidden_channels')
+				config[config_version]['pooling_type'] = self.configuration_dict.get('pooling_type')
+				config[config_version]['activation_function'] = self.configuration_dict.get('activation_function')
+				config[config_version]['dense_depths'] = self.configuration_dict.get('dense_depths')
+
+				config.write()
+				print('Wrote CNN architecture into config file')
+				print(config)
+			else:
+				print('Error: configuration dict empty! (occured while storing cnn architecture')
+
+		# STORE CNN TRAINING 
+		elif config_version.upper() == 'CNN_TR':
+
+			if self.configuration_dict: # TODO: split into two dicts?? Same as above
+				config[config_version]['batch_size'] 		= self.configuration_dict.get('batch_size')
+				config[config_version]['max_iterations'] 	= self.configuration_dict.get('max_iterations')
+				config[config_version]['chk_iterations'] 	= self.configuration_dict.get('chk_iterations')
+				config[config_version]['dropout_k_p'] 		= self.configuration_dict.get('dropout_k_p')
+				config[config_version]['fine_tuning_only'] 	= self.configuration_dict.get('fine_tuning_only')
+				config[config_version]['step_size'] 		= self.configuration_dict.get('step_size')
+				config[config_version]['decay_steps'] 		= self.configuration_dict.get('decay_steps')
+				config[config_version]['decay_rate'] 		= self.configuration_dict.get('decay_rate')
+				config[config_version]['test_set_bool']		= self.configuration_dict.get('test_set_bool')
+			
+				config.write()
+				print('Wrote CNN training parameters into config file')
+				print(config)
+			else:
+				print('Error: configuration dict empty! (occured while storing cnn training parameters)')
+
+
 		else:
 			print("Unknown config version (storing)")
 
