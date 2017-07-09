@@ -6,21 +6,39 @@ from lib.activations import l_relu
 class CAE:
 	# convolutional autoencoder 
 
-	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent', output_reconstruction_activation = 'sigmoid', regularization_factor = 0):
+	def __init__(self, data, filter_dims, hidden_channels, step_size = 0.0001, weight_init_stddev = 0.0001, weight_init_mean = 0.0001, initial_bias_value = 0.0001, strides = None, pooling_type = 'strided_conv', activation_function = 'sigmoid', tie_conv_weights = True, store_model_walkthrough = False, add_tensorboard_summary = True, relu_leak = 0.2, optimizer_type = 'gradient_descent', output_reconstruction_activation = 'sigmoid', regularization_factor = 0, intialization_debug_output = True):
 
-		# TODO:
-		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
-		
-		# 	- add possibility to store all intermediate values in a self.tensor_walkthrough list
-		
-		# 	- add the possibility of variable strides (currently only strides = [1,1,1,1] for all dimensions should work if use_max_pooling = True)
-		# 	  (the upsampling_strides need to be adapted for the upsampling)
-		# 	- verify the bias treatment (currently: the same bias for every pixel in a given feature map)
+		if intialization_debug_output:
+			print('-----------------------------------------')
+			print('Initializing CAE:')
+			print('->Architecture:')
+			print('Filter sizes    		: {}'.format(' '.join(map(lambda x: '({},{})'.format(x[0], x[1]), filter_dims))))
+			print('Hidden channels 		: {}'.format(', '.join(map(str, hidden_channels))))
+			print('Pooling         		: {}'.format(pooling_type))
+			print('Weight tying 		: {}'.format(tie_conv_weights))
+
+			if activation_function != output_reconstruction_activation:
+				if activation_function == 'lrelu':
+					print('Hidden activation: lrelu (leak {})'.format(relu_leak))
+				else:
+					print('Hidden activations	: {}'.format(activation_function))
+				print('Output activation    : {}'.format(output_reconstruction_activation))
+			else:
+				print('Activation function  : {}'.format(activation_function))
+
+
+			print('->Training:')
+			print('Weight init parameters: W~N({},{}), b = {}'.format(weight_init_mean, weight_init_stddev, initial_bias_value))
+			print('Step size       : {}'.format(str(step_size)))
+			print('Optimizer type  : {}'.format(optimizer_type))
+
+			if regularization_factor > 0:
+				print('Encoding regularization (L1) factor: {}'.format(regularization_factor))
+
+			print('-----------------------------------------')
+
 
 		self.data = data # we assume data in NHWC format 
-
-		# filter_dims, out_channels and strides (if specified) are lists containing the specifications for each of the consecutive layers
-		# the choice of mac pooling and activation function is used for the whole network (the last activation function is always a sigmoid)
 
 		self.filter_dims 		= filter_dims 		# height and width of the conv kernels 	for each layer
 		self.hidden_channels 	= hidden_channels	# number of feature maps 				for each layer
@@ -65,9 +83,6 @@ class CAE:
 			regularization_factor = 0
 		self.regularization_factor = regularization_factor
 		self.regularization_terms = []
-		if regularization_factor > 0:
-			print('regularization factor is {}'.format(regularization_factor))
-
 
 		# init list to store the shapes in the forward pass for the conv2d_transpose operations
 		self.pre_conv_shapes = []
