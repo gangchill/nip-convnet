@@ -1,3 +1,6 @@
 # ignore all training output
 logs/
 weights/
+
+# ignore vim swap file
+*.swp
