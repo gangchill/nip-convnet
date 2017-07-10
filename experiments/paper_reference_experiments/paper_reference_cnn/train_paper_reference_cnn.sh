@@ -9,11 +9,13 @@ TRAINING_ROOT_DIR=$PARENT_DIR
 
 echo "Working in $PARENT_DIR"
 
-
 DATASET="MNIST_SMALL"
 CNN_LOG_FOLDER="1k_MNIST_paper_reference_model"
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
+
+# if set to true, a test run using the test set is performed after the training
 TEST_SET_BOOL=false
+
 
 echo "Begin training the reference network"
 
