@@ -76,21 +76,18 @@ def main():
 		else:
 			print('run name 	: {}'.format(custom_run_name))
 
-		# 7: evaluate using test set
+		# 7: add a test set evaluation after the training process
+		# 	 flag was formerly used to enable test set evaluation during training time but this should not e done
 		test_evaluation = arguments[7]
-		if str(test_evaluation) == 'true':
-			evaluate_using_test_set = True 
-			evaluation_set_size 	= -1		
-			evaluation_batch_size 	= 512 
-			print('(!ATTENTION!): evaluation using test set')
+
+		evaluate_using_test_set = False
+		evaluation_set_size 	= 1024	
+		evaluation_batch_size 	= 512 
+
+		if str(test_evaluation) == 'true' or str(test_evaluation) == 'True':
+			final_test_evaluation = True
 		else:
-			evaluate_using_test_set = False
-			evaluation_set_size 	= 1024 			
-			evaluation_batch_size 	= 512    		
-			if DATASET == 'CIFAR10':
-				print('evaluation using the training set')
-			else:
-				print('evaluation using the eval set')
+			final_test_evaluation = False
 
 		# 8: weights and log folder prefix (optional, default is the nip-convnet root)
 		if len(arguments) == 9:
@@ -126,6 +123,7 @@ def main():
 		# 													training   set, (CIFAR10)     }
 		# the test set should only be used for the final evaluation of a models performance
 		evaluate_using_test_set = False
+		final_test_evaluation 	= True
 		evaluation_set_size 	= 1024 			# set negative value for the whole set or restrain set size 
 		evaluation_batch_size 	= 512    		# batch size used for testing
 
@@ -402,7 +400,7 @@ def main():
 
 			saver.restore(sess, latest_checkpoint)
 
-			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path, best_accuracy_so_far, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set)
+			train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration,  max_iterations, chk_iterations, writer, fine_tuning_only, save_path, best_accuracy_so_far, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set, final_test_evaluation=final_test_evaluation)
 
 			initialization_finished = True
 
@@ -443,7 +441,7 @@ def main():
 
 	if not initialization_finished:
 		# always train a new autoencoder 
-		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set)
+		train_cnn(sess, cnn, dataset, x, y_, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_path, num_test_images=evaluation_set_size, test_batch_size=evaluation_batch_size, evaluate_using_test_set=evaluate_using_test_set, final_test_evaluation=final_test_evaluation)
 
 
 	# TODO Sabbir: store the current config in a config file in the logs/log_folder_name/run_name folder 

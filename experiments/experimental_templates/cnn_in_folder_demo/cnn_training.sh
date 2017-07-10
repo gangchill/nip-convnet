@@ -13,7 +13,9 @@ echo "Working in $PARENT_DIR"
 DATASET="MNIST_SMALL"
 LOG_FOLDER="cnn_training_template"
 CONFIG_FILE_PATH="$PARENT_DIR/relu_cnn.ini"
-TEST_SET_BOOL=False
+
+# add test run after training
+TEST_SET_BOOL=true
 
 echo "Training the network"
 
