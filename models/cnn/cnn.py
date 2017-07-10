@@ -63,7 +63,7 @@ class CNN:
 		self._encoding 		= None
 		self._logits 		= None
 		self._prediction 	= None
-		self._error			= None
+		self._error		= None
 		self._optimizer  	= None
 		self._optimize 		= None
 		self._optimize_dense_layers = None
@@ -73,6 +73,10 @@ class CNN:
 		self.weight_init_mean 		= weight_init_mean   # 0.   	
 		self.initial_bias_value 	= initial_bias_value # 0. 
 		self.step_size 				= step_size			 # 0.0001
+
+		self.dense_stddev = 0.001
+		self.dense_mean   = 0.0
+		self.dense_b_init = 0.0001
 
 		self.decay_steps = decay_steps
 		self.decay_rate = decay_rate
@@ -227,8 +231,8 @@ class CNN:
 
 				# print('weight_shape: ', weight_shape)
 
-				W = tf.Variable(tf.truncated_normal(weight_shape, stddev=0.1), name='dense_{}_weights'.format(d_ind))
-				b = tf.Variable(tf.constant(0.1, shape=bias_shape), name='dense_{}_bias'.format(d_ind))
+				W = tf.Variable(tf.truncated_normal(weight_shape, mean=self.dense_mean,  stddev=self.dense_stddev), name='dense_{}_weights'.format(d_ind))
+				b = tf.Variable(tf.constant(self.dense_b_init, shape=bias_shape), name='dense_{}_bias'.format(d_ind))
 
 				# save dense variables to list to use them in fine-tuning
 				self.dense_weights.append(W)
@@ -237,14 +241,18 @@ class CNN:
 				self.dense_layer_variables.append(b)
 
 				dense_preact 	= tf.add(tf.matmul(tmp_tensor, W), b, name='dense_{}_preact'.format(d_ind))
-				
+		
+			
+	
+				self._summaries.append(tf.summary.histogram('dense_layer_{}_preact'.format(d_ind), dense_preact))
+	
 				if d_ind != len(self.dense_depths) - 1:
 
 					if self.activation_function =='relu':
 						dense_act = tf.nn.relu(dense_preact, name='dense_{}_act'.format(d_ind))
 					
 					elif self.activation_function == 'scaled_tanh':
-						dense_act = tf.add(tf.nn.tanh(dense_preact_preact) / 2, 0.5, 'dense_{}_act'.format(layer))
+						dense_act = tf.add(tf.nn.tanh(dense_preact) / 2, 0.5, 'dense_{}_act'.format(d_ind))
 
 					else:
 						dense_act = tf.nn.sigmoid(dense_preact, name='dense_{}_act'.format(d_ind))
