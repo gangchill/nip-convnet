@@ -82,12 +82,6 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 		else:
 			batch_xs, batch_ys = data.train.next_batch(batch_size)
 
-		if fine_tuning_only:
-			sess.run([cnn.optimize_dense_layers, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
-		else:
-			sess.run([cnn.optimize, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
-
-
 		if i % chk_iterations == 0:
 
 			# batch the test data (prevent memory overflow)
@@ -154,6 +148,14 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 				writer.add_summary(total_batch_acc_summary, i)
 
 			writer.add_summary(summary, i)
+
+		# perform one training step
+		if fine_tuning_only:
+			sess.run([cnn.optimize_dense_layers, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
+		else:
+			sess.run([cnn.optimize, cnn.increment_global_step_op], feed_dict={x: batch_xs, y: batch_ys, keep_prob: dropout_k_p})
+
+
 
 	print('...finished training') 
 
