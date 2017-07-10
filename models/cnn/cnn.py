@@ -243,6 +243,9 @@ class CNN:
 					if self.activation_function =='relu':
 						dense_act = tf.nn.relu(dense_preact, name='dense_{}_act'.format(d_ind))
 					
+					elif self.activation_function == 'scaled_tanh':
+						dense_act = tf.add(tf.nn.tanh(dense_preact_preact) / 2, 0.5, 'dense_{}_act'.format(layer))
+
 					else:
 						dense_act = tf.nn.sigmoid(dense_preact, name='dense_{}_act'.format(d_ind))
 
