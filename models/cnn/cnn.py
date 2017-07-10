@@ -295,6 +295,9 @@ class CNN:
 			print('init optimizer')
 
 			if self.decay_steps:
+
+				print('learning rate decay enabled')
+
 				# Decay the learning rate exponentially based on the number of steps.
 				lr = tf.train.exponential_decay(self.step_size,
 						self.global_step,
@@ -302,7 +305,11 @@ class CNN:
 						self.decay_rate, # 0.1
 						staircase=True)
 			else:
+
 				lr = self.step_size
+
+				print('learning rate decay disabled, lr = {}'.format(lr))
+
 
 			self._summaries.append(tf.summary.scalar('learning_rate', lr))
 			self._optimizer = tf.train.GradientDescentOptimizer(lr)
