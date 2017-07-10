@@ -89,4 +89,4 @@ def read_data_sets(test_size = 50, one_hot=False):
     train = DataSet(train_images, train_labels, reshape=False)
     test = DataSet(test_images, test_labels, reshape=False)
 
-    return Datasets(train=train, validation = None, test=test)
+    return Datasets(train=train, validation=test, test=None)
