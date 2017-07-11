@@ -224,6 +224,9 @@ class CNN:
 
 			for d_ind, d in enumerate(self.dense_depths):
 
+
+				print('ADD DENSE LAYER OF DEPTH {}'.format(self.dense_depths[d_ind]))
+
 				layer_size = self.dense_depths[d_ind]
 
 				weight_shape = [tmp_tensor.get_shape().as_list()[1], layer_size]
