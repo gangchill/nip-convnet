@@ -14,11 +14,11 @@ Test set accuracy:
 - 0.9253 (pre-trainig)
 
 Training stats:
-![training results](mnist/results/1k_mnist_training_results.png)
+![training results](results/1k_mnist_training_results.png)
 
 First layer filter comparison:
 - pre-trained:
-![pre-trained filter](mnist/results/flf_pre_trained.png)
+![pre-trained filter](results/flf_pre_trained.png)
 
 - random-init:
-![random-init filter](mnist/results/flf_random_init.png)
+![random-init filter](results/flf_random_init.png)
