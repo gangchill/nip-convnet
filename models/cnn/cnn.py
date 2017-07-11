@@ -92,15 +92,18 @@ class CNN:
 		self.set_global_step_op 		= tf.assign(self.global_step, self.global_step_setter_input)
 
 
-		self.decay_factor = 1.
+		self.decay_factor = 1e-2
 		self.decay_terms = []
 
 		print('Initializing simple CNN')
 		with tf.name_scope(scope_name):
 
 			self.logits # needs to be called first for self.decay_terms to be filled
+			if self.decay_factor > 0:
+			    self.decay_sum = tf.add_n(self.decay_terms) / len(self.decay_terms)
+			else:
+			    self.decay_sum = 0
 
-			self.decay_sum = tf.add_n(self.decay_terms)
 			self._summaries.append(tf.summary.scalar('decay_term_sum', self.decay_sum))
 
 			self.optimize
@@ -319,7 +322,7 @@ class CNN:
 			if self.add_tensorboard_summary:
 				self._summaries.append(tf.summary.scalar('cross entropy error', ce_error))
 				if self.decay_factor > 0:
-					self._summaries.append(tf.summary.scalar('total error (incl weight decay)', self._error)
+					self._summaries.append(tf.summary.scalar('total error (incl weight decay)', self._error))
 
 		return self._error
 
