@@ -27,7 +27,7 @@ def create_image_thumbnail(img_path):
     return thumb_path
 
 
-def read_data_sets(test_size = 50, one_hot=False):
+def read_data_sets(test_size = 50, one_hot=False, frames=3):
     # Load Emotions / Labels
     emotions_path = "datasets/Emotion"
     emotions = []
@@ -41,6 +41,14 @@ def read_data_sets(test_size = 50, one_hot=False):
                     with open(os.path.join(emotions_path, subject, sequence, emo_file), 'r') as f:
                         emotion=int(float(f.read()))
                     emotions.append({'filename': filename, 'emotion': emotion})
+
+                    if frames > 1:
+                        base_filename = '_'.join(filename.split('_')[:-1])
+                        frame_number = int(filename.split('_')[-1])
+
+                        for i in range(frames-1):
+                            filename = base_filename + '_' + str(frame_number-i-1).rjust(8, '0')
+                            emotions.append({'filename': filename, 'emotion': emotion})
 
     # Load images
     data = []
