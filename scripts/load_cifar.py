@@ -16,8 +16,15 @@ batches = ["data_batch_1", "data_batch_2", "data_batch_3", "data_batch_4", "data
 
 def read_data_sets(validation_size = 5000, one_hot=True):
     cifar_filename = "datasets/" + "cifar-10-python.tar.gz"
+
+    try:
+        os.makedirs("datasets")
+    except OSError:
+        pass
+
     if not os.path.isfile(cifar_dir + batches[0]):
         # Download data
+        print("Downloading ckplus dataset")
         urllib.urlretrieve("http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz", cifar_filename)
         tar = tarfile.open(cifar_filename)
         tar.extractall(path="datasets")
@@ -34,14 +41,17 @@ def read_data_sets(validation_size = 5000, one_hot=True):
         batch_labels = batch['labels']
         all_batch_labels.extend(batch_labels)
 
-    all_batch_images = np.vstack(all_batch_images).reshape(-1, 32, 32, 3)
+    all_batch_images = np.vstack(all_batch_images).reshape(-1, 3, 32, 32)
+    all_batch_images = all_batch_images.transpose([0, 2, 3, 1])
     all_batch_labels = np.array(all_batch_labels)
 
     train_images, validation_images, train_labels, validation_labels = train_test_split(all_batch_images, all_batch_labels, test_size = validation_size, random_state=0)
 
 
     test_batch = np.load(cifar_dir + "test_batch")
-    test_images = test_batch['data'].reshape(-1, 32, 32, 3)
+    test_images = test_batch['data'].reshape(-1, 3, 32, 32)
+    test_images = test_images.transpose([0, 2, 3, 1])
+
     test_labels = np.array(test_batch['labels'])
 
 
