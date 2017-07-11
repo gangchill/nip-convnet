@@ -1,5 +1,8 @@
 import numpy as np
+import os.path
 from sklearn.model_selection import train_test_split
+import tarfile
+import urllib
 
 from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
 from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet, dense_to_one_hot
@@ -11,7 +14,17 @@ cifar_dir = "datasets/cifar-10-batches-py/"
 batches = ["data_batch_1", "data_batch_2", "data_batch_3", "data_batch_4", "data_batch_5"]
 
 
-def read_data_sets(test_size = 5000, one_hot=True):
+def read_data_sets(validation_size = 5000, one_hot=True):
+    cifar_filename = "datasets/" + "cifar-10-python.tar.gz"
+    if not os.path.isfile(cifar_dir + batches[0]):
+        # Download data
+        urllib.urlretrieve("http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz", cifar_filename)
+        tar = tarfile.open(cifar_filename)
+        tar.extractall(path="datasets")
+        tar.close()
+        os.remove(cifar_filename)
+
+    # Process batches
     all_batch_images = []
     all_batch_labels = []
     for batch_name in batches:
@@ -24,7 +37,7 @@ def read_data_sets(test_size = 5000, one_hot=True):
     all_batch_images = np.vstack(all_batch_images).reshape(-1, 32, 32, 3)
     all_batch_labels = np.array(all_batch_labels)
 
-    train_images, validation_images, train_labels, validation_labels = train_test_split(all_batch_images, all_batch_labels, test_size = 5000, random_state=0)
+    train_images, validation_images, train_labels, validation_labels = train_test_split(all_batch_images, all_batch_labels, validation_size = 5000, random_state=0)
 
 
     test_batch = np.load(cifar_dir + "test_batch")
