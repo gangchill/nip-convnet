@@ -204,6 +204,7 @@ def main():
 		maybe_download_and_extract()
 
 	elif DATASET[:6]=="CIFAR_":
+		# CIFAR_5k
 		limit = int(DATASET.split('_')[1].split('k')[0])
 
 		if limit > 0 and limit < 51:
@@ -215,7 +216,7 @@ def main():
 
 			complete_dataset = load_cifar.read_data_sets(one_hot=True)
 
-			small_training_dataset = DataSet(complete_dataset.train._images[:limit], complete_dataset.train._labels[:limit], dtype=dtypes.uint8, reshape=False)
+			small_training_dataset = DataSet(complete_dataset.train._images[:limit*1000], complete_dataset.train._labels[:limit*1000], dtype=dtypes.uint8, reshape=False)
 
 			dataset = Datasets(train=small_training_dataset, validation=complete_dataset.validation, test=complete_dataset.test)
 
