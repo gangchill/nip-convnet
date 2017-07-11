@@ -37,7 +37,7 @@ def read_data_sets(validation_size = 5000, one_hot=True):
     all_batch_images = np.vstack(all_batch_images).reshape(-1, 32, 32, 3)
     all_batch_labels = np.array(all_batch_labels)
 
-    train_images, validation_images, train_labels, validation_labels = train_test_split(all_batch_images, all_batch_labels, validation_size = 5000, random_state=0)
+    train_images, validation_images, train_labels, validation_labels = train_test_split(all_batch_images, all_batch_labels, test_size = validation_size, random_state=0)
 
 
     test_batch = np.load(cifar_dir + "test_batch")
