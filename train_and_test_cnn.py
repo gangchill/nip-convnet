@@ -198,10 +198,33 @@ def main():
 		dataset 		= "cifar_10" 	# signals the train_cnn function that it needs to load the data via cifar_10_input.py
 		one_hot_labels 	= False			# changes the error functions because this cifar-10 version doesn't use a one-hot encoding
 		input_size 		= (24, 24, 3) 
-		num_classes 	= 1
+		num_classes 	= 10
 		nhwd_shape 		= True
 
 		maybe_download_and_extract()
+
+	elif DATASET[:6]=="CIFAR_":
+		limit = int(DATASET.split('_')[1].split('k')[0])
+
+		if limit > 0 and limit < 51:
+			print("Using " + str(limit) + "k CIFAR training images")
+
+			from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
+			from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
+			import scripts.load_cifar as load_cifar
+
+			complete_dataset = load_cifar.read_data_sets(one_hot=True)
+
+			small_training_dataset = DataSet(complete_dataset.train._images[:limit], complete_dataset.train._labels[:limit], dtype=dtypes.uint8, reshape=False)
+
+			dataset = Datasets(train=small_training_dataset, validation=complete_dataset.validation, test=complete_dataset.test)
+
+			one_hot_labels = True
+			input_size = (32, 32, 3)
+			num_classes = 10
+			nhwd_shape = True
+		else:
+			raise Exception("CIFAR limit must be between 1k and 50k, is: " + str(limit))
 
 	if nhwd_shape == False:
 
