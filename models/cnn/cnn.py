@@ -63,7 +63,7 @@ class CNN:
 		self._encoding 		= None
 		self._logits 		= None
 		self._prediction 	= None
-		self._error		= None
+		self._error			= None
 		self._optimizer  	= None
 		self._optimize 		= None
 		self._optimize_dense_layers = None
@@ -91,8 +91,18 @@ class CNN:
 		self.global_step_setter_input 	= tf.placeholder(tf.int32, shape=[])
 		self.set_global_step_op 		= tf.assign(self.global_step, self.global_step_setter_input)
 
+
+		self.decay_factor = 1.
+		self.decay_terms = []
+
 		print('Initializing simple CNN')
 		with tf.name_scope(scope_name):
+
+			self.logits # needs to be called first for self.decay_terms to be filled
+
+			self.decay_sum = tf.add_n(self.decay_terms)
+			self._summaries.append(tf.summary.scalar('decay_term_sum', self.decay_sum))
+
 			self.optimize
 			self.optimize_dense_layers
 
@@ -158,6 +168,9 @@ class CNN:
 
 				W = tf.Variable(tf.truncated_normal(filter_shape, mean=self.weight_init_mean, stddev=self.weight_init_stddev), name='conv{}_weights'.format(layer))
 				b = tf.Variable(tf.constant(self.initial_bias_value, shape=[out_channels]), name='conv{}_bias'.format(layer))
+
+				if self.decay_factor > 0:
+					self.decay_terms.append(tf.nn.l2_loss(W))
 
 				if self.add_tensorboard_summary and layer == 0:
 					# visualize first layer filters
@@ -237,6 +250,9 @@ class CNN:
 				W = tf.Variable(tf.truncated_normal(weight_shape, mean=self.dense_mean,  stddev=self.dense_stddev), name='dense_{}_weights'.format(d_ind))
 				b = tf.Variable(tf.constant(self.dense_b_init, shape=bias_shape), name='dense_{}_bias'.format(d_ind))
 
+				if self.decay_factor > 0:
+					self.decay_terms.append(tf.nn.l2_loss(W))
+
 				# save dense variables to list to use them in fine-tuning
 				self.dense_weights.append(W)
 				self.dense_biases.append(b)
@@ -293,12 +309,17 @@ class CNN:
 			print('initialize error')
 
 			if self.one_hot_labels:
-				self._error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
+				ce_error = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
 			else:
-				self._error = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
+				ce_error = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.target, logits=self.logits, name='cross-entropy_error'))
+
+
+			self._error = ce_error + self.decay_factor * self.decay_sum
 
 			if self.add_tensorboard_summary:
-				self._summaries.append(tf.summary.scalar('cross entropy error', self._error))
+				self._summaries.append(tf.summary.scalar('cross entropy error', ce_error))
+				if self.decay_factor > 0:
+					self._summaries.append(tf.summary.scalar('total error (incl weight decay)', self._error)
 
 		return self._error
 
