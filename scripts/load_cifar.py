@@ -49,7 +49,7 @@ def read_data_sets(validation_size = 5000, one_hot=True):
 
 
     test_batch = np.load(cifar_dir + "test_batch")
-    test_images = test_batch['data'].reshape(1, 3, 32, 32)
+    test_images = test_batch['data'].reshape(-1, 3, 32, 32)
     test_images = test_images.transpose([0, 2, 3, 1])
 
     test_labels = np.array(test_batch['labels'])
