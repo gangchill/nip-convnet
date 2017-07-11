@@ -7,6 +7,7 @@ echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 PARENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TRAINING_ROOT_DIR=$PARENT_DIR
 
+# the script train RE_RUN_NUMBER reference nets and PRE_RUN_NUMBER pre-trained networks for statistics
 REF_RUN_NUM=5
 PRE_RUN_NUM=5
 

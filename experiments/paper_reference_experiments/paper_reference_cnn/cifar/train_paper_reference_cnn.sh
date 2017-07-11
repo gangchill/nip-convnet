@@ -9,6 +9,10 @@ TRAINING_ROOT_DIR=$PARENT_DIR
 
 echo "Working in $PARENT_DIR"
 
+# the script train RE_RUN_NUMBER reference nets and PRE_RUN_NUMBER pre-trained networks for statistics
+REF_RUN_NUM=2
+PRE_RUN_NUM=2
+
 DATASET="CIFAR_1k"
 CNN_LOG_FOLDER="cifar1k_test"
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
@@ -21,17 +25,33 @@ echo "Begin training the reference network"
 
 INIT_MODE="default"
 WEIGHTS_PATH="None"
-CNN_RUN_NAME="reference-random_init"
+
+RUN_PREFIX="reference-random_init"
+
+for (( i=1; i<=${REF_RUN_NUM}; i++ ))
+do
+
+	echo "Begin training reference network $i"
+	RUN_NAME="${RUN_PREFIX}_${i}"  
+	
+	echo "Run name is: $RUN_NAME"	
+	python train_and_test_cnn.py $DATASET $CNN_CONFIG_FILE_PATH $INIT_MODE $WEIGHTS_PATH $CNN_LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $PARENT_DIR 
 
 
-python train_and_test_cnn.py $DATASET $CNN_CONFIG_FILE_PATH $INIT_MODE $WEIGHTS_PATH $CNN_LOG_FOLDER $CNN_RUN_NAME $TEST_SET_BOOL $PARENT_DIR 
+done
+
 
 echo "Begin training the pre-trained network"
 
 INIT_MODE="pre_trained_encoding"
 WEIGHTS_PATH="experiments/paper_reference_experiments/paper_reference_cae_cifar/weights/CIFAR_reference_cae/cifar_test_lr5.0"
-CNN_RUN_NAME="pre-trained"
+RUN_PREFIX="pre-trained"
 
+for (( i=1; i<=${PRE_RUN_NUM}; i++ ))
+do
+	echo "Begin training pre-trained network  $i"
+	RUN_NAME="${RUN_PREFIX}_${i}"  
 
-python train_and_test_cnn.py $DATASET $CNN_CONFIG_FILE_PATH $INIT_MODE $WEIGHTS_PATH $CNN_LOG_FOLDER $CNN_RUN_NAME $TEST_SET_BOOL $PARENT_DIR
+	python train_and_test_cnn.py $DATASET $CNN_CONFIG_FILE_PATH $INIT_MODE $WEIGHTS_PATH $CNN_LOG_FOLDER $RUN_NAME $TEST_SET_BOOL $PARENT_DIR
 
+done
