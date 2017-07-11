@@ -9,8 +9,8 @@ TRAINING_ROOT_DIR=$PARENT_DIR
 
 echo "Working in $PARENT_DIR"
 
-DATASET="CIFAR10"
-CNN_LOG_FOLDER="cifar_comparison_final_dawn"
+DATASET="CIFAR_1k"
+CNN_LOG_FOLDER="cifar1k_test"
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
 # CNN_CONFIG_FILE_PATH="experiments/experimental_templates/cnn_in_folder_demo/relu_cnn.ini"
 
