@@ -10,11 +10,11 @@ TRAINING_ROOT_DIR=$PARENT_DIR
 echo "Working in $PARENT_DIR"
 
 # the script train RE_RUN_NUMBER reference nets and PRE_RUN_NUMBER pre-trained networks for statistics
-REF_RUN_NUM=2
-PRE_RUN_NUM=2
+REF_RUN_NUM=5
+PRE_RUN_NUM=5
 
-DATASET="CIFAR_1k"
-CNN_LOG_FOLDER="cifar1k_test"
+DATASET="CIFAR_10k"
+CNN_LOG_FOLDER="10cifar10k_runs"
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
 # CNN_CONFIG_FILE_PATH="experiments/experimental_templates/cnn_in_folder_demo/relu_cnn.ini"
 

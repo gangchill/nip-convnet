@@ -14,8 +14,8 @@ PRE_RUN_NUM=5
 
 echo "Working in $PARENT_DIR"
 
-DATASET="MNIST_SMALL"
-CNN_LOG_FOLDER="1k_mnist_multi"
+DATASET="MNIST"
+CNN_LOG_FOLDER="10_MNISTfull_runs"
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
 
 # if set to true, a test run using the test set is performed after the training
