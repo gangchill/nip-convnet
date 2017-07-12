@@ -91,8 +91,13 @@ class CNN:
 		self.global_step_setter_input 	= tf.placeholder(tf.int32, shape=[])
 		self.set_global_step_op 		= tf.assign(self.global_step, self.global_step_setter_input)
 
+		if weight_decay_regularizer == 0:
+		    weight_decay_regularizer = 0.
 
 		self.decay_factor = weight_decay_regularizer
+
+		print('decay factor is {}'.format(self.decay_factor))
+
 		self.decay_terms = []
 
 		print('Initializing simple CNN')
