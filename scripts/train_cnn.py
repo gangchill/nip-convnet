@@ -6,7 +6,7 @@ import scripts.from_github.cifar10_input as cifar10_input
 
 CIFAR_LOCATION = 'cifar10_data/cifar-10-batches-bin'
 
-def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_prefix = None, best_accuracy_so_far = 0, num_test_images = 1024, test_batch_size = 1024, evaluate_using_test_set = False, final_test_evaluation = True):
+def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_iteration, max_iterations, chk_iterations, writer, fine_tuning_only, save_prefix = None, best_accuracy_so_far = 0, num_test_images = 1024, test_batch_size = 1024, evaluate_using_test_set = False, final_test_evaluation = True, best_model_for_test = True):
 
 	print("Training CNN for {} iterations with batchsize {}".format(max_iterations, batch_size))
 
@@ -162,6 +162,15 @@ def train_cnn(sess, cnn, data, x, y, keep_prob, dropout_k_p, batch_size, init_it
 	if final_test_evaluation:
 		print('The network was trained without presence of the test set.')
 		print('...Performing test set evaluation')
+
+		print('loading best model')
+		best_model_folder = os.path.join(save_prefix, 'best')
+		print('looking for best weights in {}'.format(best_model_folder))
+
+		latest_checkpoint = tf.train.latest_checkpoint(best_model_folder)
+
+		best_it_saver.restore(sess, latest_checkpoint)
+
 
 		if data == 'cifar_10':
 			total_test_images = 10000

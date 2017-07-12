@@ -93,6 +93,7 @@ class CNN:
 
 
 		self.decay_factor = weight_decay_regularizer
+
 		self.decay_terms = []
 
 		print('Initializing simple CNN')
