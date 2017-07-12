@@ -383,7 +383,7 @@ def main():
 
 	init_iteration = 0
 
-	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size, decay_steps = decay_steps, decay_rate = decay_rate, weight_init_stddev = weight_init_stddev, weight_init_mean = weight_init_mean, initial_bias_value = initial_bias_value)
+	cnn = CNN(x_image, y_, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type, activation_function, one_hot_labels=one_hot_labels, step_size = step_size, decay_steps = decay_steps, decay_rate = decay_rate, weight_init_stddev = weight_init_stddev, weight_init_mean = weight_init_mean, initial_bias_value = initial_bias_value, weight_decay_regularizer=weight_decay_regularizer)
 
 	sess = tf.Session() 
 	sess.run(tf.global_variables_initializer())
