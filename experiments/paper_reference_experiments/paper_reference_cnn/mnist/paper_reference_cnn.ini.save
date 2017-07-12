@@ -1,0 +1,19 @@
+[CNN]
+filter_dims_x = 5, 5, 3
+filter_dims_y = 5, 5, 3
+hidden_channels = 100, 150, 200
+pooling_type = strided_conv
+strides = None
+activation_function = scaled_tanh
+dense_depths = 300
+batch_size = 128
+max_iterations = 101
+chk_iterations = 50
+dropout_k_p = 0.5
+fine_tuning_only = 1
+step_size = 0.1
+decay_steps = 0
+decay_rate = 0.1
+weight_init_stddev = 0.05
+weight_init_mean = 0.1
+initial_bias_value = 0.1
