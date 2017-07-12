@@ -278,6 +278,8 @@ def main():
 		decay_steps		= 2
 		decay_rate		= 0.1
 
+		weight_decay_regularizer = 0.
+
 		weight_init_stddev 	= 0.2
 		weight_init_mean 	= 0.
 		initial_bias_value 	= 0.
@@ -304,6 +306,7 @@ def main():
 		config_dict['weight_init_stddev'] 	= weight_init_stddev
 		config_dict['weight_init_mean']		= weight_init_mean
 		config_dict['initial_bias_value']	= initial_bias_value
+		config_dict['weight_decay_regularizer'] = weight_decay_regularizer
 
 		config_loader.configuration_dict = config_dict
 
@@ -335,6 +338,7 @@ def main():
 		weight_init_stddev 		= float(config_dict['weight_init_stddev'])
 		weight_init_mean 		= float(config_dict['weight_init_mean'])
 		initial_bias_value 		= float(config_dict['initial_bias_value'])
+		weight_decay_regularizer= float(config_dict['weight_decay_regularizer'])
 
 		print('Config succesfully loaded')
 

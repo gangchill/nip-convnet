@@ -5,7 +5,7 @@ import collections
 class CNN: 
 	# convolutional neural network (same structure as cae with added fully-connected layers)
 
-	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1, decay_steps = 10000, decay_rate = 0.1, weight_init_stddev = 0.2, weight_init_mean = 0, initial_bias_value = 0):
+	def __init__(self, data, target, keep_prob, filter_dims, hidden_channels, dense_depths, pooling_type = 'strided_conv', activation_function = 'sigmoid', add_tensorboard_summary = True, scope_name='CNN', one_hot_labels = True, step_size = 0.1, decay_steps = 10000, decay_rate = 0.1, weight_decay_regularizer = 0, weight_init_stddev = 0.2, weight_init_mean = 0, initial_bias_value = 0):
 
 		# TODO:
 		# 	- add assertion that test whether filter_dims, hidden_channels and strides have the right dimensions
@@ -92,7 +92,7 @@ class CNN:
 		self.set_global_step_op 		= tf.assign(self.global_step, self.global_step_setter_input)
 
 
-		self.decay_factor = 1e-2
+		self.decay_factor = weight_decay_regularizer
 		self.decay_terms = []
 
 		print('Initializing simple CNN')

@@ -61,6 +61,8 @@ class ConfigLoader:
 			local_dict['weight_init_mean']		= config[config_version]['weight_init_mean'],
 			local_dict['initial_bias_value']	= config[config_version]['initial_bias_value'],
 
+			local_dict['weight_decay_regularizer'] = config[config_version]['weight_decay_regularizer'],
+
 		# LOAD CNN ARCHITECTURE
 		elif config_version.upper()=='CNN_ARC':
 			valid_config = 1
@@ -128,7 +130,7 @@ class ConfigLoader:
 				print('# of configurations need to be 17!')
 
 		elif config_version.upper()=='CNN':
-			if self.configuration_dict and len(self.configuration_dict)==17:
+			if self.configuration_dict and len(self.configuration_dict)==18:
 				config[config_version]['filter_dims_x'] 		= [int(i[0]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['filter_dims_y'] 		= [int(i[1]) for i in self.configuration_dict.get('filter_dims')]
 				config[config_version]['hidden_channels'] 		= self.configuration_dict.get('hidden_channels')
@@ -147,6 +149,8 @@ class ConfigLoader:
 				config[config_version]['weight_init_stddev']	= self.configuration_dict.get('weight_init_stddev')
 				config[config_version]['weight_init_mean'] 		= self.configuration_dict.get('weight_init_mean')
 				config[config_version]['initial_bias_value']	= self.configuration_dict.get('initial_bias_value')
+
+				config[config_version]['weight_decay_regularizer'] = self.configuration_dict.get('weight_decay_regularizer')
 
 				config.write()
 				print(config)
