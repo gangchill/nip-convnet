@@ -3,6 +3,8 @@
 # --------------------------------------------------------------------------------------
 
 import tensorflow as tf 
+from tensorflow.python.framework import dtypes
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -172,6 +174,30 @@ def main():
 		nhwd_shape 		= True
 
 		maybe_download_and_extract()
+
+	elif DATASET[:6]=="CIFAR_":
+		# CIFAR_nk
+		limit = int(DATASET.split('_')[1].split('k')[0])
+
+		if limit > 0 and limit < 51:
+			print("Using " + str(limit) + "k CIFAR training images")
+
+			from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet
+			from tensorflow.contrib.learn.python.learn.datasets.base import Datasets
+			import scripts.load_cifar as load_cifar
+
+			complete_dataset = load_cifar.read_data_sets(one_hot=True)
+
+			small_training_dataset = DataSet(complete_dataset.train._images[:limit*1000], complete_dataset.train._labels[:limit*1000], dtype=dtypes.uint8, reshape=False)
+
+			dataset = Datasets(train=small_training_dataset, validation=complete_dataset.validation, test=complete_dataset.test)
+
+			one_hot_labels = True
+			input_size = (32, 32, 3)
+			num_classes = 10
+			nhwd_shape = True
+		else:
+			raise Exception("CIFAR limit must be between 1k and 50k, is: " + str(limit))
 
 	else:
 		print('ERROR: Dataset not available')
