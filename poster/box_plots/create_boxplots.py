@@ -3,7 +3,7 @@ import numpy as np
 
 def main():
 
-	create_mnist_boxplot()
+	# create_mnist_boxplot()
 	create_cifar_boxplot()
 	create_ckplus_boxplot()
 
@@ -22,12 +22,12 @@ def create_cifar_boxplot():
 	cifar_10k = [cifar_10k_random_init, cifar_10k_pre_trained]
 	cifar_10k_trial_count = min(len(cifar_10k_random_init), len(cifar_10k_pre_trained))
 
-	cifar_full_pre_trained = []
-	cifar_full_random_init = []
+	cifar_full_pre_trained = [0.6572, 0.6592, 0.6535, 0.6557, 0.6300, 0.6544]
+	cifar_full_random_init = [0.6292, 0.6287, 0.6235, 0.6293, 0.6284, 0.6252]
 	cifar_full = [cifar_full_random_init, cifar_full_pre_trained]
 	cifar_full_trial_count = min(len(cifar_full_random_init), len(cifar_full_pre_trained))
 
-	cifar_ylims = 0., 1.
+	cifar_ylims = 0.4, 0.7
 
 	data 			= [cifar_1k, cifar_10k, cifar_full]
 	trial_counts 	= [cifar_1k_trial_count, cifar_10k_trial_count, cifar_full_trial_count]
