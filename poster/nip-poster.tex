@@ -73,6 +73,12 @@
 
 \begin{document}
 
+\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
+\setbeamercolor{block alerted title}{fg=black, bg=gray} % Colors of the highlighted block titles
+\setbeamercolor{block alerted body}{fg=black, bg=white} % Colors of the body of highlighted blocks
+
+
 \addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
 \addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} % White space under highlighted (alert) blocks
 
@@ -90,6 +96,8 @@
 %----------------------------------------------------------------------------------------
 %	OBJECTIVES
 %----------------------------------------------------------------------------------------
+
+\begin{alertblock}{Setup}
 
 \begin{block}{Convolutional Autoencoders}
 
@@ -109,23 +117,25 @@
 \begin{block}{Experimental setup}
 
 \begin{figure}
-\includegraphics[width=\linewidth]{graphics/setup.png}
+\includegraphics[width=0.8\linewidth]{graphics/setup.png}
 \caption{Pre-training setup}
 \end{figure}
 
 \end{block}
 
+\end{alertblock}
+
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Activation- and error function}
+\begin{alertblock}{Activation- and error function}
 	\centering
 	\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
 
 	Using the mean cross-entropy over all pixels, the deeper autoencoders learned a blank image as reconstruction. The mean-squared error gives good results. The graph shows the both measures in function of training iterations when minimizing the mean-squared error. 
 
-\end{block}
+\end{alertblock}
 
 \setbeamercolor{block alerted title}{fg=black,bg=dorado} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
@@ -141,11 +151,18 @@
 
 \begin{column}{\threecolwid}
 
-\begin{columns}[T, totalwidth=\threecolwid] % Split up the two columns wide column
+
+\begin{alertblock}{MAIN}
+
+\centering
+
+\begin{columns}[t, totalwidth=0.9\threecolwid] % Split up the two columns wide column
 
 %\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
-\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+
+
+\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{MNIST}
 
 \begin{figure}
@@ -168,7 +185,7 @@
 \end{block}
 \end{column}
 
-\begin{column}{\onecolwid}
+\begin{column}{0.9\onecolwid}
 \begin{block}{CIFAR}
 \begin{figure}
 \centering
@@ -193,7 +210,7 @@
 \end{block}
 \end{column}
 
-\begin{column}{\onecolwid}
+\begin{column}{0.9\onecolwid}
 \begin{block}{Extended Cohn-Kanade (CK+)}
 \begin{figure}
 \centering
@@ -210,12 +227,12 @@
 \end{figure}
 
 \emph{Dataset Challenges:}
-\begin{itemize}
-\item Natural images (high resolution)
-\item More restrained problem than CIFAR (emotion classification).
-\item Very few datapoints 
-\item No pre-defined splits
-\end{itemize}
+natural images (high resolution) but easier problem than cifar. However : very few data
+%\item Natural images (high resolution)
+%\item More restrained problem than CIFAR (emotion classification).
+%\item Very few datapoints 
+%\item No pre-defined splits
+%\end{itemize}
 
 \end{block}
 
@@ -223,27 +240,12 @@
 
 \end{columns}
 
-\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
+
+\begin{columns}[t, totalwidth=0.9\threecolwid] % Split up the two columns wide column
 
 %\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
-\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
-
-\end{column}
-\begin{column}{\onecolwid}
-
-\end{column}
-
-\begin{column}{\onecolwid}
-
-\end{column}
-\end{columns}
-
-\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
-
-%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
-
-\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{}
 \emph{Experimental results:}
 
@@ -254,9 +256,9 @@
 
 \end{block}
 \end{column}
-\begin{column}{\onecolwid}
+\begin{column}{0.9\onecolwid}
 \begin{block}{}
-\emph{Experimental results}
+\emph{Experimental results:}
 
 \begin{figure}
 \includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
@@ -266,10 +268,9 @@
 \end{block}
 \end{column}
 
-\begin{column}{\onecolwid}
+\begin{column}{0.9\onecolwid}
 \begin{block}{}
-\emph{Experimental results}
-TODO: add the results
+\emph{Experimental results:}
 \end{block}
 
 
@@ -282,12 +283,12 @@ TODO: add the results
 \end{column}
 \end{columns}
 
-
+\end{alertblock}
 
 \begin{columns}[t, totalwidth=\threecolwid]
 \begin{column}{1.5\onecolwid}
 
-\begin{block}{Rectified Linear Units}
+\begin{alertblock}{Rectified Linear Units}
 
 	\begin{figure}
 		\centering
@@ -325,13 +326,13 @@ TODO: add the results
 
 	ReLU's achieve very good reconstruction results but max-pooling does not seem sufficient for normalization. The learned filters lack a clear structure.
 
-\end{block}
+\end{alertblock}
 
 \end{column}
 
 \begin{column}{1.5\onecolwid}
 
-	\begin{block}{Pre-training: learned filters}
+	\begin{alertblock}{Pre-training: learned filters}
 
 		\begin{figure}
 		\centering
@@ -387,7 +388,7 @@ TODO: add the results
 
 		Although accuracy differences are only subtle, the first-layer filters of the pre-trained network show a clear and interpretable structure as opposed to the ones learned by the randomly initialized network.
 
-	\end{block}
+	\end{alertblock}
 
 \end{column}
 
