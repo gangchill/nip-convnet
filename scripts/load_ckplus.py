@@ -13,7 +13,7 @@ from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet, dense_
 import traceback
 
 PATCH_SIZE = (325, 340)
-INPUT_SIZE = (65,68)
+INPUT_SIZE = (68,65)
 NUM_CLASSES = 7
 
 
@@ -123,14 +123,17 @@ def read_from_folders(folders, frames):
                                 img_path = os.path.join(subject, sequence, pngfile)
                                 thumb_path = create_image_thumbnail(img_path, all_landmarks)
 
-                                image = scipy.misc.imread(thumb_path).flatten()
+                                image = scipy.misc.imread(thumb_path, mode='F').flatten()
+                                if len(image) == 4420:
 
-                                # Normalize pixel values
-                                #image = image * (1. / 255)
+                                    # Normalize pixel values
+                                    #image = image * (1. / 255)
 
-                                image_dict = dict(enumerate(image))
-                                image_dict['emotion'] = emotion - 1
-                                data.append(image_dict)
+                                    image_dict = dict(enumerate(image))
+                                    image_dict['emotion'] = emotion - 1
+                                    data.append(image_dict)
+                                else:
+                                    print("Image " + pngfile + " has wrong dimensions")
                             except IndexError:
                                 pass
     return data
