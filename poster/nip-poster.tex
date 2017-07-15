@@ -26,7 +26,7 @@
 
 \usepackage{subcaption}
 
-\usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage[scale=1.24, size=a0]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage[utf8]{inputenc}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
@@ -65,7 +65,7 @@
 
 \title{CNN pre-training using convolutional autoencoders} % Poster title
 
-\author{Russell Hoffman, Sabbir Ahmed, Maximilian Kohlbrenner } % Author(s)
+\author{Russell Hofmann, Sabbir Ahmed, Maximilian Kohlbrenner } % Author(s)
 
 \institute{TU Berlin} % Institution(s)
 
@@ -131,21 +131,53 @@
 % ----------------------------------------------
 
 
+
+\begin{column}{\threecolwid}
+
 \begin{column}{\sepwid}\end{column} % Empty spacer column
 
-\begin{column}{\onecolwid} % Begin a column which is two columns wide (column 2)
 
-%\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
 
 %\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{MNIST}
 
 
 
 \end{block}
-%------------------------------------------------
+\end{column}
+\begin{column}{\onecolwid}
+\begin{block}{CIFAR}
+\begin{figure}
+%\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
+\includegraphics[width=0.5\linewidth]{graphics/cifar_image.png}
+\includegraphics[width=0.5\linewidth]{graphics/cifar_reconstruction.png}
 
+\caption{CIFAR reconstruction}
+\end{figure}
+\end{block}
+\end{column}
+
+\begin{column}{\onecolwid}
+\begin{block}{CK+ Dataset}
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{graphics/face.png}	
+\includegraphics[width=0.5\linewidth]{graphics/reconst.png}
+%\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
+\caption{CK+ input image (left) and reconstruction (right)}
+\end{figure}
+%\begin{enumerate}
+\end{block}
+\end{column}
+\end{columns}
+
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
+
+%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
+
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{Stats}
 \begin{itemize}
 \item (lmage content) handwritten digits 
@@ -157,35 +189,8 @@
 
 \end{itemize}
 \end{block}
-
-\begin{block}{Experimental results}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
-\caption{boxplot of training accuracies}
-\end{figure}
-
-\end{block}
-
-
-\end{column} % End of column 2
-
-
-
-\begin{column}{\onecolwid} 
-
-\begin{block}{CIFAR}
-
-\end{block}
-
-\begin{figure}
-%\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
-\includegraphics[width=0.5\linewidth]{graphics/cifar_image.png}
-\includegraphics[width=0.5\linewidth]{graphics/cifar_reconstruction.png}
-
-\caption{CIFAR reconstruction}
-\end{figure}
-
+\end{column}
+\begin{column}{\onecolwid}
 \begin{block}{Stats}
 \begin{itemize}
 \item (lmage content) real-world images
@@ -196,8 +201,39 @@
 \item (SOTA performance) include Sabbir
 \end{itemize}
 \end{block}
+\end{column}
 
+\begin{column}{\onecolwid}
+\begin{block}{Stats}
+\begin{itemize}
+\item (lmage content) facial expressions
+\item (label type) emotions (TODO: nbr)
+\item (datase sizes) extremely small set size (TODO: add numbers)
+\item (size and colors) large (TODO: add size), 1 channel (grayscale) 
+\item (compared difficulty) easier task but bigger images and very few images
+\item (SOTA performance) include Sabbir
+\item (extra: ) datapoints are sequences (explain our choice), cropping for smaller images
 
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
+
+%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
+
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+\begin{block}{Experimental results}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
+\caption{boxplot of training accuracies}
+\end{figure}
+
+\end{block}
+\end{column}
+\begin{column}{\onecolwid}
 \begin{block}{Experimental results}
 
 \begin{figure}
@@ -240,41 +276,9 @@
 \end{figure}
 
 \end{block}
+\end{column}
 
-\end{column} % End of column 3
-
-\begin{column}{\sepwid}\end{column} % Empty spacer column
-
-\begin{column}{\onecolwid} % The third column
-
-%----------------------------------------------------------------------------------------
-%	CONCLUSION
-%----------------------------------------------------------------------------------------
-
-\begin{block}{CK+ Dataset}
-\begin{figure}
-\includegraphics[width=0.5\linewidth]{graphics/face.png}	
-\includegraphics[width=0.5\linewidth]{graphics/reconst.png}
-%\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
-\caption{CK+ input image (left) and reconstruction (right)}
-\end{figure}
-%\begin{enumerate}
-
-\end{block}
-
-\begin{block}{Stats}
-\begin{itemize}
-\item (lmage content) facial expressions
-\item (label type) emotions (TODO: nbr)
-\item (datase sizes) extremely small set size (TODO: add numbers)
-\item (size and colors) large (TODO: add size), 1 channel (grayscale) 
-\item (compared difficulty) easier task but bigger images and very few images
-\item (SOTA performance) include Sabbir
-\item (extra: ) datapoints are sequences (explain our choice), cropping for smaller images
-
-\end{itemize}
-\end{block}
-
+\begin{column}{\onecolwid}
 \begin{block}{Experimental results}
 TODO: add the results
 \end{block}
@@ -293,18 +297,10 @@ TODO: add the results
 	\item max-pooling for regularization did not work on the relu autoencoder
 \end{itemize}
 \end{alertblock}
+\end{column}
+\end{columns}
 
-%\begin{block}{References}
-
-%\nocite{*} % Insert publications even if they are not cited in the poster
-%\small{\bibliographystyle{unsrt}
-%\bibliography{sample}\vspace{0.75in}}
-
-%\end{block}
-
-%----------------------------------------------------------------------------------------
-
-\end{column} % End of the third column
+\end{column}
 
 \end{columns} % End of all the columns in the poster
 
