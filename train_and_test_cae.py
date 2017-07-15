@@ -161,8 +161,8 @@ def main():
 		nhwd_shape = False
 
 	elif DATASET == "CKPLUS":
-		import scripts.load_ckplus_cae as load_ckplus
-		dataset = load_ckplus.read_data_sets(one_hot=True)
+		import scripts.load_ckplus as load_ckplus
+		dataset = load_ckplus.read_data_sets(split=False, one_hot=True)
 		input_size = (49, 64)
 		num_classes = load_ckplus.NUM_CLASSES
 		nhwd_shape = False
