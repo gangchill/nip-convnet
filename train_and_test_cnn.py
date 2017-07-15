@@ -191,7 +191,6 @@ def main():
 
 	elif DATASET == "MNIST_1k":
 		
-		print('ATTENTION!!! MNIST SMALL IS NOW 10k')
 		N = 1000
 
 		# load mnist

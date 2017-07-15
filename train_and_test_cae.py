@@ -6,8 +6,11 @@ import tensorflow as tf
 from tensorflow.python.framework import dtypes
 
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib as mpl
+
+mpl.use('Agg')
+import matplotlib.pyplot as plt
+
 import os, sys
 from functools import reduce
 
@@ -29,7 +32,9 @@ def main():
 	## ############## ##
 
 	arguments = sys.argv
-
+	
+	print('len(arguments) = {}'.format(len(arguments)))
+	print(arguments)
 
 	if 7 <= len(arguments) <= 8:
 		print('-----------------------------------------------------------------------------')
@@ -50,9 +55,9 @@ def main():
 			initialization_mode = 'resume'
 			print('Init mode 	: resume')
 		else:
-			initialization_mode = 'from_file'
+			initialization_mode = 'from_folder'
 			model_weights_dir = init_weigts_path
-			print('Init mode 	: from_file')
+			print('Init mode 	: {}'.format(initialization_mode))
 
 		# 4: Log folder
 		log_folder_name = arguments[4]
@@ -71,7 +76,7 @@ def main():
 
 		print('-----------------------------------------------------------------------------')
 
-		visualize_model_walkthrough = False
+		visualize_model_walkthrough = True
 
 		# 7: weights and log folder prefix (default is the nip-convnet root)
 		if len(arguments) == 8:
@@ -107,7 +112,7 @@ def main():
 		model_weights_dir = 'test'
 
 		# store model walkthrough (no CIFAR support yet)
-		visualize_model_walkthrough = False
+		visualize_model_walkthrough = True
 
 		log_folder_name = '07_CAE_MNIST_SIGMOID_debug'
 		custom_run_name = None
@@ -395,6 +400,9 @@ def main():
 			chkpnt_file_path = save_path
 		else: 
 			chkpnt_file_path = model_weights_dir
+		
+
+		print('Looking for checkpoint')
 
 		saver = tf.train.Saver(autoencoder.all_variables_dict)
 		latest_checkpoint = tf.train.latest_checkpoint(chkpnt_file_path)
@@ -429,8 +437,8 @@ def main():
 	# print('Test the training:')
 
 	# visualize_cae_filters(sess, autoencoder)
-	if visualize_model_walkthrough and not DATASET == 'CIFAR10':
-		visualize_ae_representation(sess, x_image, autoencoder, dataset, log_folder_name, run_name, input_size, 2)
+	if visualize_model_walkthrough:
+		visualize_ae_representation(sess, x_image, autoencoder, dataset, log_folder_name, run_name, input_size, 5)
 
 
 	# add logwriter for tensorboard
@@ -493,7 +501,7 @@ def visualize_cae_filters(sess, autoencoder):
 	plt.close(fig)
 
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, folder_name, run_name, input_size, num_images = 100, use_training_set = False, common_scaling = False, plot_first_layer_filters = False):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, folder_name, run_name, input_size, num_images = 100, use_training_set = False, common_scaling = False, plot_first_layer_filters = False, max_maps_per_layer = 10):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
@@ -525,7 +533,6 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 	print(len(cae_filters), len(walkthrough))
 
 	# workaround to make old code work
-	# TODO: change the visualization to be able to show all filters + feature maps
 	cae_filters = cae_filters[0]
 
 
@@ -552,7 +559,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 
 		print('representation walkthrough')
 
-		fig = plt.figure(figsize=(10 * num_filters , 40))
+		fig = plt.figure(figsize=(40 , 40))
 
 		max_size 			= np.max(np.array(autoencoder.hidden_channels))
 		hidden_layer_count 	= len(walkthrough)
@@ -564,29 +571,46 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 		plt.subplot(rows, 1, 1)
 		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
-		plt.colorbar(orientation="horizontal",fraction=0.07)
+		# plt.colorbar(orientation="horizontal",fraction=0.07)
 
 		# plot reconstruction
 		plt.subplot(rows,1 , rows)
 		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
-		plt.colorbar(orientation="horizontal",fraction=0.07)
+		# plt.colorbar(orientation="horizontal",fraction=0.07)
+		
+		stretcher = 0
+		print 'hlc: ', hidden_layer_count
 
 		for c in range(hidden_layer_count):
 			hc_size = walkthrough[c].shape[3]
+
+			if c <= hidden_layer_count / 2:
+				stretcher += 1
+
+			else:
+				stretcher -= 1
+			
+			print stretcher
+
+			if max_maps_per_layer > 0:
+				hc_size = min(hc_size, max_maps_per_layer) * stretcher
+			
+			
+
 			for r in range(hc_size):
 
 				# plot feature map of filter r in the c-th hidden layer
 				plt.subplot(rows,hc_size, (c + 1) * hc_size + r + 1)
 				plt.imshow(walkthrough[c][i,:,:,r], cmap='gray', interpolation='none')
 				plt.axis('off')
-				plt.colorbar(orientation="horizontal",fraction=0.07)
+				# plt.colorbar(orientation="horizontal",fraction=0.07)
 
 
 		# plt.tight_layout()
 		plt.savefig(os.path.join('digit_reconstructions', folder_name, run_name, '{}_{}_feature_maps.png'.format(run_name,i)))
 		plt.close(fig)
-
+		'''
 		print('filter + representation')
 		fig = plt.figure(figsize=(10 * num_filters , 40))
 
@@ -636,7 +660,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 			plt.savefig(os.path.join('digit_reconstructions', 'cae_example{}.png'.format(i)))
 
 			plt.close(fig)
-
+		'''
 
 if __name__ == '__main__':
 	main()
