@@ -173,6 +173,6 @@ def read_data_sets(split=True, num_train_folders=90, one_hot=True, frames=3):
     test_images = test_df.as_matrix()
 
     train = DataSet(train_images[train_idx,:], train_labels[train_idx], reshape=False)
-    test = DataSet(test_images[test_id,:], test_labels[test_idx], reshape=False)
+    test = DataSet(test_images[test_idx,:], test_labels[test_idx], reshape=False)
 
     return Datasets(train=train, validation=test, test=None)
