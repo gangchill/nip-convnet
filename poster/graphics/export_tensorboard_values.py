@@ -40,12 +40,15 @@ def main():
 
 
 	# presentation:
-	max_its 	= 10
-	linewidth 	= 3
-	ticksize 	= 15
-	fontsize 	= 20
 
-	fig = plt.figure(figsize=20,40)
+	sclng_fctr = 3
+
+	max_its 	= 10 	* sclng_fctr
+	linewidth 	= 3		* sclng_fctr
+	ticksize 	= 15	* sclng_fctr
+	fontsize 	= 20	* sclng_fctr
+
+	fig = plt.figure(figsize=(40,20))
 
 
 	mpl.rcParams['xtick.labelsize'] = ticksize
@@ -58,7 +61,7 @@ def main():
 
 	plt.plot(it, avg_ce / np.max(avg_ce), 	label='(normalized) mean cross-entropy', linewidth = linewidth, color='red')
 	plt.plot(it, mse    / np.max(mse), 		label='(normalized) mean squared-error', linewidth = linewidth, color='green')
-	plt.legend()
+	plt.legend(fontsize=fontsize)
 	plt.xlabel('training iteration', fontsize=fontsize)
 	plt.savefig('mse_ce_comparison.png', dpi=300)
 
