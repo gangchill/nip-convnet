@@ -151,7 +151,7 @@ def read_data_sets(split=True, num_train_folders=90, one_hot=True, frames=3):
         print("{} CK+ TEST datapoints loaded".format(len(test_df)))
     else:
         train_df = pd.DataFrame(read_from_folders(all_folders, frames))
-        test_df = train_df
+        test_df = train_df.head().copy()
         print("{} CK+ TRAIN datapoints loaded".format(len(train_df)))
 
     if one_hot:
