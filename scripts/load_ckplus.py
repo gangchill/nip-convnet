@@ -166,13 +166,10 @@ def read_data_sets(split=True, num_train_folders=90, one_hot=True, frames=3):
     del train_df['emotion']
     del test_df['emotion']
 
-    train_idx = np.random.shuffle(np.arange(len(train_labels)))
-    test_idx = np.random.shuffle(np.arange(len(test_labels)))
-
     train_images = train_df.as_matrix()
     test_images = test_df.as_matrix()
 
-    train = DataSet(train_images[train_idx,:], train_labels[train_idx], reshape=False)
-    test = DataSet(test_images[test_idx,:], test_labels[test_idx], reshape=False)
+    train = DataSet(train_images, train_labels, reshape=False)
+    test = DataSet(test_images, test_labels, reshape=False)
 
     return Datasets(train=train, validation=test, test=None)
