@@ -24,16 +24,12 @@
 
 \documentclass[final]{beamer}
 
-\usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage{subcaption}
+
+\usepackage[scale=1.24, size=a0]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage[utf8]{inputenc}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
-
-\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
-\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
-\setbeamercolor{block alerted title}{fg=white,bg=dblue!70} % Colors of the highlighted block titles
-\setbeamercolor{block alerted body}{fg=black,bg=dblue!10} % Colors of the body of highlighted blocks
-% Many more colors are available for use in beamerthemeconfposter.sty
 
 %-----------------------------------------------------------
 % Define the column widths and overall poster size
@@ -69,7 +65,7 @@
 
 \title{CNN pre-training using convolutional autoencoders} % Poster title
 
-\author{Russell Hoffman, Sabbir Ahmed, Maximilian Kohlbrenner } % Author(s)
+\author{Russell Hofmann, Sabbir Ahmed, Maximilian Kohlbrenner } % Author(s)
 
 \institute{TU Berlin} % Institution(s)
 
@@ -108,8 +104,8 @@
 \begin{block}{Experimental setup}
 
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{graphics/setup.png}
-\caption{Bisectrices de un ángulo}
+\includegraphics[width=\linewidth]{graphics/setup.png}
+\caption{Pre-training setup}
 \end{figure}
 
 \end{block}
@@ -118,24 +114,15 @@
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{CIFAR-10}
+\begin{block}{CAE}
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{graphics/cifar_filters.png}
-\caption{selection of CAE first layer filters on CIFAR10}
+\includegraphics[width=0.8\linewidth]{graphics/feature_map_walkthrough_mnist.png}
+\caption{MNIST CAE reconstruction}
 \end{figure}
-
 \end{block}
 
 \setbeamercolor{block alerted title}{fg=black,bg=dorado} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
-
-\begin{alertblock}{miscellaneous findings}
-\begin{itemize}
-	\item (pixel-wise) average cross-entropy not suited for convolutional autoencoder (useful for non-conv)
-	\item max-pooling for regularization 
-\end{itemize}
-\end{alertblock}
-
 
 \end{column} % End of the first column
 
@@ -144,24 +131,53 @@
 % ----------------------------------------------
 
 
+
+\begin{column}{\threecolwid}
+
 \begin{column}{\sepwid}\end{column} % Empty spacer column
 
-\begin{column}{\onecolwid} % Begin a column which is two columns wide (column 2)
 
-%\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
 
 %\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{MNIST}
 
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{graphics/mnist_reconstructions.png}
-\caption{MNIST CAE reconstruction}
-\end{figure}
+
 
 \end{block}
-%------------------------------------------------
+\end{column}
+\begin{column}{\onecolwid}
+\begin{block}{CIFAR}
+\begin{figure}
+%\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
+\includegraphics[width=0.5\linewidth]{graphics/cifar_image.png}
+\includegraphics[width=0.5\linewidth]{graphics/cifar_reconstruction.png}
 
+\caption{CIFAR reconstruction}
+\end{figure}
+\end{block}
+\end{column}
+
+\begin{column}{\onecolwid}
+\begin{block}{CK+ Dataset}
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{graphics/face.png}	
+\includegraphics[width=0.5\linewidth]{graphics/reconst.png}
+%\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
+\caption{CK+ input image (left) and reconstruction (right)}
+\end{figure}
+%\begin{enumerate}
+\end{block}
+\end{column}
+\end{columns}
+
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
+
+%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
+
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
 \begin{block}{Stats}
 \begin{itemize}
 \item (lmage content) handwritten digits 
@@ -173,32 +189,8 @@
 
 \end{itemize}
 \end{block}
-
-\begin{block}{Experimental results}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
-\caption{boxplot of training accuracies}
-\end{figure}
-
-\end{block}
-
-
-\end{column} % End of column 2
-
-
-
-\begin{column}{\onecolwid} 
-
-\begin{block}{CIFAR}
-
-\end{block}
-
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
-\caption{Diagrama del problema}
-\end{figure}
-
+\end{column}
+\begin{column}{\onecolwid}
 \begin{block}{Stats}
 \begin{itemize}
 \item (lmage content) real-world images
@@ -209,38 +201,9 @@
 \item (SOTA performance) include Sabbir
 \end{itemize}
 \end{block}
+\end{column}
 
-
-\begin{block}{Experimental results}
-
-\begin{figure}
-\includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
-\caption{boxplot of training accuracies}
-\end{figure}
-
-\end{block}
-
-\end{column} % End of column 3
-
-\begin{column}{\sepwid}\end{column} % Empty spacer column
-
-\begin{column}{\onecolwid} % The third column
-
-%----------------------------------------------------------------------------------------
-%	CONCLUSION
-%----------------------------------------------------------------------------------------
-
-\begin{block}{CK+ Dataset}
-\begin{figure}
-
-\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
-\caption{Triángulos con ángulo común}
-\end{figure}
-Para que practiques te dejamos la siguiente lista de problemas relacionados con bisectrices.
-%\begin{enumerate}
-
-\end{block}
-
+\begin{column}{\onecolwid}
 \begin{block}{Stats}
 \begin{itemize}
 \item (lmage content) facial expressions
@@ -253,18 +216,91 @@ Para que practiques te dejamos la siguiente lista de problemas relacionados con 
 
 \end{itemize}
 \end{block}
+\end{column}
+\end{columns}
 
-%\begin{block}{References}
+\begin{columns}[t, totalwidth=\threecolwid] % Split up the two columns wide column
 
-%\nocite{*} % Insert publications even if they are not cited in the poster
-%\small{\bibliographystyle{unsrt}
-%\bibliography{sample}\vspace{0.75in}}
+%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
-%\end{block}
+\begin{column}{\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+\begin{block}{Experimental results}
 
-%----------------------------------------------------------------------------------------
+\begin{figure}
+\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
+\caption{boxplot of training accuracies}
+\end{figure}
 
-\end{column} % End of the third column
+\end{block}
+\end{column}
+\begin{column}{\onecolwid}
+\begin{block}{Experimental results}
+
+\begin{figure}
+\includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
+\caption{boxplot of training accuracies}
+\end{figure}
+
+\begin{figure}
+\centering
+
+\begin{subfigure}{.4\linewidth}
+\centering
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_01.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_02.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_03.png}\\
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_04.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_05.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_06.png}\\
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_07.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_08.png} \hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_09.png}
+\caption{pre-trained}
+\end{subfigure}
+\begin{subfigure}{.4\linewidth}
+\centering
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_01.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_02.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_03.png}\\
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_04.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_05.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_06.png}\\
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_07.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_08.png}\hspace{0.05\linewidth}
+\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_09.png}
+\caption{random-init}
+\end{subfigure}
+
+\caption{random first-layer filters of CNN's trained on the whole CIFAR-10 dataset}
+
+\end{figure}
+
+\end{block}
+\end{column}
+
+\begin{column}{\onecolwid}
+\begin{block}{Experimental results}
+TODO: add the results
+\end{block}
+
+
+\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
+\setbeamercolor{block alerted title}{fg=black, bg=gray} % Colors of the highlighted block titles
+\setbeamercolor{block alerted body}{fg=black, bg=white} % Colors of the body of highlighted blocks
+% Many more colors are available for use in beamerthemeconfposter.sty
+
+
+\begin{alertblock}{miscellaneous findings}
+\begin{itemize}
+	\item (pixel-wise) average cross-entropy not suited for convolutional autoencoder (useful for non-conv)
+	\item max-pooling for regularization did not work on the relu autoencoder
+\end{itemize}
+\end{alertblock}
+\end{column}
+\end{columns}
+
+\end{column}
 
 \end{columns} % End of all the columns in the poster
 
