@@ -213,7 +213,7 @@ def main():
 	elif DATASET == "CKPLUS":
 		import scripts.load_ckplus as load_ckplus
 		dataset = load_ckplus.read_data_sets(one_hot=True)
-		input_size = (49,64)
+		input_size = (68,65)
 		num_classes = load_ckplus.NUM_CLASSES
 		one_hot_labels = True
 		nhwd_shape = False
