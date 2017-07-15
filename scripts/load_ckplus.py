@@ -13,7 +13,7 @@ from tensorflow.contrib.learn.python.learn.datasets.mnist import DataSet, dense_
 import traceback
 
 PATCH_SIZE = (325, 340)
-INPUT_SIZE = (68,65)
+INPUT_SIZE = (65,68)
 NUM_CLASSES = 7
 
 
