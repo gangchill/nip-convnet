@@ -112,30 +112,27 @@ def read_from_folders(folders, frames):
             for sequence in os.listdir(os.path.join(dataset_path, subject)):
                 if os.path.isdir(os.path.join(dataset_path, subject, sequence)):
                     for pngfile in os.listdir(os.path.join(dataset_path, subject, sequence)):
-                        if frames == None:
+                        if frames is None and not ("thumb" in pngfile or "patch" in pngfile):
                             emotion = 0
-                        else:
+                        elif frames:
                             try:
                                 # Try to assign corresponding emotion, raises IndexError if not found
                                 emotion = [e['emotion'] for e in emotions if e['filename'] == pngfile.split('.')[:-1][0]][0]
+
+                                # Create thumbnail of image
+                                img_path = os.path.join(subject, sequence, pngfile)
+                                thumb_path = create_image_thumbnail(img_path, all_landmarks)
+
+                                image = scipy.misc.imread(thumb_path).flatten()
+
+                                # Normalize pixel values
+                                #image = image * (1. / 255)
+
+                                image_dict = dict(enumerate(image))
+                                image_dict['emotion'] = emotion - 1
+                                data.append(image_dict)
                             except IndexError:
                                 pass
-
-                        try:
-                            # Create thumbnail of image
-                            img_path = os.path.join(subject, sequence, pngfile)
-                            thumb_path = create_image_thumbnail(img_path, all_landmarks)
-
-                            image = scipy.misc.imread(thumb_path).flatten()
-
-                            # Normalize pixel values
-                            #image = image * (1. / 255)
-
-                            image_dict = dict(enumerate(image))
-                            image_dict['emotion'] = emotion - 1
-                            data.append(image_dict)
-                        except:
-                            print(traceback.format_exc())
     return data
 
 
