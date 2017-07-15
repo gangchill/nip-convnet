@@ -1,5 +1,9 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import numpy 				as np
+import matplotlib 			as mpl
+
+mpl.use('agg')
+
+import matplotlib.pyplot 	as plt
 
 def main():
 
@@ -75,7 +79,17 @@ def create_mnist_boxplot():
 	visualize_boxplot(data, 'mnist', [1,10,55], trial_counts, mnist_ylims)
 
 
-def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size = 20):
+def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size = 20, incl_trial_cnt = False):
+
+	fontsize 	= 25
+	linewidth 	= 4
+	ticksize 	= 20
+	boxwidth 	= 0.5
+
+	bxplt_linewidth = 3
+
+	mpl.rcParams['xtick.labelsize'] = ticksize
+	mpl.rcParams['ytick.labelsize'] = ticksize
 
 	# presentation
 	fig = plt.figure(figsize=(20, 10))
@@ -83,12 +97,61 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size =
 	x_labels    = ['random-init', 'pre-trained']
 	sets = len(data)
 
+
+	widths = [boxwidth for i in range(len(data[0]))]
+
 	for i in range(sets):
 
 		plt.subplot(1, sets, i+1)
-		plt.title('{} {}k ({} trials)'.format(dataset_name, in_k_sizes[i], trials[i]), fontsize=font_size)
+
+		if incl_trial_cnt:
+			plt.title('{} {}k ({} trials)'.format(dataset_name, in_k_sizes[i], trials[i]), fontsize=font_size)
+		else:
+			plt.title('{} {}k'.format(dataset_name, in_k_sizes[i]), fontsize=font_size)
+
 		plt.ylim(ylims)
-		plt.boxplot(data[i], 0, '')
+		# plt.boxplot(data[i], 0, '', patch_artist = False, widths = widths, meanline=True)
+		
+		## ##### ##
+		# BOXPLOT # 
+		## ##### ##
+
+		ax = plt.gca()
+		bp = ax.boxplot(data[i], 0, '', patch_artist=True)
+
+		## change outline color, fill color and linewidth of the boxes
+		for box in bp['boxes']:
+		    # change outline color
+		    box.set( color='#7570b3', linewidth=bxplt_linewidth)
+		    # change fill color
+		    box.set( facecolor = '#1b9e77' )
+
+
+		## change color and linewidth of the whiskers
+		for whisker in bp['whiskers']:
+		    whisker.set(color='#7570b3', linewidth=bxplt_linewidth)
+
+		## change color and linewidth of the caps
+		for cap in bp['caps']:
+		    cap.set(color='#7570b3', linewidth=bxplt_linewidth)
+
+		## change color and linewidth of the medians
+		for median in bp['medians']:
+		    median.set(color='#b2df8a', linewidth=bxplt_linewidth)
+
+		'''
+		## change the style of fliers and their fill
+		for flier in bp['fliers']:
+		    flier.set(marker='o', color='#e7298a', alpha=0.5)
+		'''
+
+		ax.get_xaxis().tick_bottom()
+		ax.get_yaxis().tick_left()
+
+		for tick in ax.xaxis.get_major_ticks():
+			tick.label.set_fontsize(fontsize) 
+
+
 		plt.xticks([1,2], x_labels)
 
 	filename = 'boxplots_{}.png'.format(dataset_name)
