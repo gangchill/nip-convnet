@@ -20,6 +20,8 @@ NUM_CLASSES = 7
 dataset_path = "datasets/cohn-kanade-images"
 emotions_path = "datasets/Emotion"
 
+landmarks = {}
+
 def normalize_filename(fn):
     return '_'.join(fn.split('.')[0].split('_')[:3])
 
@@ -40,6 +42,7 @@ def identify_patch(landmarks):
     return (left, top, right, bottom)
 
 def load_landmarks():
+    print("Loading landmarks")
     dataset_path = "datasets/Landmarks"
     x_dists = []
     y_dists = []
@@ -58,7 +61,8 @@ def load_landmarks():
                             print(traceback.format_exc())
     return all_landmarks
 
-def create_image_thumbnail(img_path, landmarks):
+def create_image_thumbnail(img_path):
+    global landmarks
     image_path = normalize_filename(img_path)
     thumb_size = INPUT_SIZE
     thumb_path = '.'.join(img_path.split('.')[:-1]) + '_patch_' + str(thumb_size[0]) + str(thumb_size[1]) + '.png'
@@ -66,6 +70,10 @@ def create_image_thumbnail(img_path, landmarks):
 
 
     if not os.path.isfile(thumb_path):
+        if not landmarks:
+            # Load landmarks
+            landmarks = load_landmarks()
+
         image = Image.open(os.path.join(dataset_path, image_path) + '.png')
         image = image.crop(identify_patch(landmarks[image_path]))
         image = image.resize(thumb_size, Image.ANTIALIAS)
@@ -102,9 +110,6 @@ def read_from_folders(folders, frames):
                                     filename = base_filename + '_' + str(frame_number-i-1).rjust(8, '0')
                                     emotions.append({'filename': filename, 'emotion': emotion})
 
-    # Load landmarks
-    all_landmarks = load_landmarks()
-
     # Load images
     data = []
     for subject in os.listdir(dataset_path):
@@ -121,7 +126,7 @@ def read_from_folders(folders, frames):
 
                                 # Create thumbnail of image
                                 img_path = os.path.join(subject, sequence, pngfile)
-                                thumb_path = create_image_thumbnail(img_path, all_landmarks)
+                                thumb_path = create_image_thumbnail(img_path)
 
                                 image = scipy.misc.imread(thumb_path, mode='F').flatten()
                                 if len(image) == 4420:
@@ -157,8 +162,8 @@ def read_data_sets(split=True, num_train_folders=90, num_test_folders=24, one_ho
         print("{} CK+ TEST datapoints loaded".format(len(test_df)))
     else:
         train_df = pd.DataFrame(read_from_folders(all_folders, frames))
-        validation_df = train_df.head().copy()
-        test_df = train_df.head().copy()
+        validation_df = train_df.copy()
+        test_df = train_df.copy()
         print("{} CK+ TRAIN datapoints loaded".format(len(train_df)))
 
     if one_hot:
