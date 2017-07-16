@@ -139,42 +139,53 @@ def read_from_folders(folders, frames):
     return data
 
 
-def read_data_sets(split=True, num_train_folders=90, one_hot=True, frames=3):
+def read_data_sets(split=True, num_train_folders=90, num_test_folders=30, one_hot=True, frames=3):
 
     all_folders = os.listdir(emotions_path)
     random.Random(0).shuffle(all_folders)
 
     if split:
         train_folders = all_folders[:num_train_folders]
-        validation_folders = all_folders[num_train_folders:]
+        test_folders = all_folders[num_train_folders:num_train_folders+num_test_folders]
+        validation_folders = all_folders[num_train_folders+num_test_folders:]
 
         train_df = pd.DataFrame(read_from_folders(train_folders, frames))
-        test_df = pd.DataFrame(read_from_folders(validation_folders, frames))
+        validation_df = pd.DataFrame(read_from_folders(validation_folders, frames))
+        test_df = pd.DataFrame(read_from_folders(test_folders, frames))
         print("{} CK+ TRAIN datapoints loaded".format(len(train_df)))
+        print("{} CK+ VALIDATION datapoints loaded".format(len(validation_df)))
         print("{} CK+ TEST datapoints loaded".format(len(test_df)))
     else:
         train_df = pd.DataFrame(read_from_folders(all_folders, frames))
+        validation_df = train_df.head().copy()
         test_df = train_df.head().copy()
         print("{} CK+ TRAIN datapoints loaded".format(len(train_df)))
 
     if one_hot:
         train_labels = dense_to_one_hot(train_df['emotion'].values, NUM_CLASSES)
+        validation_labels = dense_to_one_hot(validation_df['emotion'].values, NUM_CLASSES)
         test_labels = dense_to_one_hot(test_df['emotion'].values, NUM_CLASSES)
     else:
         train_labels = train_df['emotion']
+        validation_labels = validation_df['emotion']
         test_labels = test_df['emotion']
     del train_df['emotion']
+    del validation_df['emotion']
     del test_df['emotion']
 
     train_idx = np.arange(len(train_labels))
+    validation_idx = np.arange(len(validation_labels))
     test_idx = np.arange(len(test_labels))
     np.random.shuffle(train_idx)
+    np.random.shuffle(validation_idx)
     np.random.shuffle(test_idx)
 
     train_images = train_df.as_matrix()
+    validation_images = validation_df.as_matrix()
     test_images = test_df.as_matrix()
 
     train = DataSet(train_images[train_idx,:], train_labels[train_idx], reshape=False)
+    validation = DataSet(validation_images[validation_idx,:], validation_labels[validation_idx], reshape=False)
     test = DataSet(test_images[test_idx,:], test_labels[test_idx], reshape=False)
 
-    return Datasets(train=train, validation=test, test=None)
+    return Datasets(train=train, validation=validation, test=test)
