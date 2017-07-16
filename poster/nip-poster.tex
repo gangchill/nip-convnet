@@ -122,18 +122,25 @@
 \caption{Input (first row), and a selection of feature maps from the subsequent convolutional layers (rows 2,3 and 4). The last row (feature maps for the 3rd convolution layer) makes up the hidden representation of the CAE}
 \end{figure}
 
+\end{block}
 
+\begin{block}{Activation and Error Function}
+	\centering
+	\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
+
+	\begin{itemize}
+		\item Activation function: scaled tanh (saturating, sigmoidal)
+		\item Error function     : mean-squared error (mean cross-entropy produced blank reconstruction)
+	\end{itemize}
 
 \end{block}
+
 
 \end{alertblock}
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
-
-\setbeamercolor{block alerted title}{fg=black,bg=dorado} % Change the alert block title colors
-\setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
 
 \end{column} % End of the first column
 
@@ -153,178 +160,157 @@
 
 \begin{columns}[t, totalwidth=0.9\threecolwid] % Split up the two columns wide column
 
-%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
+	%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
 
 
-\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
-\begin{block}{MNIST}
+	\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+	\begin{block}{MNIST}
 
-\begin{figure}
+	\begin{figure}
 
-\centering
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_02.png}
+	\centering
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/input_02.png}
 
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_02.png}
-
-
-\caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
-
-\end{figure}
-
-\emph{Dataset Characteristics:}
-
-\begin{itemize}
-	\item Comparatively simple (linear classifier achieves > 90\% accuracy)
-\end{itemize}
-
-\end{block}
-\end{column}
-
-\begin{column}{0.9\onecolwid}
-\begin{block}{CIFAR}
-\begin{figure}
-\centering
-%\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_02.png}
-
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_02.png}
-
-\caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
-
-\end{figure}
-
-\emph{Dataset Characteristics:}\\
-\begin{itemize}
-\item natural image classification (difficult)
-\item comparably low resolution
-\end{itemize}
-\end{block}
-\end{column}
-
-\begin{column}{0.9\onecolwid}
-\begin{block}{Extended Cohn-Kanade (CK+)}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_02.png}
-
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_00.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_01.png}
-\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_02.png}
-
-%\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
-\caption{CK+ input image (top) and reconstruction (bottom)}
-\end{figure}
-
-\emph{Dataset Characteristics:}\\
-\begin{itemize}
-	\item natural images (high resolution) 
-	\item pre-processing: image sequences, choose images and subjects and split datasets, cropping and downsampling
-	\item very few data (696 train, 87, val, 198 test in our case)
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/mnist/reconstruction_02.png}
 
 
-\end{itemize}
-%\item Natural images (high resolution)
-%\item More restrained problem than CIFAR (emotion classification).
-%\item Very few datapoints 
-%\item No pre-defined splits
-%\end{itemize}
+	\caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
 
-\end{block}
+	\end{figure}
 
-\end{column}
+	\emph{Dataset Characteristics:}
+
+	\begin{itemize}
+		\item Comparatively simple (linear classifier achieves > 90\% accuracy)
+	\end{itemize}
+
+	\end{block}
+	\end{column}
+
+	\begin{column}{0.9\onecolwid}
+	\begin{block}{CIFAR}
+	\begin{figure}
+	\centering
+	%\includegraphics[width=0.8\linewidth]{graphics/cifar_reconstructions.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/input_02.png}
+
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/cifar/reconstruction_02.png}
+
+	\caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
+
+	\end{figure}
+
+	\emph{Dataset Characteristics:}\\
+	\begin{itemize}
+	\item natural image classification (difficult)
+	\item comparably low resolution
+	\end{itemize}
+	\end{block}
+	\end{column}
+
+	\begin{column}{0.9\onecolwid}
+	\begin{block}{Extended Cohn-Kanade (CK+)}
+
+	\begin{figure}
+	\centering
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_02.png}
+
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_00.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_01.png}
+	\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_02.png}
+
+	%\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
+	\caption{CK+ input image (top) and reconstruction (bottom)}
+	\end{figure}
+
+	\emph{Dataset Characteristics:}\\
+	\begin{itemize} 
+		\item pre-processing and set splitting %: image sequences, choose images and subjects and split datasets, cropping and downsampling
+		\item very few data (696 train, 87, val, 198 test in our case)
+	\end{itemize}
+	%\item Natural images (high resolution)
+	%\item More restrained problem than CIFAR (emotion classification).
+	%\item Very few datapoints 
+	%\item No pre-defined splits
+	%\end{itemize}
+
+	\end{block}
+
+	\end{column}
 
 \end{columns}
 
 
 \begin{columns}[t, totalwidth=0.9\threecolwid] % Split up the two columns wide column
 
-%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
+	%\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
-\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
-\begin{block}{}
-\emph{Experimental results:}
+	\begin{column}{0.9\onecolwid} % Begin a column which is one column wide (subcolumn 1)
+	\begin{block}{}
+	\emph{Experimental results:}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
-\caption{\emph{MNIST}: test set accuracy comparison for different training set sizes (stddev in black)}
-\end{figure}
+	\begin{figure}
+	\includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
+	\caption{\emph{MNIST}: test set accuracy comparison for different training set sizes (stddev in black)}
+	\end{figure}
 
-\end{block}
-\end{column}
-\begin{column}{0.9\onecolwid}
-\begin{block}{}
-\emph{Experimental results:}
+	\end{block}
+	\end{column}
+	\begin{column}{0.9\onecolwid}
+	\begin{block}{}
+	\emph{Experimental results:}
 
-\begin{figure}
-\includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
-\caption{\emph{CIFAR-10}: test set accuracy comparison for different training set sizes (stddev in black)}
-\end{figure}
+	\begin{figure}
+	\includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
+	\caption{\emph{CIFAR-10}: test set accuracy comparison for different training set sizes (stddev in black)}
+	\end{figure}
 
-\end{block}
-\end{column}
+	\end{block}
+	\end{column}
 
-\begin{column}{0.9\onecolwid}
-\begin{block}{}
-\emph{Experimental results:}
+	\begin{column}{0.9\onecolwid}
+	\begin{block}{}
+	\emph{Experimental results:}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.33\linewidth]{box_plots/boxplots_ckplus.png}
-\caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
-\end{figure}
+	\begin{figure}
+	\centering
+	\includegraphics[width=0.33\linewidth]{box_plots/boxplots_ckplus.png}
+	\caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
+	\end{figure}
 
-\end{block}
+	\end{block}
 
 
-\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
-\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
-\setbeamercolor{block alerted title}{fg=black, bg=gray} % Colors of the highlighted block titles
-\setbeamercolor{block alerted body}{fg=black, bg=white} % Colors of the body of highlighted blocks
-% Many more colors are available for use in beamerthemeconfposter.sty
+	\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+	\setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
+	\setbeamercolor{block alerted title}{fg=black, bg=gray} % Colors of the highlighted block titles
+	\setbeamercolor{block alerted body}{fg=black, bg=white} % Colors of the body of highlighted blocks
+	% Many more colors are available for use in beamerthemeconfposter.sty
 
-\end{column}
+	\end{column}
 \end{columns}
+
 
 \end{alertblock}
 
-
-\end{column}
-\end{columns} % End of all the columns in the poster
-
+\begin{alertblock}{Results}
 
 \begin{columns}[t]
 
-	\begin{column}{\onecolwid}
-
-		\begin{alertblock}{CAE: Activation and Error Function}
-			\centering
-			\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
-
-			\begin{itemize}
-				\item Activation function: scaled tanh (saturating, sigmoidal)
-				\item Error function     : mean-squared error (mean cross-entropy produced blank reconstruction)
-			\end{itemize}
-
-		\end{alertblock}
-
-	\end{column}
-
-
 	\begin{column}{1.5\onecolwid}
 
-		\begin{alertblock}{Pre-Training and Filter Structure}
+		\begin{block}{Pre-Training and Filter Structure}
 
 			\begin{figure}
 			\centering
@@ -380,13 +366,13 @@
 
 			Although accuracy differences are only subtle, the first-layer filters of the pre-trained network show a clear and interpretable structure as opposed to the ones learned by the randomly initialized network.
 
-		\end{alertblock}
+		\end{block}
 
 	\end{column}
 
 	\begin{column}{1.5\onecolwid}
 
-		\begin{alertblock}{Rectified Linear Units}
+		\begin{block}{Rectified Linear Units}
 
 			\begin{figure}
 				\centering
@@ -424,7 +410,7 @@
 
 			ReLU's achieve very good reconstruction results but max-pooling does not seem sufficient for normalization. The learned filters lack a clear structure.
 
-		\end{alertblock}
+		\end{block}
 
 		\end{column}
 
@@ -432,6 +418,11 @@
 
 \end{columns}
 
+\end{alertblock}
+
+
+\end{column}
+\end{columns} % End of all the columns in the poster
 
 
 \end{frame} % End of the enclosing frame
