@@ -63,9 +63,9 @@
 %	TITLE SECTION 
 %----------------------------------------------------------------------------------------
 
-\title{CNN pre-training using convolutional autoencoders} % Poster title
+\title{CNN Pre-Training Using Convolutional Autoencoders} % Poster title
 
-\author{Russell Hofmann, Sabbir Ahmed, Maximilian Kohlbrenner } % Author(s)
+\author{Russell Hofmann, Sabbir Ahmmed, Maximilian Kohlbrenner } % Author(s)
 
 \institute{TU Berlin} % Institution(s)
 
@@ -113,8 +113,8 @@
 \begin{block}{Convolutional Autoencoders}
 
 \begin{itemize}
-	\item convolutional architecture, reconstruction similar to deconvolution method 
-	\item regularization achieved using max-pooling
+	\item Convolutional architecture, reconstruction similar to deconvolution method 
+	\item Regularization achieved using max-pooling (Masci, J., Meier, U., Cireşan, D. and Schmidhuber, J., 2011)
 \end{itemize}
 
 \begin{figure}
@@ -129,12 +129,12 @@
 
 \begin{block}{CAE: Activation and Error Function}
 	\centering
-	%\textbf{Activation and Error Function}
+
 	\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
 
 	\begin{itemize}
-		\item Activation function: scaled tanh (saturating, sigmoidal)
-		\item Error function     : mean-squared error (mean cross-entropy produced blank reconstruction)
+		\item Activation function: scaled-tanh (saturating, sigmoidal)
+		\item Error function: mean-squared error (mean cross-entropy produced blank reconstruction)
 	\end{itemize}
 
 \end{block}
@@ -190,7 +190,7 @@
 	\emph{Dataset Characteristics:}
 
 	\begin{itemize}
-		\item Comparatively simple (linear classifier achieves > 90\% accuracy)
+		\item Comparatively simple (linear classifier achieves $>$~90\% accuracy)
 	\end{itemize}
 
 	\end{block}
@@ -322,8 +322,10 @@
 			\begin{itemize}
 				\item Pre-Training consistently increases accuracy over all tested datasets and most training sizes (figures~\ref{fig:mnist_plot},~\ref{fig:cifar_plot} and~\ref{fig:ckplus_plot})
 
-				\item After training, pre-trained network's first-layer filters show a clearer structure (figure~\ref{fig:cifar_filters}))
+				\item After training, pre-trained network's first-layer filters show a clearer structure (figure~\ref{fig:cifar_filters})
 				%The first-layer filters of the pre-trained networks show a clear and interpretable structure as opposed to the ones learned by the randomly initialized network (\ref{fig:cifar_filters})
+
+				\item CAE error function is crucial
 
 				\item When changing from sigmoidal to ReLU activation function, max-pooling no longer seems sufficient for CAE regularization (figure~\ref{fig:relu_cae}) 
 
@@ -386,7 +388,7 @@
 					%\caption{\emph{CIFAR-10}(CNN): random first layer filters, random-init}
 				\end{subfigure}
 
-			\caption{(\emph{CIFAR-10} CNN): Selection of first layer filters. pre-trained (left), random-init (right)}
+			\caption{\textbf{\emph{CIFAR-10} CNN} selection of first layer filters. pre-trained (left), random-init (right)}
 			\label{fig:cifar_filters}
 
 			\end{figure}
@@ -420,7 +422,7 @@
 
 				\end{subfigure}
 
-			\caption{(ReLU CAE:) example input + reconstruction (left), selection of first layer filters (right) }
+			\caption{\textbf{ReLU CAE} example input + reconstruction (left), selection of first layer filters (right) }
 			\label{fig:relu_cae}
 
 			\end{figure}
