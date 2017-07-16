@@ -26,7 +26,7 @@
 
 \usepackage{subcaption}
 
-\usepackage[scale=1.24, size=a0]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage[scale=1.1, size=a0]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage[utf8]{inputenc}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
@@ -101,15 +101,15 @@
 
 \begin{block}{Convolutional Autoencoders}
 
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{graphics/feature_map_walkthrough_ckplus.png}
+\caption{Input (first row), and a selection of feature maps from the first conv layer (second row), second conv layer (third row) and feature map representation (fourth row)}
+\end{figure}
+
 \begin{itemize}
 	\item convolutional architecture, reconstruction similar to deconvolution method 
 	\item regularization achieved using max-pooling
 \end{itemize}
-
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{graphics/feature_map_walkthrough_mnist.png}
-\caption{input, feature map representation and reconstruction through the layers of a CAE}
-\end{figure}
 
 \end{block}
 
@@ -129,14 +129,6 @@
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\begin{alertblock}{Activation- and error function}
-	\centering
-	\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
-
-	Using the mean cross-entropy over all pixels, the deeper autoencoders learned a blank image as reconstruction. The mean-squared error gives good results. The graph shows the both measures in function of training iterations when minimizing the mean-squared error. 
-
-\end{alertblock}
-
 \setbeamercolor{block alerted title}{fg=black,bg=dorado} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
 
@@ -152,7 +144,7 @@
 \begin{column}{\threecolwid}
 
 
-\begin{alertblock}{MAIN}
+\begin{alertblock}{Pre-Training Experiments}
 
 \centering
 
@@ -180,7 +172,11 @@
 
 \end{figure}
 
-\emph{Dataset Challenges}: Comparatively simple dataset (linear classifier achieves > 90\% accuracy)
+\emph{Dataset Characteristics:}
+
+\begin{itemize}
+	\item Comparatively simple (linear classifier achieves > 90\% accuracy)
+\end{itemize}
 
 \end{block}
 \end{column}
@@ -202,7 +198,7 @@
 
 \end{figure}
 
-\emph{Dataset Challenges:}
+\emph{Dataset Characteristics:}\\
 \begin{itemize}
 \item natural image classification (difficult)
 \item comparably low resolution
@@ -212,22 +208,26 @@
 
 \begin{column}{0.9\onecolwid}
 \begin{block}{Extended Cohn-Kanade (CK+)}
+
 \begin{figure}
 \centering
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/input_00.png}
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/input_01.png}
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/input_02.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_00.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_01.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/input_02.png}
 
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/reconstruction_00.png}
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/reconstruction_01.png}
-\includegraphics[width=0.3\linewidth]{graphics/reconstructions/ckplus/reconstruction_02.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_00.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_01.png}
+\includegraphics[width=0.2\linewidth]{graphics/reconstructions/ckplus/reconstruction_02.png}
 
 %\includegraphics[width=0.8\linewidth]{graphics/ckplus_reconstructions_better.png}
-\caption{CK+ input image (left) and reconstruction (right)}
+\caption{CK+ input image (top) and reconstruction (bottom)}
 \end{figure}
 
-\emph{Dataset Challenges:}
-natural images (high resolution) but easier problem than cifar. However : very few data
+\emph{Dataset Characteristics:}\\
+\begin{itemize}
+	\item natural images (high resolution) 
+	\item very few data
+\end{itemize}
 %\item Natural images (high resolution)
 %\item More restrained problem than CIFAR (emotion classification).
 %\item Very few datapoints 
@@ -251,7 +251,7 @@ natural images (high resolution) but easier problem than cifar. However : very f
 
 \begin{figure}
 \includegraphics[width=\linewidth]{box_plots/boxplots_mnist.png}
-\caption{test set accuracy comparison for different training set sizes}
+\caption{\emph{MNIST}: test set accuracy comparison for different training set sizes}
 \end{figure}
 
 \end{block}
@@ -262,7 +262,7 @@ natural images (high resolution) but easier problem than cifar. However : very f
 
 \begin{figure}
 \includegraphics[width=\linewidth]{box_plots/boxplots_cifar.png}
-\caption{test set accuracy comparison for different training set sizes}
+\caption{\emph{CIFAR-10}: test set accuracy comparison for different training set sizes}
 \end{figure}
 
 \end{block}
@@ -271,6 +271,13 @@ natural images (high resolution) but easier problem than cifar. However : very f
 \begin{column}{0.9\onecolwid}
 \begin{block}{}
 \emph{Experimental results:}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.33\linewidth]{box_plots/boxplots_ckplus.png}
+\caption{\emph{CK+}: test set accuracy comparison for 696 training images}
+\end{figure}
+
 \end{block}
 
 
@@ -285,120 +292,140 @@ natural images (high resolution) but easier problem than cifar. However : very f
 
 \end{alertblock}
 
-\begin{columns}[t, totalwidth=\threecolwid]
-\begin{column}{1.5\onecolwid}
-
-\begin{alertblock}{Rectified Linear Units}
-
-	\begin{figure}
-		\centering
-
-		\begin{subfigure}{0.4\linewidth}
-
-			\centering
-			\includegraphics[width=0.4\linewidth]{graphics/reconstructions/cifar/relu/input_00_relu.png}
-			\includegraphics[width=0.4\linewidth]{graphics/reconstructions/cifar/relu/reconstruction_00_relu.png}
-
-			\caption{Almost perfect reconstruction using ReLU activation + smaller network size}
-
-		\end{subfigure}
-		\begin{subfigure}{0.4\linewidth}
-
-			\centering
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_00.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_01.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_02.png} \\
-			\vspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_03.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_04.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_05.png} \\
-			\vspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_06.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_07.png} \hspace{0.05\linewidth}
-			\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_08.png} 
-
-			\caption{Structureless filters learned in the process}
-
-		\end{subfigure}
-
-
-	\end{figure}
-
-	ReLU's achieve very good reconstruction results but max-pooling does not seem sufficient for normalization. The learned filters lack a clear structure.
-
-\end{alertblock}
 
 \end{column}
+\end{columns} % End of all the columns in the poster
 
-\begin{column}{1.5\onecolwid}
 
-	\begin{alertblock}{Pre-training: learned filters}
+\begin{columns}[t]
 
-		\begin{figure}
-		\centering
+	\begin{column}{\onecolwid}
 
-			\begin{subfigure}{.4\linewidth}
+		\begin{alertblock}{Activation- and Error Function}
+			\centering
+			\includegraphics[width=.7\linewidth]{graphics/mse_ce_comparison.png}
+
+			\begin{itemize}
+				\item Activation function: sigmoidial (scaled tanh)
+				\item Error function     : mean-squared error (mean cross-entropy produced blank reconstruction)
+			\end{itemize}
+
+		\end{alertblock}
+
+	\end{column}
+
+
+	\begin{column}{1.5\onecolwid}
+
+		\begin{alertblock}{Pre-training: learned filters}
+
+			\begin{figure}
+			\centering
+
+				\begin{subfigure}{.4\linewidth}
+					\centering
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_01.png} 
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_02.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_03.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_04.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_05.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_06.png} \\
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_07.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_08.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_09.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_10.png} 
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_11.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_12.png} \\
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_13.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_14.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_15.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_16.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_17.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_18.png}
+					\caption{pre-trained}
+				\end{subfigure}
+				\begin{subfigure}{.4\linewidth}
+					\centering
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_01.png} 
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_02.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_03.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_04.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_05.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_06.png} \\
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_07.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_08.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_09.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_10.png} 
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_11.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_12.png} \\
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_13.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_14.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_15.png}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_16.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_17.png} %\hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_18.png}
+					\caption{random-init}
+				\end{subfigure}
+
+				\caption{random first-layer filters of CNN's trained on the whole CIFAR-10 dataset}
+
+			\end{figure}
+
+			Although accuracy differences are only subtle, the first-layer filters of the pre-trained network show a clear and interpretable structure as opposed to the ones learned by the randomly initialized network.
+
+		\end{alertblock}
+
+	\end{column}
+
+	\begin{column}{1.5\onecolwid}
+
+		\begin{alertblock}{Rectified Linear Units}
+
+			\begin{figure}
 				\centering
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_01.png} 
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_02.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_03.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_04.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_05.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_06.png} \\
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_07.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_08.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_09.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_10.png} 
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_11.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_12.png} \\
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_13.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_14.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_15.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_16.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_17.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/pre_trained_18.png}
-				\caption{pre-trained}
-			\end{subfigure}
-			\begin{subfigure}{.4\linewidth}
-				\centering
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_01.png} 
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_02.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_03.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_04.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_05.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_06.png} \\
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_07.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_08.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_09.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_10.png} 
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_11.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_12.png} \\
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_13.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_14.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_15.png}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_16.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_17.png} %\hspace{0.05\linewidth}
-				\includegraphics[width=0.1\linewidth]{graphics/cifar_filters/random_18.png}
-				\caption{random-init}
-			\end{subfigure}
 
-			\caption{random first-layer filters of CNN's trained on the whole CIFAR-10 dataset}
+				\begin{subfigure}{0.4\linewidth}
 
-		\end{figure}
+					\centering
+					\includegraphics[width=0.4\linewidth]{graphics/reconstructions/cifar/relu/input_00_relu.png}
+					\includegraphics[width=0.4\linewidth]{graphics/reconstructions/cifar/relu/reconstruction_00_relu.png}
 
-		Although accuracy differences are only subtle, the first-layer filters of the pre-trained network show a clear and interpretable structure as opposed to the ones learned by the randomly initialized network.
+					\caption{Almost perfect reconstruction using ReLU activation + smaller network size}
 
-	\end{alertblock}
+				\end{subfigure}
+				\begin{subfigure}{0.4\linewidth}
 
-\end{column}
+					\centering
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_00.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_01.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_02.png} \\
+					\vspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_03.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_04.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_05.png} \\
+					\vspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_06.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_07.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{graphics/reconstructions/cifar/relu/relu_filter_08.png} 
+
+					\caption{Structureless filters learned in the process}
+
+				\end{subfigure}
+
+
+			\end{figure}
+
+			ReLU's achieve very good reconstruction results but max-pooling does not seem sufficient for normalization. The learned filters lack a clear structure.
+
+		\end{alertblock}
+
+		\end{column}
+
+
 
 \end{columns}
 
 
-
-
-\end{column}
-\end{columns} % End of all the columns in the poster
 
 \end{frame} % End of the enclosing frame
 

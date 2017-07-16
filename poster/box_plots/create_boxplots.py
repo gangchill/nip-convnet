@@ -16,7 +16,7 @@ def create_cifar_boxplot():
 	# CIFAR #
 	## ### ##
 
-	cifar_1k_pre_trained = [0.3655, 0.3703, 0.3681, 03634, 0.3650, 0.3698, 0.3800, 0.3679, 0.3652] 
+	cifar_1k_pre_trained = [0.3655, 0.3703, 0.3681, 0.3634, 0.3650, 0.3698, 0.3800, 0.3679, 0.3652] 
 	cifar_1k_random_init = [0.3628, 0.3754, 0.3712, 0.3614, 0.3721, 0.3729, 0.3648, 0.3793, 0.3704, 0.3737]
 	cifar_1k = [cifar_1k_random_init, cifar_1k_pre_trained]
 	cifar_1k_trial_count = min(len(cifar_1k_pre_trained), len(cifar_1k_random_init))
@@ -40,9 +40,21 @@ def create_cifar_boxplot():
 
 def create_ckplus_boxplot():
 	
-	print('ckplus not implemented, feed data!!!')
+	## #### ##
+	# CKPLUS #
+	## #### ##
 
-	pass
+	ckplus_full_pre_trained = [0.7323, 0.7374] 
+	ckplus_full_random_init = [0.6919, 0.7172, 0.6869, 0.7172, 0.7071]
+	ckplus_full = [ckplus_full_random_init, ckplus_full_pre_trained]
+	ckplus_full_trial_count = min(len(ckplus_full_pre_trained), len(ckplus_full_random_init))
+
+	ckplus_ylims = 0.6, 0.8
+
+	data 			= [ckplus_full]
+	trial_counts 	= [ckplus_full_trial_count]
+
+	visualize_boxplot(data, 'ckplus', [0.696], trial_counts, ckplus_ylims)
 
 
 def create_mnist_boxplot():
@@ -71,7 +83,7 @@ def create_mnist_boxplot():
 	mnist_full = [mnist_full_random_init, mnist_full_pre_trained]
 	mnist_full_trial_count = min(len(mnist_full_random_init), len(mnist_full_pre_trained))
 
-	mnist_ylims = 0.89, 0.99
+	mnist_ylims = 0.9, 1.0
 
 	data 			= [mnist_1k, mnist_10k, mnist_full]
 	trial_counts 	= [mnist_1k_trial_count, mnist_10k_trial_count, mnist_full_trial_count]
@@ -79,11 +91,11 @@ def create_mnist_boxplot():
 	visualize_boxplot(data, 'mnist', [1,10,55], trial_counts, mnist_ylims)
 
 
-def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size = 20, incl_trial_cnt = False):
+def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, incl_trial_cnt = False, plot_mode = 'barplot'):
 
-	fontsize 	= 25
+	fontsize 	= 27
 	linewidth 	= 4
-	ticksize 	= 20
+	ticksize 	= 30
 	boxwidth 	= 0.5
 
 	bxplt_linewidth = 3
@@ -92,7 +104,7 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size =
 	mpl.rcParams['ytick.labelsize'] = ticksize
 
 	# presentation
-	fig = plt.figure(figsize=(20, 10))
+	fig = plt.figure(figsize=(20 / 3. * len(data), 10))
 
 	x_labels    = ['random-init', 'pre-trained']
 	sets = len(data)
@@ -105,54 +117,112 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, font_size =
 		plt.subplot(1, sets, i+1)
 
 		if incl_trial_cnt:
-			plt.title('{} {}k ({} trials)'.format(dataset_name, in_k_sizes[i], trials[i]), fontsize=font_size)
+			plt.title('{} {}k ({} trials)'.format(dataset_name, in_k_sizes[i], trials[i]), fontsize=fontsize)
 		else:
-			plt.title('{} {}k'.format(dataset_name, in_k_sizes[i]), fontsize=font_size)
+			plt.title('{} {}k'.format(dataset_name, in_k_sizes[i]), fontsize=fontsize)
 
 		plt.ylim(ylims)
-		# plt.boxplot(data[i], 0, '', patch_artist = False, widths = widths, meanline=True)
+
+		plt.yticks(np.linspace(ylims[0], ylims[1], 5))
 		
-		## ##### ##
-		# BOXPLOT # 
-		## ##### ##
+		if plot_mode == 'boxplot':
 
-		ax = plt.gca()
-		bp = ax.boxplot(data[i], 0, '', patch_artist=True)
+			## ##### ##
+			# BOXPLOT # 
+			## ##### ##
 
-		## change outline color, fill color and linewidth of the boxes
-		for box in bp['boxes']:
-		    # change outline color
-		    box.set( color='#7570b3', linewidth=bxplt_linewidth)
-		    # change fill color
-		    box.set( facecolor = '#1b9e77' )
+			ax = plt.gca()
+			bp = ax.boxplot(data[i], 0, '', patch_artist=True)
 
-
-		## change color and linewidth of the whiskers
-		for whisker in bp['whiskers']:
-		    whisker.set(color='#7570b3', linewidth=bxplt_linewidth)
-
-		## change color and linewidth of the caps
-		for cap in bp['caps']:
-		    cap.set(color='#7570b3', linewidth=bxplt_linewidth)
-
-		## change color and linewidth of the medians
-		for median in bp['medians']:
-		    median.set(color='#b2df8a', linewidth=bxplt_linewidth)
-
-		'''
-		## change the style of fliers and their fill
-		for flier in bp['fliers']:
-		    flier.set(marker='o', color='#e7298a', alpha=0.5)
-		'''
-
-		ax.get_xaxis().tick_bottom()
-		ax.get_yaxis().tick_left()
-
-		for tick in ax.xaxis.get_major_ticks():
-			tick.label.set_fontsize(fontsize) 
+			## change outline color, fill color and linewidth of the boxes
+			for box in bp['boxes']:
+			    # change outline color
+			    box.set( color='#7570b3', linewidth=bxplt_linewidth)
+			    # change fill color
+			    box.set( facecolor = '#1b9e77' )
 
 
-		plt.xticks([1,2], x_labels)
+			## change color and linewidth of the whiskers
+			for whisker in bp['whiskers']:
+			    whisker.set(color='#7570b3', linewidth=bxplt_linewidth)
+
+			## change color and linewidth of the caps
+			for cap in bp['caps']:
+			    cap.set(color='#7570b3', linewidth=bxplt_linewidth)
+
+			## change color and linewidth of the medians
+			for median in bp['medians']:
+			    median.set(color='#b2df8a', linewidth=bxplt_linewidth)
+
+			'''
+			## change the style of fliers and their fill
+			for flier in bp['fliers']:
+			    flier.set(marker='o', color='#e7298a', alpha=0.5)
+			'''
+
+			ax.get_xaxis().tick_bottom()
+			ax.get_yaxis().tick_left()
+
+			for tick in ax.xaxis.get_major_ticks():
+				tick.label.set_fontsize(fontsize) 
+
+			plt.xticks([1,2], x_labels)
+
+		else:
+
+			pt_data = np.array(data[i])[1]
+
+			pt_mean 	= np.mean(pt_data)
+			pt_stddev 	= np.std(pt_data) 
+
+			ri_data = np.array(data[i])[0]
+
+			ri_mean 	= np.mean(ri_data)
+			ri_stddev 	= np.std(ri_data) 
+
+			print 'handling {} {}k'.format(dataset_name, in_k_sizes[i])
+			print 'ri_data: {}'.format(ri_data)
+			print 'ri_mean: {}'.format(ri_mean)
+			print 'ri_stdd: {}'.format(ri_stddev)
+
+			print 'pt_data: {}'.format(pt_data)
+			print 'pt_mean: {}'.format(pt_mean)
+			print 'pt_stdd: {}'.format(pt_stddev)
+
+			ax = plt.gca()
+			pt_bp = ax.bar([1.8], pt_mean, yerr=pt_stddev, error_kw=dict(ecolor='black', lw=2, capsize=5, capthick=2))
+			ri_bp = ax.bar([0.5], ri_mean, yerr=ri_stddev, error_kw=dict(ecolor='black', lw=2, capsize=5, capthick=2))
+
+			ax.set_xlim([0,3])
+
+			for bar in pt_bp:
+
+				# change outline color
+				bar.set( color='#7570b3', linewidth=bxplt_linewidth)
+				# change fill color
+				bar.set( facecolor = '#cca677')
+
+			for bar in ri_bp:
+
+				# change outline color
+				bar.set( color='#7570b3', linewidth=bxplt_linewidth)
+				# change fill color
+				bar.set( facecolor = '#1b9e77' )
+
+			plt.xticks([0.9,2.2], x_labels, ha='center')
+
+			# ax.get_xaxis().tick_bottom()
+			ax.get_yaxis().tick_left()
+
+			plt.tick_params(
+			    axis='x',          # changes apply to the x-axis
+			    which='both',      # both major and minor ticks are affected
+			    bottom='off',      # ticks along the bottom edge are off
+			    top='off') # labels along the bottom edge are off
+
+			for tick in ax.xaxis.get_major_ticks():
+				tick.label.set_fontsize(fontsize) 
+
 
 	filename = 'boxplots_{}.png'.format(dataset_name)
 
