@@ -139,7 +139,7 @@ def read_from_folders(folders, frames):
     return data
 
 
-def read_data_sets(split=True, num_train_folders=90, num_test_folders=30, one_hot=True, frames=3):
+def read_data_sets(split=True, num_train_folders=90, num_test_folders=24, one_hot=True, frames=3):
 
     all_folders = os.listdir(emotions_path)
     random.Random(0).shuffle(all_folders)
