@@ -44,7 +44,7 @@ def create_ckplus_boxplot():
 	# CKPLUS #
 	## #### ##
 
-	ckplus_full_pre_trained = [0.7323, 0.7374] 
+	ckplus_full_pre_trained = [0.7323, 0.7374, 0.7475, 0.7374, 0.7273] 
 	ckplus_full_random_init = [0.6919, 0.7172, 0.6869, 0.7172, 0.7071]
 	ckplus_full = [ckplus_full_random_init, ckplus_full_pre_trained]
 	ckplus_full_trial_count = min(len(ckplus_full_pre_trained), len(ckplus_full_random_init))
