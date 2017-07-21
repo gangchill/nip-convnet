@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[draft]{article}
 
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
@@ -20,6 +20,9 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+
+\usepackage{graphicx}  % Required for including images
+
 
 \title{Formatting instructions for NIPS 2016}
 
@@ -76,7 +79,33 @@
 \section{Introduction}
 \section{Related Work}
 \section{Setup \& Context}
+  \subsection{General Setup}
+    \includegraphics[width=0.8\linewidth]{../graphics/setup.png}
+  \subsection{Autoencoder Training}
+
+  \subsection{Pre-Training and Test Methodology}
+  
+
 \section{Experiments}
+
+  \subsection{Datset Descriptions and Challenges}
+
+    \begin{itemize}
+    \item{MNIST}
+    \item{CIFAR-10}
+    \item{CK+}
+    \end{itemize}
+
+  \subsection{Autoencoder Training}
+  \subsection{Pretraining and Classification}
+
 \section{Discussion and Conclusion}
+  
+  \begin{itemize}
+
+    \item Evaluation of the Results         (Does it work)
+    \item Evaluation of further experiments (When does it work, comparison with relu etc)
+
+  \end{itemize}
 
 \end{document}
