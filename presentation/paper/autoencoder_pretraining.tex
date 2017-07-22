@@ -159,12 +159,36 @@
 
     \begin{itemize}
     \item{MNIST}
+        MNIST is the standard dataset used for image classification. It consists of scanned postal code numbers (?),
+        which are 28 by 28 pixel grayscale images.
     \item{CIFAR-10}
+        The CIFAR dataset is made out of natural scenes, which are 32x32 colorized images. The CIFAR-10 variant,
+        which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
     \item{CK+}
+        The Extended Cohn-Kanade (CK+) dataset was the most interesting dataset during our project. Unlike the other
+        two datasets, no pre-training experiments have been done on CK+, as far as we know.
+        As the CK+ is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
+        We decided to not take the full images, but to use the provided facial landmarks, to put the faces
+        into a bounding box of size (...).
+         
     \end{itemize}
 
   \subsection{Autoencoder Training}
+  For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used
+  these values as input and target output for a convolutional autoencoder.
   \subsection{Pretraining and Classification}
+  The general idea of pretraining a classification neural network, is to transfer the encoding weights of
+  the CAE to the CNN. So we took the convolutional filter weights, which we generated during the autoencoder training,
+  and used them as initial values for the convolutional layers for the classification network.
+
+  As the MNIST and CIFAR-10 datasets consist of a lot more images than CK+, we decided to follow the approach of the paper
+  and take a 1k and 10k subset for these two. So while we still took all training images for building a decent autoencoder,
+  the CNN could only use some of the images. This is especially interesting to check the hypothesis, that pre-training makes
+  more sense, when you have less training images.
+
+  To validate our pretraining experiments, in each run we set up a CNN with randomly initialized filters and a CNN which
+  uses the filters trained by the CAE. Both networks have randomly initialized weights for their dense layers.
+
 
 \section{Discussion and Conclusion}
   
