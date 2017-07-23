@@ -25,6 +25,7 @@
 
 \usepackage{graphicx}  % Required for including images
 
+\bibliographystyle{dcu}
 
 \title{Pre-Training CNN's Using Convolutional Autoencoders}
 
@@ -156,26 +157,72 @@
 \section{Experiments}
 
   \subsection{Datset Descriptions and Challenges}
+  We conducted experiments on three different datasets, which vary in their image size, number of images and colour information.
+    \subsubsection{MNIST}
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/input_00.png}
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/input_01.png}
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/input_02.png}
 
-    \begin{itemize}
-    \item{MNIST}
-        MNIST is the standard dataset used for image classification. It consists of scanned postal code numbers (?),
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
+          \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
+
+          \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
+        \end{figure}
+        MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned postal code numbers (?),
         which are 28 by 28 pixel grayscale images.
-    \item{CIFAR-10}
-        The CIFAR dataset is made out of natural scenes, which are 32x32 colorized images. The CIFAR-10 variant,
-        which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
-    \item{CK+}
-        The Extended Cohn-Kanade (CK+) dataset was the most interesting dataset during our project. Unlike the other
-        two datasets, no pre-training experiments have been done on CK+, as far as we know.
-        As the CK+ is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
-        We decided to not take the full images, but to use the provided facial landmarks, to put the faces
-        into a bounding box of size (...).
-         
-    \end{itemize}
+    \subsubsection{CIFAR-10}
+    	\begin{figure}[h]
+        \centering
+        %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_02.png}
+
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
+
+        \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
+
+      \end{figure}
+      The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The CIFAR-10 variant,
+      which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
+    \subsubsection{CK+}
+    \textbf{if I reproduce images in electronic or print media, to use only those from the following subjects and include notice of copyright (©Jeffrey Cohn).
+S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132}
+      \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_02.png}
+
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_02.png}
+
+        %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
+        \caption{CK+ input image (top) and reconstruction (bottom)}
+      \end{figure}
+      The Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} was the most interesting dataset during our project.
+      Unlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
+      As the CK+ is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
+      We decided to not take the full images, but to use the provided facial landmarks, to put the faces into a bounding box of size (...).
+      - 123 subjects \\
+- 593 emotion sequences with 10 to 60 frames from neutral face to emotional face \\
+- we crop the images using a bounding box and scale them down by factor 5 \\
+- CAE
+    - use all frames as unlabelled input\\
+- for the CNN we use the last 3 frames of all sequences
+    - we split the subjects into 90 training subjects, 9 validation subjects and 24 test subjects\\
+- before training we randomly shuffle the images\\
 
   \subsection{Autoencoder Training}
   For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used
-  these values as input and target output for a convolutional autoencoder.
+  these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way,
+  so that the CNN would give best results.
   \subsection{Pretraining and Classification}
   The general idea of pretraining a classification neural network, is to transfer the encoding weights of
   the CAE to the CNN. So we took the convolutional filter weights, which we generated during the autoencoder training,
@@ -190,6 +237,52 @@
   uses the filters trained by the CAE. Both networks have randomly initialized weights for their dense layers.
 
 
+    \begin{figure}
+      \includegraphics[width=\linewidth]{../box_plots/boxplots_mnist.png}
+      \caption{\emph{MNIST}: test set accuracy comparison for different training set sizes (stddev in black)}
+      \label{fig:mnist_plot}
+    \end{figure}
+
+    \begin{figure}
+      \includegraphics[width=\linewidth]{../box_plots/boxplots_cifar.png}
+      \caption{\emph{CIFAR-10}: test set accuracy comparison for different training set sizes (stddev in black)}
+      \label{fig:cifar_plot}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.33\linewidth]{../box_plots/boxplots_ckplus.png}
+      \caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
+      \label{fig:ckplus_plot}
+    \end{figure}
+
+  \subsection{Statistical Significance}
+  In order to check the statistical significance of the achieved pretraining improvements, we conducted the McNemar test. Therefore we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+  The results are shown in Table \ref{table:significance}.
+  \begin{table}
+  \caption{Statistical Significance of Pretraining Improvements}
+  \label{table:significance}
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    %\multicolumn{2}{c}{Part}                   \\
+    %\cmidrule{1-2}
+    Dataset     & Size     & Significance (p-value) \\
+    \midrule
+    MNIST & 1k  & $\sim$100     \\
+    & 10k  & $\sim$100     \\
+    & 50k  & $\sim$100     \\
+    \midrule
+    CIFAR-10     & 1 & $\sim$10      \\
+    & 10 & $\sim$10      \\
+    & 50k & $\sim$10      \\
+    \midrule
+    CK+     & 1k      & up to $10^6$  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
 \section{Discussion and Conclusion}
   
   \begin{itemize}
@@ -198,5 +291,8 @@
     \item Evaluation of further experiments (When does it work, comparison with relu etc)
 
   \end{itemize}
+
+\clearpage
+\bibliography{references}
 
 \end{document}
