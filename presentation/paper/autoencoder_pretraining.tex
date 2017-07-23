@@ -1,4 +1,4 @@
-\documentclass[draft]{article}
+\documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
@@ -80,6 +80,20 @@
 \end{abstract}
 
 \section{Introduction}
+  
+  \begin{enumerate}
+    \item CNN's state of the art in many
+    \item CNN training difficult a lot of local minima
+    \item Data representation is learned during classification task (feature extraction), convolutions especially useful (interpretable as feature extraction)
+    \item representation might be more general than classification task
+    \item small datasets: needs to learn both at the same time
+    \item one method to learn a representation: convolutional autoencoder
+    \item reference paper (it worked)
+    \item We verify those results on the MNIST + CIFAR-10 benchmarks
+    \item We demonstrate the use of pre-training on the CK+ dataset where only very few correctly datapoints are available and show that the additional, non-labeled datapoints can be used to obtain a better classification accuracy.
+  \end{enumerate}
+  
+
 \section{Related Work}
 \section{Setup \& Context}
   
@@ -284,12 +298,18 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132}
 
 
 \section{Discussion and Conclusion}
-  
+
+  \paragraph{CAE and Training Results}
   \begin{itemize}
+    \item CAE training seems to need MSE error function
+    \item Using ReLU activations, the Autoencoder did not learn easily interpretable filters
+  \end{itemize}
 
-    \item Evaluation of the Results         (Does it work)
-    \item Evaluation of further experiments (When does it work, comparison with relu etc)
-
+  \paragraph{Evaluation of the pre-training results}
+  \begin{itemize}
+    \item Pre-Training consistently enhances the neural network's accuracy on a held-out test. (Add significance if tested)
+    \item Using ReLU activations, we could not reproduce similar results
+    \item CKplus setting: clearest results when having a lot of unlabeled data at our disposal
   \end{itemize}
 
 \clearpage
