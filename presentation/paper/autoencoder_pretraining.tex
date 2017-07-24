@@ -188,7 +188,7 @@
     (TODO: add better description + significance test)
   
 
-\section{Experiments}
+\section{Experimental Results}
   % Results and challenges while performing experiments
   % Training process
   % How long trained
@@ -212,6 +212,7 @@
           \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
 
           \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
+          \label{fig:mnist_reconstructions}
         \end{figure}
         MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images.
     \subsubsection{CIFAR-10}
@@ -227,6 +228,7 @@
         \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
 
         \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
+        \label{fig:cifar_reconstructions}
 
       \end{figure}
       The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
@@ -246,6 +248,7 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
 
         %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
         \caption{CK+ input image (top) and reconstruction (bottom) ({\textcopyright}Jeffrey Cohn)}
+        \label{fig:ckplus_reconstructions}
       \end{figure}
       The Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} was the most interesting dataset during our project.
       Unlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
@@ -257,14 +260,23 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       Before training we randomly shuffle the images.
 
   \subsection{Autoencoder Training}
-    For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
+    % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
 
-    For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
+    % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
 
+    \paragraph{CAE: Reconstruction}
+    The reconstructions for the datasets can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}.
 
-    \subsubsection{ReLu activation function}
+    %(TODO: describe a bit)
+
+    \paragraph{Rectified Linear Units}
       In further experiments we used the ReLu activation function \citep{nair2010rectified} for the autoencoder.
       This lead to quite good-looking representations, while the filters did not seem to have much structure, see figure \ref{fig:relu_cae}.
+      
+      \begin{enumerate}
+        \item talk about smoothness + lack of structure in the filters -> meaningless?
+        \item in first experiments it did not improve the accuracy -> we dropped it
+      \end{enumerate}
 
       \begin{figure}[h]
 
@@ -322,9 +334,16 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       % Should we write this into Conclusion: ?
       This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
 
+
+      \paragraph{Filters after Training}
+      \begin{enumerate}
+        \item{Include filter plot after training}
+        \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
+      \end{enumerate}
+
     \begin{figure}
-      \includegraphics[width=.4\linewidth]{../box_plots/boxplots_mnist.png}
-      \includegraphics[width=.4\linewidth]{../box_plots/boxplots_cifar.png}
+      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_mnist.png}
+      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_cifar.png}
 
       \caption{Pre-Training Results \emph{MNIST} and \emph{CIIFAR-10}: Test set accuracy after training on different subsets of the training data.}
       \label{fig:mnist_cifar_plot}
@@ -341,6 +360,7 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
   \subsection{Statistical Significance}
     In order to check the statistical significance of the achieved pretraining improvements, we conducted the McNemar test. This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
     As can be seen in table \ref{table:significance}, the improvements for (...TODO...) are significant.
+    
     \begin{table}
       \caption{Statistical Significance of Pretraining Improvements}
       \label{table:significance}
