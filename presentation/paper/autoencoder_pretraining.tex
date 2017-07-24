@@ -270,14 +270,13 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
         %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
         \caption{CK+ input image (top) and reconstruction (bottom) ({\textcopyright}Jeffrey Cohn)}
       \end{figure}
-      The Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} was the most interesting dataset during our project.
-      Unlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
+      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
+      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
       As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
       We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
-      Alltogether CK+ has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
       In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
       We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
-      Before training we randomly shuffle the images.
+      Before training we randomly shuffled the images and used the same split for all runs.
 
   \subsection{Autoencoder Training}
     For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
@@ -288,6 +287,7 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
     \subsubsection{ReLu activation function}
       In further experiments we used the ReLu activation function \citep{nair2010rectified} for the autoencoder.
       This lead to quite good-looking representations, while the filters did not seem to have much structure, see figure \ref{fig:relu_cae}.
+      Unlike the CAE using a sigmoidal function, the representation learned with ReLu activation function did not improve classification accuracy of the CNN.
 
       \begin{figure}[h]
 
@@ -335,6 +335,33 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
     After the final training we measured the classification accuracy on the separate testset, so that we can measure generalization.
       % Training process
       % evaluated on test set
+
+  \subsection{Statistical Significance}
+    In order to check the statistical significance of the achieved pretraining improvements, we conducted the McNemar test. This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+    As can be seen in table \ref{table:significance}, the improvements for (...TODO...) are significant.
+    \begin{table}
+      \caption{Statistical Significance of Pretraining Improvements}
+      \label{table:significance}
+      \centering
+      \begin{tabular}{lll}
+        \toprule
+        %\multicolumn{2}{c}{Part}                   \\
+        %\cmidrule{1-2}
+        Dataset     & Size     & Significance (p-value) \\
+        \midrule
+        MNIST & 1k  &     \\
+        & 10k  &      \\
+        & 50k  &     \\
+        \midrule
+        CIFAR-10     & 1 &     \\
+        & 10 &      \\
+        & 50k &      \\
+        \midrule
+        CK+     & 1k      &  \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+
     \subsubsection{Interpretation}
       For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
       For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could
@@ -363,32 +390,6 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       \caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
       \label{fig:ckplus_plot}
     \end{figure}
-
-  \subsection{Statistical Significance}
-    In order to check the statistical significance of the achieved pretraining improvements, we conducted the McNemar test. This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
-    As can be seen in table \ref{table:significance}, the improvements for (...TODO...) are significant.
-    \begin{table}
-      \caption{Statistical Significance of Pretraining Improvements}
-      \label{table:significance}
-      \centering
-      \begin{tabular}{lll}
-        \toprule
-        %\multicolumn{2}{c}{Part}                   \\
-        %\cmidrule{1-2}
-        Dataset     & Size     & Significance (p-value) \\
-        \midrule
-        MNIST & 1k  &     \\
-        & 10k  &      \\
-        & 50k  &     \\
-        \midrule
-        CIFAR-10     & 1 &     \\
-        & 10 &      \\
-        & 50k &      \\
-        \midrule
-        CK+     & 1k      &  \\
-        \bottomrule
-      \end{tabular}
-    \end{table}
 
 
 \section{Conclusion}
