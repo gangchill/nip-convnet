@@ -203,13 +203,13 @@
     \subsubsection{MNIST}
         \begin{figure}[h]
           \centering
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/input_00.png}
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/input_01.png}
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/input_02.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_00.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_01.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_02.png}
 
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
-          \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
 
           \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
         \end{figure}
@@ -218,13 +218,13 @@
     	\begin{figure}[h]
         \centering
         %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_00.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_01.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/input_02.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_00.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_01.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_02.png}
 
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
 
         \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
 
@@ -234,6 +234,29 @@
     \subsubsection{CK+}
     \textbf{if I reproduce images in electronic or print media, to use only those from the following subjects 
 S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
+      \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000002.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000003.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000004.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000005.png}
+
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000006.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000007.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000008.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000009.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000010.png}
+
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000011.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000012.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000013.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000014.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000015.png}
+
+        \caption{CK+ frames from neutral face to emotional face ({\textcopyright}Jeffrey Cohn)}
+      \end{figure}
+
       \begin{figure}[h]
         \centering
         \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
@@ -313,8 +336,8 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       % Training process
       % evaluated on test set
     \subsubsection{Interpretation}
-      For all datasets it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
-      For the 1k subsets of MNIST and CIFAR-10, no significant improvement seems to occur. This could
+      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
+      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could
       be due to overfitting, as we train a complex network on very little data.
       For the CK+ dataset we get the biggest improvement through pretraining.
       Even though the standard deviation is quite high, we get a significant jump in the accuracy.
@@ -323,10 +346,13 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
 
     \begin{figure}
-      \includegraphics[width=.4\linewidth]{../box_plots/boxplots_mnist.png}
-      \includegraphics[width=.4\linewidth]{../box_plots/boxplots_cifar.png}
+      \centering
 
-      \caption{Pre-Training Results \emph{MNIST} and \emph{CIIFAR-10}: Test set accuracy after training on different subsets of the training data.}
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_mnist.png}
+
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_cifar.png}
+
+      \caption{Pre-Training Results \emph{MNIST}(top) and \emph{CIIFAR-10}(bottom): Test set accuracy after training on different subsets of the training data.}
       \label{fig:mnist_cifar_plot}
     \end{figure}
 
