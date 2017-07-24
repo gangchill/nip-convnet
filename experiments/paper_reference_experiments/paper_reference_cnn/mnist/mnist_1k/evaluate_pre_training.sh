@@ -8,14 +8,14 @@ PARENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TRAINING_ROOT_DIR=$PARENT_DIR
 
 # the script train RE_RUN_NUMBER reference nets and PRE_RUN_NUMBER pre-trained networks for statistics
-REF_RUN_NUM=5
-PRE_RUN_NUM=5
+REF_RUN_NUM=0
+PRE_RUN_NUM=10
 
 
 echo "Working in $PARENT_DIR"
 
-DATASET="MNIST_10k"
-CNN_LOG_FOLDER="30_MNIST_10k_jetztaberecht"
+DATASET="MNIST_1k"
+CNN_LOG_FOLDER="666_MNIST_1k"
 
 CNN_CONFIG_FILE_PATH="$PARENT_DIR/paper_reference_cnn.ini"
 
