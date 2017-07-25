@@ -1,4 +1,4 @@
-\documentclass[draft]{article}
+\documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
@@ -7,7 +7,9 @@
 % to avoid loading the natbib package, add option nonatbib:
 % \usepackage[nonatbib]{nips_2016}
 
-\usepackage{nips_2016}
+\usepackage[final]{nips_2016}
+
+\usepackage{amsmath} % used for matrices in math mode
 
 % to compile a camera-ready version, add the [final] option, e.g.:
 % \usepackage[final]{nips_2016}
@@ -20,11 +22,16 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{textcomp}
 
 \usepackage{graphicx}  % Required for including images
 
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
 
-\title{Formatting instructions for NIPS 2016}
+\bibliographystyle{dcu}
+
+\title{Pre-Training CNN's Using Convolutional Autoencoders}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -37,22 +44,17 @@
 % author name.
 
 \author{
-  David S.~Hippocampus\thanks{Use footnote for providing further
-    information about author (webpage, alternative
-    address)---\emph{not} for acknowledging funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
-  %% examples of more authors
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
+  Maximilian~Kohlbrenner\\
+  TU Berlin\\
+  \texttt{mail} \\
+  \And
+  Russell Hofmann\\
+  TU Berlin\\
+  \texttt{mail} \\
+  \AND
+  Sabbir Ahmmed \\
+  TU Berlin \\
+  \texttt{mail}
   %% Address \\
   %% \texttt{email} \\
   %% \And
@@ -76,36 +78,409 @@
   We are comparing the effect of pretraining.
 \end{abstract}
 
-\section{Introduction}
-\section{Related Work}
-\section{Setup \& Context}
-  \subsection{General Setup}
-    \includegraphics[width=0.8\linewidth]{../graphics/setup.png}
-  \subsection{Autoencoder Training}
+\section*{Todos}
 
-  \subsection{Pre-Training and Test Methodology}
-  
-
-\section{Experiments}
-
-  \subsection{Datset Descriptions and Challenges}
-
+\begin{itemize}
+  \item switch CK+ test persons
+  \item Datasets:
     \begin{itemize}
-    \item{MNIST}
-    \item{CIFAR-10}
-    \item{CK+}
+      \item make figures smaller
+      \item describe datasets a bit more 
+    \end{itemize}
+  \item ckplus:
+    \begin{itemize}
+      \item explain the ambiguous label problem 
     \end{itemize}
 
-  \subsection{Autoencoder Training}
-  \subsection{Pretraining and Classification}
+  \item move ReLU and filter after training part before experimental results
+  \item move statistical significance into the methods part 
 
-\section{Discussion and Conclusion}
+\end{itemize}
+
+\section{Introduction}
+  % CNN SOTA but difficult to train (local minima)
+  While deep convolutional neural networks have attained state of the art performance in many computer vision tasks, their training still remains a difficult task and results are highly vulnerable to local minima. 
+  % classification learns: representation + decision
+  During a classification task, a CNN first learns a new data representation using its convolution layers as feature extractors and then uses several fully-connected layers for decision-making. 
+  % representation might be more general
+  While this learned representation is optizimed for classification, some learned features might be more general and useful for more than this specific task. 
+  % representation learning: autoencoder
+  A convolutional autoencoder is an unsupervised method that allows to train the convolutional layers independently from a classification task to learn a new data representation. The learned weights can then be used to initialize a convolutional neural networks convolution layers. 
+  % small datasets: needs to learn both at the same time
+  This becomes of special interest when only very few labeled examples are available since additional, unlabeled datapoints can be used for the representation learning task. 
+  % reference paper (it worked)
+  \citep{masci11} showed that pre-training a neural network using autoencoder weights can improve the classification accuracy consistently by a small margin.
+  % We verify those results on the MNIST + CIFAR-10 benchmarks
+  We reproduce these results on the common \emph{MNIST} and \emph{CIFAR-10} benchmarks and finally demonstrate that the approach can be used very effectively on the \emph{Extended Cohn-Kanade} dataset where label information is not only extemely sparse but also ambiguous. 
+  % We demonstrate the use of pre-training on the CK+ dataset where only very few correctly datapoints are available and show that the additional, non-labeled datapoints can be used to obtain a better classification accuracy.
+
+\section{Related Work}
+\cite{masci11} introduced the Convolutional Auto-Encoder, an unsupervised method for hierarchical feature extraction, which learns biologically plausible filters. Masci et. al demonstrated that a CNN can be initialized by a CAE stack. Although CAE’s overcomplete hidden representation makes learning harder,  interesting and visually nicest filters emerge if a max-pooling layer is used. They experimented with twenty 7 x 7 filters of four CAEs of the same topology, and trained them differently on MNIST dataset. The first one of the CAEs was trained on original digits, the second one on noisy inputs with 50\% binomial noise added, the third one with an additional max-pooling layer of size 2 x 2 and the fourth one on noisy (30\% binomial noise) inputs with a max-pooling layer of size 2 x 2. When they compared the results, it turned out that interesting and biologically plausible filters emerged only when the CAE is trained with a max-pooling layer. When the CAE is trained without any additional constraints, it learned trivial solutions and when they trained the CAE with additional noise, it became more localized. They repeated the above experiment on CIFAR10 dataset and found striking impact of a max-pooling layer whereas adding noise had almost no visual effect except on the weight magnitudes, indicating that max-pooling is essential. They also demonstrated that pre-trained CNNs consistently outperform randomly initialized CNN.
+
+\cite{hamester15} proposed a model using a variant of the Multi-channel Convolutional Neural Network for face expression recognition which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel were trained as convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) (Sumbramaniam et al. (2012)).
+
+\section{Setup \& Context}
+
+  In this paper, we evaluate the influence of CNN pre-training using convolutional autoencoders on the network's out-of-sample accuracy. To achieve this, we train, in a first step, a convolutional autoencoder on a chosen dataset and then, in a second step, use it's convolution layer weights to initialize the convolution layers of a CNN. After training, we compare the CNN's test set accuracy to a reference network that was trained under the same conditions with randomly initialized convolution weights. 
+
+  \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{../graphics/setup.png}
+    \caption{Experimental Setup}
+    \label{fig:experimental_setup}
+  \end{figure}
+
+  A visualization of the weight transfer can be seen on the schematic in figure ~\ref{fig:experimental_setup}. 
+
+  While we restricted the training set size for some of the CNN training experiments, the CAEs were always trained on all available training data since in a lot of settings, additional unlabeled data is easily available while labeled data might be extremely rare and costly.  
+
+  \subsection{Autoencoder}
+
+    \paragraph{Architecture}
+    The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a feature map representation and then reconstructs the input using strided transposed convolutions 
+    % (TODO: similar to Zeiler / first GAN layers? + citation). 
+    In our experiments, we use the autoencoder architecture described \citep{TODO:add_stacked_conv_citation}. It's encoding part consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations is described in table \ref{table:encoding_architecture}. All convolutions are full, non-strided convolutions (do not change the height/width of the input). 
+
+    \begin{table}[h]
+      \begin{center}
+        \begin{tabular}{ l|c c c c c c }
+          Layer Type    &   input   & convolution     & max-pool  & convolution & max-pool  & convolution \\
+          Filter Size   &   none    & 5x5             & 2x2       & 5x5         & 2x2       & 3x3         \\
+          Feature Maps&   1(gray)|3(rgb)   & 100             & 100       & 150         & 150       & 200         \\
+          Activation    &   none    & scaled-tanh     & none      & scaled-tanh & none      & scaled-tanh \\
+          Size          & $(H,W,D)$ & $(H,W,100)$     & $(\frac{H}{2}, \frac{W}{2}, 100)$ & $(\frac{H}{2}, \frac{W}{2}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 200)$
+        \end{tabular}
+      \end{center}
+      \caption{CAE encoding layers}
+      \label{table:encoding_architecture}
+    \end{table}
+
+    % $$input \rightarrow conv1 ~(5x5~filter, 100~feature~maps) \rightarrow 2x2 non-overlapping max-pooling \rightarrow activation function \rightarrow  $$
+
+    %In our experiments, the encoding part consisted of:
+    % in general: conv layers have (1,1,1,1) strides and we are performing a full convolution (out hei/wid = in hei(wid))
+    %input (batchsize, height, width, numchannels) -> conv1 (5x5 filter) (batchsize, height, width, 100) -> activation function (scaled tanh) (b,h,w,100) -> max pooling (2x2, (1,2,2,1) strides) (b, h/2, w/2, 100) -> conv2 (5x5 filter) (b, h/2, w/2, 150) -> activation function (Scaled tanh) (b, h/2, w/2, 150) -> max  pooling (2x2 filter, (1,2,2,1) strides (b, h/4, w/4, 150) -> conv3 (3x3 filter), (b, h/4, w/4, 200) -> activation function (scaled tanh) (b, h/4, w/4, 200) 
+
+    For the reconstruction, we use une strided transpose convolution layer per convolution / max-pool layer in the encoding layers. The weights of the transpose convolutions are the same as learned in the convolution layers and the 2x2 strides invert the downsampling effect of the max-pooling layers.
+
+    \paragraph{Activation Function} Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci11}. We will talk about our ReLU experiments in (TODO: add link). With scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, CAEs seemed faster to train using this function, however we did not conduct any experiments to verify this.
+
+    \paragraph{Regularization} In general, a full convolutional layer could easily learn a simple point filter such as $k = \begin{smallmatrix} 0&0&0\\ 0&1&0 \\ 0&0&0 \end{smallmatrix}$ (for 1d input) that copies the input onto a feature map. While this would later simplify a perfect reconstruction of the input, the CAE does not find any more suitable representation for our data. To prevent this problem, some kind of regularization is needed. Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer (TODO: reference sparse CAE paper and more regularization ideas?). In \citep{masci11} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this did not seem not to help the emergence of more natural filters in their experiments. 
+    % (TODO: describe what is a natural filter for us). 
+
+    \paragraph{Training} While the authors of \citep{masci11} use a layer-wise training for convolutional autoencoders, we achieve good results by training the whole auto-encoder at once. 
+    % (TODO: maybe this made it more difficult / longer to train?).
+    For the \emph{MNIST} and \emph{CIFAR-10} datasets, the autoencoders are trained with simple gradient descent using as learning rate of $lr = 0.5$, for the CKPLUS dataset, we use the adagrad optimizer with the same initial learning rate $lr$.
+
+    \paragraph{Weight initialization} The convolutional filters are initialized using a truncated normal distribution with mean $\mu = 0.001$ and standard deviation $\sigma = 0.05$, all bias values are initialized with the constant $0.001$
+
+  \subsection{Pre-Training}
+
+    \paragraph{CNN architecture} The CNN uses the same architecture as the CAE encoding for its convolution layers (feature extraction) and then uses a fully-connected layer with size 384 followed by an activation function (scaled tanh), a second fully-connected layer of size 10 and a softmax layer for classification. 
+
+    \paragraph{Weight Initialization}
+
+    The convolutional layer weights (filters) and biases of the pre-trained networks were initialized with the values obtained from the convolutional autoencoders.
+
+    The reference CNN's convolution weights were initialized with mean $\mu = 0 $ and standard deviation $\sigma = 0.2$, the biases with the constant value $b =  0.0001$.
+
+    The fully-connected layers were initialized randomly for all networks, the weights with a truncated normal distribution with mean $\mu = 0$ and standard deviation $\sigma = 0.001$ and the biases with the constant value $0.0001$.
+    This means that for all experiments, some parts of the networks are randomly initialized, all weights for the reference networks and the fully-connected weights for the pre-trained networks. 
+
+    \paragraph{CNN Training}
+    % (TODO: optimizer, step size, convergence criterion, amount of epochs per dataset)
+    For each datset, we split the available training data into training and evaluation set and use the evaluation set to track the training progress and adjust hyperparameters. We keep track of both cross-entropy error and accuracy on the evaluation set and stop training when these values converge. Afterwards, we evaluate the networks accuracy once on the held-out test set and use the obtained value as a result. 
+
+    For the larger datasets \emph{MNIST} and \emph{CIFAR-10}, we conducted several experiments restricting the amount of available training data inspired by \citep{masci11}. The autoencoder used for pre-training was always trained on the whole dataset. 
+
+    %\begin{itemize}
+      %\item Network Architectures
+      %\item Weight Transfer
+      %\item weight initialization (all layers)
+      %\item CNN Training
+      %\item Test Methodology (Train + Validation + Test Sets)
+      %\item 1k/10k/full splits but always full dataset for CAE
+    %\end{itemize}
+
+  \subsection{Evaluation}
+    For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
+    (TODO: add better description + significance test)
   
-  \begin{itemize}
 
-    \item Evaluation of the Results         (Does it work)
-    \item Evaluation of further experiments (When does it work, comparison with relu etc)
+  \subsection{Datsets}
+  We conducted experiments on three different datasets, which vary in their image size, number of images and colour information.
+    \subsubsection{MNIST}
+        \begin{figure}[h]
+          \centering
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_00.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_01.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_02.png}
 
-  \end{itemize}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
+          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
+
+          \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
+          \label{fig:mnist_reconstructions}
+        \end{figure}
+        MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images.
+    \subsubsection{CIFAR-10}
+      \begin{figure}[h]
+        \centering
+        %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_00.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_01.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_02.png}
+
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
+
+        \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
+        \label{fig:cifar_reconstructions}
+
+      \end{figure}
+      The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
+      The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
+    \subsubsection{CK+}
+      \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000002.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000003.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000004.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000005.png}
+
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000006.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000007.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000008.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000009.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000010.png}
+
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000011.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000012.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000013.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000014.png}
+        \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000015.png}
+
+        \caption{CK+ frames from neutral face to emotional face ({\textcopyright}Jeffrey Cohn)}
+      \end{figure}
+
+      \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_02.png}
+
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_00.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_01.png}
+        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_02.png}
+
+        %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
+        \caption{CK+ input image (top) and reconstruction (bottom) ({\textcopyright}Jeffrey Cohn)}
+        \label{fig:ckplus_reconstructions}
+      \end{figure}
+      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
+      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
+      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
+      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
+      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
+      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
+      Before training we randomly shuffled the images and used the same split for all runs.
+
+
+\section{Experimental Results}
+  % Results and challenges while performing experiments
+  % Training process
+  % How long trained
+  % convergence criterion (checked how long they took)
+  % amount of epochs per dataset
+  % evaluated on test set
+  % shrink boxplots, next to each other
+  % FOCUS: CK+ Processing
+
+  
+  \subsection{Autoencoder Training}
+    % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
+
+    % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
+
+    \paragraph{CAE: Reconstruction}
+    The reconstructions for the datasets can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}.
+
+    %(TODO: describe a bit)
+
+    \paragraph{Rectified Linear Units}
+      In further experiments we used the ReLu activation function \citep{nair2010rectified} for the autoencoder.
+      This lead to quite good-looking representations, while the filters did not seem to have much structure, see figure \ref{fig:relu_cae}.
+      
+      \begin{enumerate}
+        \item talk about smoothness + lack of structure in the filters -> meaningless?
+        \item in first experiments it did not improve the accuracy -> we dropped it
+      \end{enumerate}
+
+      Unlike the CAE using a sigmoidal function, the representation learned with ReLu activation function did not improve classification accuracy of the CNN.
+
+      \begin{figure}[h]
+
+				\begin{subfigure}{0.4\linewidth}
+
+					\centering
+					\includegraphics[width=0.6\linewidth]{../graphics/reconstructions/cifar/relu/input_00_relu.png}
+					\includegraphics[width=0.6\linewidth]{../graphics/reconstructions/cifar/relu/reconstruction_00_relu.png}
+					%\caption{(CAE:) Reconstruction example using ReLU activation + smaller network size}
+
+				\end{subfigure}
+				\begin{subfigure}{0.4\linewidth}
+
+					\centering
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_00.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_01.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_02.png} \\
+					\vspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_03.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_04.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_05.png} \\
+					\vspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_06.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_07.png} \hspace{0.05\linewidth}
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_08.png} 
+
+					%\caption{(CAE:) Structureless first layer filters learned by ReLU autoencoder}
+
+				\end{subfigure}
+
+			\caption{\textbf{ReLU CAE} example input + reconstruction (left), selection of first layer filters (right) }
+			\label{fig:relu_cae}
+
+    \end{figure}
+
+  \subsection{Pretraining and Classification}
+    The general idea of pretraining a classification neural network, is to transfer the encoding weights of the CAE to the CNN. So we took the convolutional filter weights, which we generated during the autoencoder training, and used them as initial values for the convolutional layers for the classification network.
+
+    As the MNIST and CIFAR-10 datasets consist of a lot more images than CK+, we decided to follow the approach of the paper and take a 1k and 10k subset for these two. So while we still took all training images for building a decent autoencoder, the CNN could only use some of the images. This is especially interesting to check the hypothesis, that pre-training makes more sense, when you have less training images.
+
+    To validate our pretraining experiments, in each run we set up a CNN with randomly initialized filters and a CNN which uses the filters trained by the CAE. Both networks have randomly initialized weights for their dense layers.
+
+    We let all networks run for at least x (TODO) epochs for all datasets, until the MSE did not change significantly anymore.
+
+    After the final training we measured the classification accuracy on the separate testset, so that we can measure generalization.
+      % Training process
+      % evaluated on test set
+
+      \paragraph{Filters after Training}
+        \begin{enumerate}
+          \item{Include filter plot after training}
+          \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
+        \end{enumerate}
+
+    \subsubsection{Interpretation}
+      For all datasets it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
+      For the 1k subsets of MNIST and CIFAR-10, no significant improvement seems to occur. This could
+      be due to overfitting, as we train a complex network on very little data.
+      For the CK+ dataset we get the biggest improvement through pretraining.
+      Even though the standard deviation is quite high, we get a significant jump in the accuracy.
+      This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
+      % Should we write this into Conclusion: ?
+      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
+
+
+    \begin{figure}
+      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_mnist.png}
+      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_cifar.png}
+
+      \caption{Pre-Training Results \emph{MNIST} and \emph{CIIFAR-10}: Test set accuracy after training on different subsets of the training data.}
+      \label{fig:mnist_cifar_plot}
+    \end{figure}
+
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.33\linewidth]{../box_plots/boxplots_ckplus.png}
+      \caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
+      \label{fig:ckplus_plot}
+    \end{figure}
+
+  \subsection{Statistical Significance}
+    In order to check the statistical significance of the achieved pretraining improvements, we conducted a standard t-test.
+    This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+    As can be seen in table \ref{table:significance}, the improvements for all datasets, except the 1k CIFAR-10 subset, are significant.
+
+    \begin{table}
+      \caption{Statistical Significance of Pretraining Improvements}
+      \label{table:significance}
+      \centering
+      \begin{tabular}{lll}
+        \toprule
+        %\multicolumn{2}{c}{Part}                   \\
+        %\cmidrule{1-2}
+        Dataset     & Size     & Significance (p-value) \\
+        \midrule
+        MNIST & 1k  & \textbf{4.34e-05} \\
+        & 10k  & \textbf{0.0411} \\
+        & 50k  & \textbf{0.00635} \\
+        \midrule
+        CIFAR-10 & 1k & 0.419 \\
+        & 10k & \textbf{6.83e-10} \\
+        & 50k & \textbf{0.000314} \\
+        \midrule
+        CK+     & 1k & \textbf{0.00194} \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+
+    \subsubsection{Interpretation}
+      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
+      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could
+      be due to overfitting, as we train a complex network on very little data.
+      For the CK+ dataset we get the biggest improvement through pretraining.
+      Even though the standard deviation is quite high, we get a significant jump in the accuracy.
+      This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
+      % Should we write this into Conclusion: ?
+      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
+
+    \begin{figure}
+      \centering
+
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_mnist.png}
+
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_cifar.png}
+
+      \caption{Pre-Training Results \emph{MNIST}(top) and \emph{CIIFAR-10}(bottom): Test set accuracy after training on different subsets of the training data.}
+      \label{fig:mnist_cifar_plot}
+    \end{figure}
+
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.33\linewidth]{../box_plots/boxplots_ckplus.png}
+      \caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
+      \label{fig:ckplus_plot}
+    \end{figure}
+
+
+\section{Conclusion}
+
+  We reproduced the results of \citep{masci11} showing that pre-training a CNN using the weights obtained from a convololutional autoencoder consistently boosts the classifiers accuracy by a small margin. 
+
+  In our experiments with convolutional autoencoders, we came to the conclusion that the use of the mean-squared is crucial for training success and hypothesize that when using relu functions, the use of max-pooling is not sufficient for the emergence of natural filters that would be helpful for pre-training a neural network. 
+
+  On the \emph{CK+} dataset we are able to improve the average accuracy of our networks from 70.4\% to 73.6\% clearly demonstrating the use of this technique in a domain where the amount of labeled training data is very limited. 
+
+  %%\paragraph{CAE and Training Results}
+  %\begin{itemize}
+  %  \item CAE training seems to need MSE error function
+  %  \item Using ReLU activations, the Autoencoder did not learn easily interpretable filters
+  %\end{itemize}
+
+  %%\paragraph{Evaluation of the pre-training results}
+  %\begin{itemize}
+  %  \item Pre-Training consistently enhances the neural network's accuracy on a held-out test. (Add significance if tested)
+  %  \item Using ReLU activations, we could not reproduce similar results
+  %  \item CKplus setting: clearest results when having a lot of unlabeled data at our disposal
+  %\end{itemize}
+
+\clearpage
+\bibliography{references}
 
 \end{document}
