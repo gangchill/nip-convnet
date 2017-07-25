@@ -375,9 +375,8 @@
         \end{enumerate}
 
     \subsubsection{Interpretation}
-      For all datasets it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
-      For the 1k subsets of MNIST and CIFAR-10, no significant improvement seems to occur. This could
-      be due to overfitting, as we train a complex network on very little data.
+      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
+      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could be due to overfitting, as we train a complex network on very little data.
       For the CK+ dataset we get the biggest improvement through pretraining.
       Even though the standard deviation is quite high, we get a significant jump in the accuracy.
       This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
@@ -386,10 +385,13 @@
 
 
     \begin{figure}
-      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_mnist.png}
-      \includegraphics[width=.5\linewidth]{../box_plots/boxplots_cifar.png}
+      \centering
 
-      \caption{Pre-Training Results \emph{MNIST} and \emph{CIIFAR-10}: Test set accuracy after training on different subsets of the training data.}
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_mnist.png}
+
+      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_cifar.png}
+
+      \caption{Pre-Training Results \emph{MNIST}(top) and \emph{CIIFAR-10}(bottom): Test set accuracy after training on different subsets of the training data.}
       \label{fig:mnist_cifar_plot}
     \end{figure}
 
@@ -428,35 +430,6 @@
         \bottomrule
       \end{tabular}
     \end{table}
-
-    \subsubsection{Interpretation}
-      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
-      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could
-      be due to overfitting, as we train a complex network on very little data.
-      For the CK+ dataset we get the biggest improvement through pretraining.
-      Even though the standard deviation is quite high, we get a significant jump in the accuracy.
-      This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
-      % Should we write this into Conclusion: ?
-      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
-
-    \begin{figure}
-      \centering
-
-      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_mnist.png}
-
-      \includegraphics[width=.8\linewidth]{../box_plots/boxplots_cifar.png}
-
-      \caption{Pre-Training Results \emph{MNIST}(top) and \emph{CIIFAR-10}(bottom): Test set accuracy after training on different subsets of the training data.}
-      \label{fig:mnist_cifar_plot}
-    \end{figure}
-
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.33\linewidth]{../box_plots/boxplots_ckplus.png}
-      \caption{\emph{CK+}: test set accuracy comparison for 696 training images (stddev in black)}
-      \label{fig:ckplus_plot}
-    \end{figure}
 
 
 \section{Conclusion}
