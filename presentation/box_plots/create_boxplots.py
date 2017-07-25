@@ -210,6 +210,9 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, incl_trial_
 			print 'pt_mean: {}'.format(pt_mean)
 			print 'pt_stdd: {}'.format(pt_stddev)
 
+			print 'ttest_ind: {}'.format(stats.ttest_ind(ri_data, pt_data)[1])
+			print ''
+
 			ax = plt.gca()
 			pt_bp = ax.bar([1.8], pt_mean, yerr=pt_stddev, error_kw=dict(ecolor='black', lw=2, capsize=5, capthick=2))
 			ri_bp = ax.bar([0.5], ri_mean, yerr=ri_stddev, error_kw=dict(ecolor='black', lw=2, capsize=5, capthick=2))

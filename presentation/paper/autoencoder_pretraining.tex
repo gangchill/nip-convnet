@@ -243,8 +243,6 @@
       The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
       The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
     \subsubsection{CK+}
-    \textbf{if I reproduce images in electronic or print media, to use only those from the following subjects 
-S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
       \begin{figure}[h]
         \centering
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
@@ -404,9 +402,10 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
     \end{figure}
 
   \subsection{Statistical Significance}
-    In order to check the statistical significance of the achieved pretraining improvements, we conducted the McNemar test. This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
-    As can be seen in table \ref{table:significance}, the improvements for (...TODO...) are significant.
-    
+    In order to check the statistical significance of the achieved pretraining improvements, we conducted a standard t-test.
+    This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+    As can be seen in table \ref{table:significance}, the improvements for all datasets, except the 1k CIFAR-10 subset, are significant.
+
     \begin{table}
       \caption{Statistical Significance of Pretraining Improvements}
       \label{table:significance}
@@ -417,15 +416,15 @@ S52, S55, S74, S106, S111, S113, S121, S124, S125, S130, S132} \\
         %\cmidrule{1-2}
         Dataset     & Size     & Significance (p-value) \\
         \midrule
-        MNIST & 1k  &     \\
-        & 10k  &      \\
-        & 50k  &     \\
+        MNIST & 1k  & \textbf{4.34e-05} \\
+        & 10k  & \textbf{0.0411} \\
+        & 50k  & \textbf{0.00635} \\
         \midrule
-        CIFAR-10     & 1 &     \\
-        & 10 &      \\
-        & 50k &      \\
+        CIFAR-10 & 1k & 0.419 \\
+        & 10k & \textbf{6.83e-10} \\
+        & 50k & \textbf{0.000314} \\
         \midrule
-        CK+     & 1k      &  \\
+        CK+     & 1k & \textbf{0.00194} \\
         \bottomrule
       \end{tabular}
     \end{table}
