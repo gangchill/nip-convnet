@@ -81,7 +81,6 @@
 \section*{Todos}
 
 \begin{itemize}
-  \item switch CK+ test persons
   \item Datasets:
     \begin{itemize}
       \item make figures smaller
@@ -118,6 +117,16 @@
 \cite{masci11} introduced the Convolutional Auto-Encoder, an unsupervised method for hierarchical feature extraction, which learns biologically plausible filters. Masci et. al demonstrated that a CNN can be initialized by a CAE stack. Although CAE’s overcomplete hidden representation makes learning harder,  interesting and visually nicest filters emerge if a max-pooling layer is used. They experimented with twenty 7 x 7 filters of four CAEs of the same topology, and trained them differently on MNIST dataset. The first one of the CAEs was trained on original digits, the second one on noisy inputs with 50\% binomial noise added, the third one with an additional max-pooling layer of size 2 x 2 and the fourth one on noisy (30\% binomial noise) inputs with a max-pooling layer of size 2 x 2. When they compared the results, it turned out that interesting and biologically plausible filters emerged only when the CAE is trained with a max-pooling layer. When the CAE is trained without any additional constraints, it learned trivial solutions and when they trained the CAE with additional noise, it became more localized. They repeated the above experiment on CIFAR10 dataset and found striking impact of a max-pooling layer whereas adding noise had almost no visual effect except on the weight magnitudes, indicating that max-pooling is essential. They also demonstrated that pre-trained CNNs consistently outperform randomly initialized CNN.
 
 \cite{hamester15} proposed a model using a variant of the Multi-channel Convolutional Neural Network for face expression recognition which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel were trained as convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) (Sumbramaniam et al. (2012)).
+
+\subsection{Datasets}
+  % TODO Introduce, why these two datasets, see stacked conv paper
+  \subsubsection{MNIST}
+    MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
+    The dataset consists of 55000 training, 5000 validation, and 10000 test images.
+  \subsubsection{CIFAR-10}
+    The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
+    The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...).
+    It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Setup \& Context}
 
@@ -205,44 +214,19 @@
   \subsection{Evaluation}
     For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
     (TODO: add better description + significance test)
-  
 
-  \subsection{Datsets}
-  We conducted experiments on three different datasets, which vary in their image size, number of images and colour information.
-    \subsubsection{MNIST}
-        \begin{figure}[h]
-          \centering
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_00.png}
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_01.png}
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_02.png}
+  \subsection{CK+}
+      % TODO: Split into paragraphs a bit
+      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
+      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
+      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
+      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
+      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
+      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
+      Before training we randomly shuffled the images and used the same split for all runs.
 
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
-          \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
-
-          \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
-          \label{fig:mnist_reconstructions}
-        \end{figure}
-        MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images.
-    \subsubsection{CIFAR-10}
-      \begin{figure}[h]
-        \centering
-        %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_00.png}
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_01.png}
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_02.png}
-
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
-        \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
-
-        \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
-        \label{fig:cifar_reconstructions}
-
-      \end{figure}
-      The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
-      The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...)
-    \subsubsection{CK+}
+      % TODO: explain the ambiguous label problem
+      % TODO: Refer to frames in text
       \begin{figure}[h]
         \centering
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
@@ -265,28 +249,7 @@
 
         \caption{CK+ frames from neutral face to emotional face ({\textcopyright}Jeffrey Cohn)}
       \end{figure}
-
-      \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_01.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_02.png}
-
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_00.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_01.png}
-        \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_02.png}
-
-        %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
-        \caption{CK+ input image (top) and reconstruction (bottom) ({\textcopyright}Jeffrey Cohn)}
-        \label{fig:ckplus_reconstructions}
-      \end{figure}
-      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
-      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
-      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
-      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
-      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
-      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
-      Before training we randomly shuffled the images and used the same split for all runs.
+      
 
 
 \section{Experimental Results}
@@ -298,6 +261,7 @@
   % evaluated on test set
   % shrink boxplots, next to each other
   % FOCUS: CK+ Processing
+  We conducted experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+) datasets, which vary in their image size, number of images and colour information.
 
   
   \subsection{Autoencoder Training}
@@ -309,6 +273,51 @@
     The reconstructions for the datasets can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}.
 
     %(TODO: describe a bit)
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_00.png}
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_01.png}
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_02.png}
+
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
+        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
+
+        \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
+        \label{fig:mnist_reconstructions}
+      \end{figure}
+
+    \begin{figure}[h]
+      \centering
+      %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_00.png}
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_01.png}
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_02.png}
+
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
+      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
+
+      \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
+      \label{fig:cifar_reconstructions}
+
+    \end{figure}
+
+    \begin{figure}[h]
+      \centering
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_01.png}
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_02.png}
+
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_00.png}
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_01.png}
+      \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/reconstruction_02.png}
+
+      %\includegraphics[width=0.8\linewidth]{../graphics/ckplus_reconstructions_better.png}
+      \caption{CK+ input image (top) and reconstruction (bottom) ({\textcopyright}Jeffrey Cohn)}
+      \label{fig:ckplus_reconstructions}
+    \end{figure}
 
     \paragraph{Rectified Linear Units}
       In further experiments we used the ReLu activation function \citep{nair2010rectified} for the autoencoder.
@@ -367,23 +376,6 @@
     After the final training we measured the classification accuracy on the separate testset, so that we can measure generalization.
       % Training process
       % evaluated on test set
-
-      \paragraph{Filters after Training}
-        \begin{enumerate}
-          \item{Include filter plot after training}
-          \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
-        \end{enumerate}
-
-    \subsubsection{Interpretation}
-      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
-      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could be due to overfitting, as we train a complex network on very little data.
-      For the CK+ dataset we get the biggest improvement through pretraining.
-      Even though the standard deviation is quite high, we get a significant jump in the accuracy.
-      This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
-      % Should we write this into Conclusion: ?
-      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
-
-
     \begin{figure}
       \centering
 
@@ -403,12 +395,19 @@
       \label{fig:ckplus_plot}
     \end{figure}
 
-  \subsection{Statistical Significance}
+      \paragraph{Filters after Training}
+        \begin{enumerate}
+          \item{Include filter plot after training}
+          \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
+        \end{enumerate}
+
+  \subsubsection{Statistical Significance}
     In order to check the statistical significance of the achieved pretraining improvements, we conducted a standard t-test.
     This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
     As can be seen in table \ref{table:significance}, the improvements for all datasets, except the 1k CIFAR-10 subset, are significant.
 
     \begin{table}
+      % TODO: Update values to new rough values, add accuracy improvement
       \caption{Statistical Significance of Pretraining Improvements}
       \label{table:significance}
       \centering
@@ -430,6 +429,15 @@
         \bottomrule
       \end{tabular}
     \end{table}
+
+    \subsubsection{Interpretation}
+      For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
+      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could be due to overfitting, as we train a complex network on very little data.
+      For the CK+ dataset we get the biggest improvement through pretraining.
+      Even though the standard deviation is quite high, we get a significant jump in the accuracy.
+      This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
+      % Should we write this into Conclusion: ?
+      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
 
 
 \section{Conclusion}
