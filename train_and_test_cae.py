@@ -501,7 +501,7 @@ def visualize_cae_filters(sess, autoencoder):
 	plt.close(fig)
 
 
-def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, folder_name, run_name, input_size, num_images = 100, use_training_set = False, common_scaling = False, plot_first_layer_filters = False, max_maps_per_layer = 10):
+def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, folder_name, run_name, input_size, num_images = 100, use_training_set = False, common_scaling = False, plot_first_layer_filters = False, max_maps_per_layer = 10, show_colorbar = True):
 
 	# initialize folder structure if not yet done
 	print('...checking folder structure')
@@ -571,13 +571,15 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 		plt.subplot(rows, 1, 1)
 		plt.imshow(dataset[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
-		# plt.colorbar(orientation="horizontal",fraction=0.07)
+		if show_colorbar:
+			plt.colorbar(orientation="horizontal",fraction=0.07)
 
 		# plot reconstruction
 		plt.subplot(rows,1 , rows)
 		plt.imshow(reconst[i].reshape(input_size[0], input_size[1]), cmap='gray', interpolation='None')
 		plt.axis('off')
-		# plt.colorbar(orientation="horizontal",fraction=0.07)
+		if show_colorbar:
+			plt.colorbar(orientation="horizontal",fraction=0.07)
 		
 		stretcher = 0
 		print 'hlc: ', hidden_layer_count
@@ -594,7 +596,7 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 			print stretcher
 
 			if max_maps_per_layer > 0:
-				hc_size = min(hc_size, max_maps_per_layer) * stretcher
+				hc_size = min(hc_size, max_maps_per_layer) # * stretcher
 			
 			
 
@@ -604,7 +606,8 @@ def visualize_ae_representation(sess, input_placeholder, autoencoder, mnist, fol
 				plt.subplot(rows,hc_size, (c + 1) * hc_size + r + 1)
 				plt.imshow(walkthrough[c][i,:,:,r], cmap='gray', interpolation='none')
 				plt.axis('off')
-				# plt.colorbar(orientation="horizontal",fraction=0.07)
+				if show_colorbar:
+					plt.colorbar(orientation="horizontal",fraction=0.07)
 
 
 		# plt.tight_layout()
