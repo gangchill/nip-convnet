@@ -19,8 +19,13 @@ def create_cifar_boxplot():
 
 	print('\nCIFAR')
 
-	cifar_1k_pre_trained = [0.3655, 0.3703, 0.3681, 0.3634, 0.3650, 0.3698, 0.3800, 0.3679, 0.3652] 
-	cifar_1k_random_init = [0.3628, 0.3754, 0.3712, 0.3614, 0.3721, 0.3729, 0.3648, 0.3793, 0.3704, 0.3737]
+	# cifar_1k_pre_trained = [0.3655, 0.3703, 0.3681, 0.3634, 0.3650, 0.3698, 0.3800, 0.3679, 0.3652] 
+	# cifar_1k_random_init = [0.3628, 0.3754, 0.3712, 0.3614, 0.3721, 0.3729, 0.3648, 0.3793, 0.3704, 0.3737]
+	
+	cifar_1k_pre_trained = [0.7475, 0.7374, 0.7273, 0.7525, 0.7424, 0.7323, 0.7374, 0.7424, 0.7374, 0.7374]
+	cifar_1k_random_init = [0.6970, 0.6818, 0.7020, 0.6717, 0.7020, 0.7020, 0.6818, 0.7020, 0.7121, 0.6869]
+
+
 	cifar_1k = [cifar_1k_random_init, cifar_1k_pre_trained]
 	cifar_1k_trial_count = min(len(cifar_1k_pre_trained), len(cifar_1k_random_init))
 

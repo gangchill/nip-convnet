@@ -330,13 +330,13 @@
 
       Unlike the CAE using a sigmoidal function, the representation learned with ReLu activation function did not improve classification accuracy of the CNN.
 
-      \begin{figure}[h]
+      \begin{figure}[ht]
 
 				\begin{subfigure}{0.4\linewidth}
 
 					\centering
-					\includegraphics[width=0.6\linewidth]{../graphics/reconstructions/cifar/relu/input_00_relu.png}
-					\includegraphics[width=0.6\linewidth]{../graphics/reconstructions/cifar/relu/reconstruction_00_relu.png}
+					\includegraphics[width=0.4\linewidth]{../graphics/reconstructions/cifar/relu/input_00_relu.png}
+					\includegraphics[width=0.4\linewidth]{../graphics/reconstructions/cifar/relu/reconstruction_00_relu.png}
 					%\caption{(CAE:) Reconstruction example using ReLU activation + smaller network size}
 
 				\end{subfigure}
@@ -396,10 +396,69 @@
     \end{figure}
 
       \paragraph{Filters after Training}
+
+      When observing the learned first layer filters after training on the classification task, we observe a striking difference between the pre-trained and randomly initialized networks. An example on the \emph{CIFAR-10} dataset can be seen in figure~\ref{fig:cifar_filters}
+
         \begin{enumerate}
-          \item{Include filter plot after training}
+          
           \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
         \end{enumerate}
+
+
+      \begin{figure}
+          \centering
+
+            \begin{subfigure}{.4\linewidth}
+              \centering
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_01.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_02.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_03.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_04.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_05.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_06.png} \\
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_07.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_08.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_09.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_10.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_11.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_12.png} \\
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_13.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_14.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_15.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_16.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_17.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_18.png}
+              %\caption{\emph{CIFAR-10}(CNN): random first layer filters, pre-trained}
+            \end{subfigure}
+            \begin{subfigure}{.4\linewidth}
+              \centering
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_01.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_02.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_03.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_04.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_05.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_06.png} \\
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_07.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_08.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_09.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_10.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_11.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_12.png} \\
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_13.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_14.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_15.png}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_16.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_17.png} %\hspace{0.05\linewidth}
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_18.png}
+              %\caption{\emph{CIFAR-10}(CNN): random first layer filters, random-init}
+            \end{subfigure}
+
+          \caption{\textbf{\emph{CIFAR-10} CNN} selection of first layer filters. pre-trained (left), random-init (right)}
+          \label{fig:cifar_filters}
+
+      \end{figure}
+
+
 
   \subsubsection{Statistical Significance}
     In order to check the statistical significance of the achieved pretraining improvements, we conducted a standard t-test.
@@ -411,21 +470,21 @@
       \caption{Statistical Significance of Pretraining Improvements}
       \label{table:significance}
       \centering
-      \begin{tabular}{lll}
+      \begin{tabular}{llcl}
         \toprule
         %\multicolumn{2}{c}{Part}                   \\
         %\cmidrule{1-2}
-        Dataset     & Size     & Significance (p-value) \\
+        Dataset     & Size    & Average Accuracy Improvement & Significance (p-value) \\
         \midrule
-        MNIST & 1k  & \textbf{4.34e-05} \\
-        & 10k  & \textbf{0.0411} \\
-        & 50k  & \textbf{0.00635} \\
+        MNIST & 1k    & + 0.37 \%  & < 5e-4 \\
+              & 10k   & + 0.39 \%  & < 5e-4 \\
+              & 50k   & + 0.32 \%  & < 1e-2 \\
         \midrule
-        CIFAR-10 & 1k & 0.419 \\
-        & 10k & \textbf{6.83e-10} \\
-        & 50k & \textbf{0.000314} \\
+        CIFAR-10  & 1k    & + 4.55 \% & < 1e-7\\
+                  & 10k   & + 4.25 \% & < 1e-9\\
+                  & 50k   & + 2.85 \% & < 1e-6\\
         \midrule
-        CK+     & 1k & \textbf{0.00194} \\
+        CK+     & 1k & + 4.5 \%      & < 1e-7 \\
         \bottomrule
       \end{tabular}
     \end{table}
