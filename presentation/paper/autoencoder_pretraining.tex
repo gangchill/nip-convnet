@@ -225,6 +225,11 @@
       We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
       Before training we randomly shuffled the images and used the same split for all runs.
 
+      Another specialty for the CK+ dataset was, that we used all frames for the CAE, this includes frames which are neutral or even ambiguous.
+      As this possibly broadens the available information for learning the autoencoder, and is also useful for practical use, we could possibly
+      use a lot of unlabelled images for pre-training. In this case the pretraining makes especially sense, as we can learn features,
+      we could not learn when training only a CNN with labelled images.
+
       % TODO: explain the ambiguous label problem
       % TODO: Refer to frames in text
       \begin{figure}[h]
