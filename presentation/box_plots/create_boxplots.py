@@ -17,20 +17,51 @@ def create_cifar_boxplot():
 	# CIFAR #
 	## ### ##
 
+	print('\nCIFAR')
+
 	cifar_1k_pre_trained = [0.3655, 0.3703, 0.3681, 0.3634, 0.3650, 0.3698, 0.3800, 0.3679, 0.3652] 
 	cifar_1k_random_init = [0.3628, 0.3754, 0.3712, 0.3614, 0.3721, 0.3729, 0.3648, 0.3793, 0.3704, 0.3737]
 	cifar_1k = [cifar_1k_random_init, cifar_1k_pre_trained]
 	cifar_1k_trial_count = min(len(cifar_1k_pre_trained), len(cifar_1k_random_init))
 
-	cifar_10k_pre_trained = [0.5577, 0.5547, 0.5485, 0.5459, 0.5481, 0.5537, 0.5583, 0.5491]
-	cifar_10k_random_init = [0.5196, 0.5304, 0.5199, 0.5160, 0.5241, 0.5190, 0.5226, 0.5200, 0.5259]
+	_, c1_pvalue = stats.ttest_ind(cifar_1k_pre_trained, cifar_1k_random_init, equal_var = False)
+
+
+	avg_improvement = (np.mean(cifar_1k_pre_trained) - np.mean(cifar_1k_random_init)) * 100
+	print('--> CIFAR 1k <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('cifar_1k p-value: {}'.format(c1_pvalue))
+
+	# cifar_10k_pre_trained = [0.5577, 0.5547, 0.5485, 0.5459, 0.5481, 0.5537, 0.5583, 0.5491]
+	# cifar_10k_random_init = [0.5196, 0.5304, 0.5199, 0.5160, 0.5241, 0.5190, 0.5226, 0.5200, 0.5259]
+	
+	cifar_10k_pre_trained = [0.5552, 0.5566, 0.5619, 0.5584, 0.5555, 0.5611, 0.5586, 0.5614, 0.5617, 0.5559]
+	cifar_10k_random_init = [0.5254, 0.5141, 0.5178, 0.5101, 0.5097, 0.5206, 0.5160, 0.5094, 0.5290, 0.5090]
 	cifar_10k = [cifar_10k_random_init, cifar_10k_pre_trained]
 	cifar_10k_trial_count = min(len(cifar_10k_random_init), len(cifar_10k_pre_trained))
 
-	cifar_full_pre_trained = [0.6572, 0.6592, 0.6535, 0.6557, 0.6300, 0.6544]
-	cifar_full_random_init = [0.6292, 0.6287, 0.6235, 0.6293, 0.6284, 0.6252]
+	_, c10_pvalue = stats.ttest_ind(cifar_10k_pre_trained, cifar_10k_random_init, equal_var = False)
+	
+
+	avg_improvement = (np.mean(cifar_10k_pre_trained) - np.mean(cifar_10k_random_init)) * 100
+	print('--> CIFAR 10k <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('cifar_1k p-value: {}'.format(c10_pvalue))
+
+	# cifar_full_pre_trained = [0.6572, 0.6592, 0.6535, 0.6557, 0.6300, 0.6544]
+	# cifar_full_random_init = [0.6292, 0.6287, 0.6235, 0.6293, 0.6284, 0.6252]
+
+	cifar_full_pre_trained = [0.6572, 0.6592, 0.6535, 0.6557, 0.6300, 0.6544, 0.6612, 0.6603, 0.6544, 0.6563]
+	cifar_full_random_init = [0.6292, 0.6287, 0.6235, 0.6293, 0.6284, 0.6252, 0.6181, 0.6252, 0.6248, 0.6250]
 	cifar_full = [cifar_full_random_init, cifar_full_pre_trained]
 	cifar_full_trial_count = min(len(cifar_full_random_init), len(cifar_full_pre_trained))
+
+	_, cf_pvalue = stats.ttest_ind(cifar_full_pre_trained, cifar_full_random_init, equal_var = False)
+	
+	avg_improvement = (np.mean(cifar_full_pre_trained) - np.mean(cifar_full_random_init)) * 100
+	print('--> CIFAR FULL <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('cifar_1k p-value: {}'.format(cf_pvalue))
 
 	cifar_ylims = 0.3, 0.7
 
@@ -45,10 +76,22 @@ def create_ckplus_boxplot():
 	# CKPLUS #
 	## #### ##
 
-	ckplus_full_pre_trained = [0.7323, 0.7374, 0.7475, 0.7374, 0.7273] 
-	ckplus_full_random_init = [0.6919, 0.7172, 0.6869, 0.7172, 0.7071]
+	print('\nCKPLUS')
+
+	# ckplus_full_pre_trained = [0.7323, 0.7374, 0.7475, 0.7374, 0.7273] 
+	# ckplus_full_random_init = [0.6919, 0.7172, 0.6869, 0.7172, 0.7071]
+	
+	ckplus_full_pre_trained = [0.7475, 0.7374, 0.7273, 0.7525, 0.7424, 0.7323, 0.7374, 0.7424, 0.7374, 0.7374]
+	ckplus_full_random_init = [0.6970, 0.6818, 0.7020, 0.6717, 0.7020, 0.7020, 0.6818, 0.7020, 0.7121, 0.6869]
 	ckplus_full = [ckplus_full_random_init, ckplus_full_pre_trained]
 	ckplus_full_trial_count = min(len(ckplus_full_pre_trained), len(ckplus_full_random_init))
+
+	_, ckplus_pvalue = stats.ttest_ind(ckplus_full_pre_trained, ckplus_full_random_init, equal_var = False)
+
+	avg_improvement = (np.mean(ckplus_full_pre_trained) - np.mean(ckplus_full_random_init)) * 100
+	print('--> CKPLUS <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('cifar_1k p-value: {}'.format(ckplus_pvalue))
 
 	ckplus_ylims = 0.6, 0.8
 
@@ -63,6 +106,9 @@ def create_mnist_boxplot():
 	## ### ##
 	# MNIST #
 	## ### ##
+
+	print('\nMNIST')
+
 	#mnist_1k_pre_trained = [0.9038, 0.9009, 0.9009]
 	#mnist_1k_random_init = [0.8980, 0.8913, 0.9003]
 	#mnist_1k_pre_trained = [0.9109, 0.9129, 0.9135, 0.9091, 0.9083, 0.9123, 0.9117, 0.9126, 0.9119, 0.9132]
@@ -71,8 +117,12 @@ def create_mnist_boxplot():
 	mnist_1k_pre_trained = [0.9234, 0.9231, 0.9233, 0.9221, 0.9242, 0.9249, 0.9238, 0.9232, 0.9239, 0.9234]
 	mnist_1k_random_init = [0.9221, 0.9181, 0.9190, 0.9174, 0.9222, 0.9194, 0.9188, 0.9232, 0.9204, 0.9176]
 
-	_, pvalue = stats.ttest_ind(mnist_1k_pre_trained, mnist_1k_random_init, equal_var = False)
-	print('p-value: {}'.format( pvalue))
+	_, m1k_pvalue = stats.ttest_ind(mnist_1k_pre_trained, mnist_1k_random_init, equal_var = False)
+	
+	avg_improvement = (np.mean(mnist_1k_pre_trained) - np.mean(mnist_1k_random_init)) * 100
+	print('--> MNIST 1k <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('mnist_1k p-value: {}'.format(m1k_pvalue))
 
 	mnist_1k = [mnist_1k_random_init, mnist_1k_pre_trained]
 	mnist_1k_trial_count = min(len(mnist_1k_pre_trained), len(mnist_1k_random_init))
@@ -86,8 +136,12 @@ def create_mnist_boxplot():
 	mnist_10k_pre_trained = [0.9775, 0.9788, 0.9774, 0.9782, 0.9780, 0.9786, 0.9788, 0.9777, 0.9769, 0.9781]
 	mnist_10k_random_init = [0.9692, 0.9740, 0.9760, 0.9753, 0.9739, 0.9714, 0.9757, 0.9748, 0.9753, 0.9754]
 
-	_, pvalue = stats.ttest_ind(mnist_10k_pre_trained, mnist_10k_random_init, equal_var = False)
-	print('p-value: {}'.format( pvalue))
+	_, m10k_pvalue = stats.ttest_ind(mnist_10k_pre_trained, mnist_10k_random_init, equal_var = False)
+	
+	avg_improvement = (np.mean(mnist_10k_pre_trained) - np.mean(mnist_10k_random_init)) * 100
+	print('--> MNIST 10k <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('mnist 10k p-value: {}'.format(m10k_pvalue))
 
 	mnist_10k = [mnist_10k_random_init, mnist_10k_pre_trained]
 	mnist_10k_trial_count = min(len(mnist_10k_random_init), len(mnist_10k_pre_trained))
@@ -98,8 +152,12 @@ def create_mnist_boxplot():
 	mnist_full_pre_trained = [0.9856, 0.9884, 0.9881, 0.9870, 0.9887, 0.9886, 0.9872, 0.9881, 0.9870, 0.9882]
 	mnist_full_random_init = [0.9834, 0.9762, 0.9850, 0.9848, 0.9830, 0.9855, 0.9875, 0.9870, 0.9863, 0.9859]
 
-	_, pvalue = stats.ttest_ind(mnist_full_pre_trained, mnist_full_random_init, equal_var = False)
-	print('p-value: {}'.format( pvalue))
+	_, mf_pvalue = stats.ttest_ind(mnist_full_pre_trained, mnist_full_random_init, equal_var = False)
+	
+	avg_improvement = (np.mean(mnist_full_pre_trained) - np.mean(mnist_full_random_init)) * 100
+	print('--> MNIST full <--')
+	print('avg improvement: {}'.format(avg_improvement))
+	print('mnist full p-value: {}'.format(mf_pvalue))
 
 	mnist_full = [mnist_full_random_init, mnist_full_pre_trained]
 	mnist_full_trial_count = min(len(mnist_full_random_init), len(mnist_full_pre_trained))
@@ -201,6 +259,7 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, incl_trial_
 			ri_mean 	= np.mean(ri_data)
 			ri_stddev 	= np.std(ri_data) 
 
+			'''
 			print 'handling {} {}k'.format(dataset_name, in_k_sizes[i])
 			print 'ri_data: {}'.format(ri_data)
 			print 'ri_mean: {}'.format(ri_mean)
@@ -210,8 +269,9 @@ def visualize_boxplot(data, dataset_name, in_k_sizes, trials, ylims, incl_trial_
 			print 'pt_mean: {}'.format(pt_mean)
 			print 'pt_stdd: {}'.format(pt_stddev)
 
-			print 'ttest_ind: {}'.format(stats.ttest_ind(ri_data, pt_data)[1])
+			# print 'ttest_ind: {}'.format(stats.ttest_ind(ri_data, pt_data)[1])
 			print ''
+			'''
 
 			ax = plt.gca()
 			pt_bp = ax.bar([1.8], pt_mean, yerr=pt_stddev, error_kw=dict(ecolor='black', lw=2, capsize=5, capthick=2))
