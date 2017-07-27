@@ -116,7 +116,7 @@
 
 \section{Methods}
 
-  \begin{figure}[ht]
+  \begin{figure}%[ht]
     \centering
     \includegraphics[width=0.6\linewidth]{../graphics/setup.png}
     \caption{Experimental Setup}
@@ -211,7 +211,7 @@
 
   \subsection{CK+}
 
-      \begin{figure}[h]
+      \begin{figure}%[h]
         \centering
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000002.png}
@@ -274,7 +274,7 @@
 
     %(TODO: describe a bit)
 
-    \begin{figure}[ht]
+    \begin{figure}% [ht]
       \centering
 
       \begin{subfigure}{0.45\linewidth}
@@ -310,7 +310,7 @@
 
     \end{figure}
 
-    \begin{figure}[h]
+    \begin{figure}% [h]
       \centering
       \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_00.png}
       \includegraphics[width=0.2\linewidth]{../graphics/reconstructions/ckplus/input_01.png}
@@ -329,7 +329,9 @@
 
       When switching to a ReLu activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
 
-      \begin{figure}[ht]
+      \begin{figure}[b]
+
+      \centering
 
 				\begin{subfigure}{0.4\linewidth}
 
@@ -397,13 +399,7 @@
 
       \paragraph{Filters after Training}
 
-      When observing the learned first layer filters after training on the classification task, we observe a striking difference between the pre-trained and randomly initialized networks. An example on the \emph{CIFAR-10} dataset can be seen in figure~\ref{fig:cifar_filters}
-
-        \begin{enumerate}
-          
-          \item{Describe first layer filters are different AFTER training although classification accuracy might be similar}
-        \end{enumerate}
-
+      In addition to the significant improvement in out-of-sample accuracy, we also observe a striking difference between the filters after convergence depending on the network initialization. The pre-trained networks first-layer filters seem to preserve a lot of the structure learned in the autoencoder, a sign that the learned representation seems to be well suited for the classification task. While the randomly-initialized filters change more during training, their final appearence never shows as clearly interpretable low-level structures as can be seen in an example on the emph{CIFAR-10} dataset in figure~\ref{fig:cifar_filters}.  
 
       \begin{figure}
           \centering
@@ -456,7 +452,7 @@
           \caption{\textbf{\emph{CIFAR-10} CNN} selection of first layer filters. pre-trained (left), random-init (right)}
           \label{fig:cifar_filters}
 
-      \end{figure}
+      \end{figure}Results
 
 
 
