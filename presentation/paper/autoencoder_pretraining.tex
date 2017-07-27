@@ -25,6 +25,8 @@
 \usepackage{textcomp}
 
 \usepackage{graphicx}  % Required for including images
+\usepackage{verbatimbox}
+
 
 \usepackage{subcaption}
 \captionsetup{compatibility=false}
@@ -84,7 +86,6 @@
   \item Datasets:
     \begin{itemize}
       \item make figures smaller
-      \item describe datasets a bit more 
     \end{itemize}
   \item ckplus:
     \begin{itemize}
@@ -128,16 +129,16 @@
     The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...).
     It consists of 45000 training, 5000 validation, and 10000 test images.
 
-\section{Setup \& Context}
+\section{Methods}
 
-  In this paper, we evaluate the influence of CNN pre-training using convolutional autoencoders on the network's out-of-sample accuracy. To achieve this, we train, in a first step, a convolutional autoencoder on a chosen dataset and then, in a second step, use it's convolution layer weights to initialize the convolution layers of a CNN. After training, we compare the CNN's test set accuracy to a reference network that was trained under the same conditions with randomly initialized convolution weights. 
-
-  \begin{figure}[h]
+  \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\linewidth]{../graphics/setup.png}
+    \includegraphics[width=0.6\linewidth]{../graphics/setup.png}
     \caption{Experimental Setup}
     \label{fig:experimental_setup}
   \end{figure}
+
+  In this paper, we evaluate the influence of CNN pre-training using convolutional autoencoders on the network's out-of-sample accuracy. To achieve this, we train, in a first step, a convolutional autoencoder on a chosen dataset and then, in a second step, use its convolution layer weights to initialize the convolution layers of a CNN. After training, we compare the CNN's test set accuracy to a reference network that was trained under the same conditions with randomly initialized convolution weights. 
 
   A visualization of the weight transfer can be seen on the schematic in figure ~\ref{fig:experimental_setup}. 
 
@@ -151,17 +152,24 @@
     In our experiments, we use the autoencoder architecture described \citep{TODO:add_stacked_conv_citation}. It's encoding part consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations is described in table \ref{table:encoding_architecture}. All convolutions are full, non-strided convolutions (do not change the height/width of the input). 
 
     \begin{table}[h]
-      \begin{center}
-        \begin{tabular}{ l|c c c c c c }
-          Layer Type    &   input   & convolution     & max-pool  & convolution & max-pool  & convolution \\
-          Filter Size   &   none    & 5x5             & 2x2       & 5x5         & 2x2       & 3x3         \\
-          Feature Maps&   1(gray)|3(rgb)   & 100             & 100       & 150         & 150       & 200         \\
-          Activation    &   none    & scaled-tanh     & none      & scaled-tanh & none      & scaled-tanh \\
-          Size          & $(H,W,D)$ & $(H,W,100)$     & $(\frac{H}{2}, \frac{W}{2}, 100)$ & $(\frac{H}{2}, \frac{W}{2}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 200)$
-        \end{tabular}
-      \end{center}
-      \caption{CAE encoding layers}
+
+      \centering
+
+      \addvbuffer[10pt]{
+        \makebox[0pt]{
+          \begin{tabular}{ l|c c c c c c }
+            Layer Type    &   input   & convolution     & max-pool  & convolution & max-pool  & convolution \\
+            Filter Size   &   none    & 5x5             & 2x2       & 5x5         & 2x2       & 3x3         \\
+            Channels      &   1(gray)|3(rgb)   & 100             & 100       & 150         & 150       & 200         \\
+            Activation    &   none    & scaled-tanh     & none      & scaled-tanh & none      & scaled-tanh \\
+            Size          & $(H,W,C)$ & $(H,W,100)$     & $(\frac{H}{2}, \frac{W}{2}, 100)$ & $(\frac{H}{2}, \frac{W}{2}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 150)$ & $(\frac{H}{4}, \frac{W}{4}, 200)$
+          \end{tabular}
+        }
+      }
+        
+      \caption{CAE/CNN: shared encoding layers. Channels refers to the amount of feature maps in the given layer}
       \label{table:encoding_architecture}
+
     \end{table}
 
     % $$input \rightarrow conv1 ~(5x5~filter, 100~feature~maps) \rightarrow 2x2 non-overlapping max-pooling \rightarrow activation function \rightarrow  $$
@@ -216,22 +224,7 @@
     (TODO: add better description + significance test)
 
   \subsection{CK+}
-      % TODO: Split into paragraphs a bit
-      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
-      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
-      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
-      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
-      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
-      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
-      Before training we randomly shuffled the images and used the same split for all runs.
 
-      Another specialty for the CK+ dataset was, that we used all frames for the CAE, this includes frames which are neutral or even ambiguous.
-      As this possibly broadens the available information for learning the autoencoder, and is also useful for practical use, we could possibly
-      use a lot of unlabelled images for pre-training. In this case the pretraining makes especially sense, as we can learn features,
-      we could not learn when training only a CNN with labelled images.
-
-      % TODO: explain the ambiguous label problem
-      % TODO: Refer to frames in text
       \begin{figure}[h]
         \centering
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000001.png}
@@ -254,8 +247,23 @@
 
         \caption{CK+ frames from neutral face to emotional face ({\textcopyright}Jeffrey Cohn)}
       \end{figure}
-      
 
+      % TODO: Split into paragraphs a bit
+      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
+      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
+      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
+      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
+      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
+      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
+      Before training we randomly shuffled the images and used the same split for all runs.
+
+      Another specialty for the CK+ dataset was, that we used all frames for the CAE, this includes frames which are neutral or even ambiguous.
+      As this possibly broadens the available information for learning the autoencoder, and is also useful for practical use, we could possibly
+      use a lot of unlabelled images for pre-training. In this case the pretraining makes especially sense, as we can learn features,
+      we could not learn when training only a CNN with labelled images.
+
+      % TODO: explain the ambiguous label problem
+      % TODO: Refer to frames in text
 
 \section{Experimental Results}
   % Results and challenges while performing experiments
@@ -485,7 +493,7 @@
               & 10k   & + 0.39 \%  & < 5e-4 \\
               & 50k   & + 0.32 \%  & < 1e-2 \\
         \midrule
-        CIFAR-10  & 1k    & + 4.55 \% & < 1e-7\\
+        CIFAR-10  & 1k    & - 0.20 \% & > 0.35\\
                   & 10k   & + 4.25 \% & < 1e-9\\
                   & 50k   & + 2.85 \% & < 1e-6\\
         \midrule
