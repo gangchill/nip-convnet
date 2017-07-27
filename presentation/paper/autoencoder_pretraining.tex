@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[draft]{article}
 
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
@@ -80,38 +80,25 @@
   We are comparing the effect of pretraining.
 \end{abstract}
 
-\section*{Todos}
-
-\begin{itemize}
-  \item Datasets:
-    \begin{itemize}
-      \item make figures smaller
-    \end{itemize}
-  \item ckplus:
-    \begin{itemize}
-      \item explain the ambiguous label problem 
-    \end{itemize}
-
-  \item move ReLU and filter after training part before experimental results
-  \item move statistical significance into the methods part 
-
-\end{itemize}
 
 \section{Introduction}
   % CNN SOTA but difficult to train (local minima)
-  While deep convolutional neural networks have attained state of the art performance in many computer vision tasks, their training still remains a difficult task and results are highly vulnerable to local minima. 
+  While deep convolutional neural networks have attained state of the art performance in many computer vision tasks, their training still remains a difficult task and results are highly dependend on the model initialization (local minima). 
   % classification learns: representation + decision
   During a classification task, a CNN first learns a new data representation using its convolution layers as feature extractors and then uses several fully-connected layers for decision-making. 
   % representation might be more general
-  While this learned representation is optizimed for classification, some learned features might be more general and useful for more than this specific task. 
+  While the representation after the convolutional layers is optizimed for classification, some learned features might be more general and also useful outside of this specific task. 
+  Instead of directly optimizing for classification, one can therefore as well begin with focussing on the learned representation before starting to work on the classification problem.
   % representation learning: autoencoder
-  A convolutional autoencoder is an unsupervised method that allows to train the convolutional layers independently from a classification task to learn a new data representation. The learned weights can then be used to initialize a convolutional neural networks convolution layers. 
+  One possible way to do this uses a convolutional autoencoder, an unsupervised method that allows to train the convolutional layers independently from a classification task to learn a new data representation. 
+  % weight transfer
+  The learned weights can then be used as a starting point to initialize a convolutional neural networks convolution layers. 
   % small datasets: needs to learn both at the same time
   This becomes of special interest when only very few labeled examples are available since additional, unlabeled datapoints can be used for the representation learning task. 
   % reference paper (it worked)
-  \citep{masci11} showed that pre-training a neural network using autoencoder weights can improve the classification accuracy consistently by a small margin.
+  \citep{masci11} showed that pre-training a neural network using autoencoder weights can improve the classification accuracy consistently by a small margin.\footnote{In their paper, pre-training boosted the classification accuracy by up to 3.2\% (on \emph{CIFAR-10} restricted to 1k training datapoints.)}
   % We verify those results on the MNIST + CIFAR-10 benchmarks
-  We reproduce these results on the common \emph{MNIST} and \emph{CIFAR-10} benchmarks and finally demonstrate that the approach can be used very effectively on the \emph{Extended Cohn-Kanade} dataset where label information is not only extemely sparse but also ambiguous. 
+  We reproduce these results on the common \emph{MNIST} \citep{lecun1998mnist} and \emph{CIFAR-10} \citep{krizhevsky2009learning} benchmarks and finally demonstrate that the approach can be used very effectively on the \emph{Extended Cohn-Kanade} \citep{kanade2000comprehensive,lucey2010extended} dataset where label information is not only extemely sparse but also ambiguous. 
   % We demonstrate the use of pre-training on the CK+ dataset where only very few correctly datapoints are available and show that the additional, non-labeled datapoints can be used to obtain a better classification accuracy.
 
 \section{Related Work}
@@ -149,7 +136,7 @@
     \paragraph{Architecture}
     The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a feature map representation and then reconstructs the input using strided transposed convolutions 
     % (TODO: similar to Zeiler / first GAN layers? + citation). 
-    In our experiments, we use the autoencoder architecture described \citep{TODO:add_stacked_conv_citation}. It's encoding part consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations is described in table \ref{table:encoding_architecture}. All convolutions are full, non-strided convolutions (do not change the height/width of the input). 
+    In our experiments, we use the autoencoder architecture described \citep{masci11}. It's encoding part consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations is described in table \ref{table:encoding_architecture}. All convolutions are full, non-strided convolutions (do not change the height/width of the input). 
 
     \begin{table}[h]
 
