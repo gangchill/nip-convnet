@@ -209,7 +209,7 @@
     For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
     (TODO: add better description + significance test)
 
-  \subsection{CK+}
+  \subsection{Extended Cohn-Kanade}
 
       \begin{figure}%[h]
         \centering
@@ -373,9 +373,12 @@
   %  To validate our pretraining experiments, in each run we set up a CNN with randomly initialized filters and a CNN which uses the filters trained by the CAE. Both networks have randomly initialized weights for their dense layers.
     As described above to validate the pre-training advantage we trained randomly initialized networks and networks which contain the pre-trained feature maps.
 
-    We let all networks run for at least x (TODO) epochs for all datasets, until the MSE did not change significantly anymore.
+    We let all networks train till we observed conversion, and then used this empircally obtained number of iterations for all following trainings.
+    During this we did not notice a big trend for overfitting.
+    We let all networks run for at least x (TODO) epochs for all datasets, so 5k iterations for the 1k datasets, 10k iterations for the 10k datasets and 15k iterations for the full datasets of MNIST and CIFAR-10. CK+ has been trained for 2k iterations, this corresponds to 
 
     After the final training we measured the classification accuracy on the separate testset, so that we can measure generalization.
+    % compare pre-training
       % Training process
       % evaluated on test set
     \begin{figure}
