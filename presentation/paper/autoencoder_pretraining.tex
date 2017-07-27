@@ -1,4 +1,4 @@
-\documentclass[draft]{article}
+\documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
@@ -56,14 +56,12 @@
   \AND
   Sabbir Ahmmed \\
   TU Berlin \\
+  \texttt{mail}\\
+  \And
+  Youssef Kashef \\
+  TU Berlin \\
+  %% Address \\
   \texttt{mail}
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
   %% \And
   %% Coauthor \\
   %% Affiliation \\
@@ -132,6 +130,7 @@
   While we restricted the training set size for some of the CNN training experiments, the CAEs were always trained on all available training data since in a lot of settings, additional unlabeled data is easily available while labeled data might be extremely rare and costly.  
 
   \subsection{Autoencoder}
+  \label{sec:methods_autoencoder}
 
     \paragraph{Architecture}
     The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a feature map representation and then reconstructs the input using strided transposed convolutions 
@@ -270,37 +269,44 @@
     % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
 
     \paragraph{CAE: Reconstruction}
-    The reconstructions for the datasets can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}.
+
+    After 300k training iterations on a dataset, the CAE reconstructs the input images sucesfully, examples can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}. While the reconstructions for the simple \emph{MNIST} dataset are almost perfect, the reconstructed images on the \emph{Cifar} and \emph{CK+} datasets seem like blurred versions of the input images, however the main features are still visible and on \emph{CK+}, the emotions are clearly differentiable. All autoencoders have the same architecture as described in \ref{sec:methods_autoencoder} and use the scaled tanh as activation function. The learned first layer filters show a similar structure to the ones shown in \citep{masci11}\footnote{Example filters can be seen on \emph{Github} \url{https://github.com/gangchill/nip-convnet/tree/master/experiments/paper_reference_experiments/paper_reference_cae/cifar}}. 
 
     %(TODO: describe a bit)
 
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_00.png}
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_01.png}
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/input_02.png}
-
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
-        \includegraphics[width=0.1\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
-
-        \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
-        \label{fig:mnist_reconstructions}
-      \end{figure}
-
-    \begin{figure}[h]
+    \begin{figure}[ht]
       \centering
-      %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_00.png}
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_01.png}
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/input_02.png}
 
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
-      \includegraphics[width=0.15\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
+      \begin{subfigure}{0.45\linewidth}
+
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/input_00.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/input_01.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/input_02.png}
+
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/reconstruction_00.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/reconstruction_01.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/mnist/reconstruction_02.png}
+
+      \caption{\emph{MNIST} example images (top) and CAE reconstructions (bottom)}
+      \label{fig:mnist_reconstructions}
+
+      \end{subfigure}
+      \begin{subfigure}{0.45\linewidth}
+        
+      %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/input_00.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/input_01.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/input_02.png}
+
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/reconstruction_00.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/reconstruction_01.png}
+      \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/reconstruction_02.png}
 
       \caption{\emph{CIFAR-10} example images(top) and CAE reconstructions(bottom)}
       \label{fig:cifar_reconstructions}
+
+      \end{subfigure}
+      
 
     \end{figure}
 
@@ -320,15 +326,8 @@
     \end{figure}
 
     \paragraph{Rectified Linear Units}
-      In further experiments we used the ReLu activation function \citep{nair2010rectified} for the autoencoder.
-      This lead to quite good-looking representations, while the filters did not seem to have much structure, see figure \ref{fig:relu_cae}.
-      
-      \begin{enumerate}
-        \item talk about smoothness + lack of structure in the filters -> meaningless?
-        \item in first experiments it did not improve the accuracy -> we dropped it
-      \end{enumerate}
 
-      Unlike the CAE using a sigmoidal function, the representation learned with ReLu activation function did not improve classification accuracy of the CNN.
+      When switching to a ReLu activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
 
       \begin{figure}[ht]
 
