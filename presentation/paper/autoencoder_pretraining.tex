@@ -104,15 +104,13 @@
 
 \cite{hamester15} proposed a model using a variant of the Multi-channel Convolutional Neural Network for face expression recognition which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel were trained as convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) (Sumbramaniam et al. (2012)).
 
-\subsection{Datasets}
-  % TODO Introduce, why these two datasets, see stacked conv paper
-  \subsubsection{MNIST}
-    MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
-    The dataset consists of 55000 training, 5000 validation, and 10000 test images.
-  \subsubsection{CIFAR-10}
-    The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
-    The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...).
-    It consists of 45000 training, 5000 validation, and 10000 test images.
+
+MNIST \citep{lecun1998mnist} is a standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
+The dataset consists of 55000 training, 5000 validation, and 10000 test images.
+
+The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
+The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...).
+It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Methods}
 
@@ -133,9 +131,9 @@
   \label{sec:methods_autoencoder}
 
     \paragraph{Architecture}
-    The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a feature map representation and then reconstructs the input using strided transposed convolutions 
+    The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a high dimensional feature map representation and then reconstructs the input using strided transposed convolutions 
     % (TODO: similar to Zeiler / first GAN layers? + citation). 
-    In our experiments, we use the autoencoder architecture described \citep{masci11}. It's encoding part consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations is described in table \ref{table:encoding_architecture}. All convolutions are full, non-strided convolutions (do not change the height/width of the input). 
+    In our experiments, we use the autoencoder architecture described \citep{masci11}. Its encoding part, consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations(\ref{par:activation_function}, is described in table \ref{table:encoding_architecture}. All convolutional layer perform a full, non-strided convolution operation and therefore do not change the height/width of the input. 
 
     \begin{table}[h]
 
@@ -166,35 +164,39 @@
 
     For the reconstruction, we use une strided transpose convolution layer per convolution / max-pool layer in the encoding layers. The weights of the transpose convolutions are the same as learned in the convolution layers and the 2x2 strides invert the downsampling effect of the max-pooling layers.
 
-    \paragraph{Activation Function} Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci11}. We will talk about our ReLU experiments in (TODO: add link). With scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, CAEs seemed faster to train using this function, however we did not conduct any experiments to verify this.
+    \paragraph{Activation Function}
+    \label{par:activation_function}
+    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci11}. We will talk about our ReLU experiments in (TODO: add link). With scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
 
-    \paragraph{Regularization} In general, a full convolutional layer could easily learn a simple point filter such as $k = \begin{smallmatrix} 0&0&0\\ 0&1&0 \\ 0&0&0 \end{smallmatrix}$ (for 1d input) that copies the input onto a feature map. While this would later simplify a perfect reconstruction of the input, the CAE does not find any more suitable representation for our data. To prevent this problem, some kind of regularization is needed. Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer (TODO: reference sparse CAE paper and more regularization ideas?). In \citep{masci11} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this did not seem not to help the emergence of more natural filters in their experiments. 
+    \paragraph{Regularization} 
+    While autoencoders are typically used for dimensionality reduction, the feature map representation of the convolutional autoencoders we are using is of a much higher dimensionality than the input images. While this feature representation seems well-suited in a CNN, the overcomplete representation becomes problematic in an autoencoder since it gives the autoencoder the possibility to simply learn the identity function. 
+    Without any further constraints, a full convolutional layer could easily learn a simple point filter such as $k = \begin{smallmatrix} 0&0&0\\ 0&1&0 \\ 0&0&0 \end{smallmatrix}$ (for grayscale input) that copies the input onto a feature map. While this would later simplify a perfect reconstruction of the input, the CAE does not find any more suitable representation for our data. 
+    To prevent this problem, some kind of regularization is needed. 
+
+    Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer (TODO: cite WTA CAE paper). In \citep{masci11} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this does not seem not to help the emergence of more natural filters in their experiments. 
     % (TODO: describe what is a natural filter for us). 
 
     \paragraph{Training} While the authors of \citep{masci11} use a layer-wise training for convolutional autoencoders, we achieve good results by training the whole auto-encoder at once. 
     % (TODO: maybe this made it more difficult / longer to train?).
-    For the \emph{MNIST} and \emph{CIFAR-10} datasets, the autoencoders are trained with simple gradient descent using as learning rate of $lr = 0.5$, for the CKPLUS dataset, we use the adagrad optimizer with the same initial learning rate $lr$.
+    For the \emph{MNIST} and \emph{CIFAR-10} datasets, the autoencoders are trained with simple gradient descent using as learning rate of $lr = 0.5$, for the CKPLUS dataset, we use the adagrad optimizer with the same initial learning rate $lr$.\footnote{CAE convolution filters initialized using a truncated normal distribution ($\mu = 0.001$, $\sigma = 0.05$), all bias values initialized with the constant $0.001$}
 
-    \paragraph{Weight initialization} The convolutional filters are initialized using a truncated normal distribution with mean $\mu = 0.001$ and standard deviation $\sigma = 0.05$, all bias values are initialized with the constant $0.001$
+  \subsection{CNN Pre-Training}
 
-  \subsection{Pre-Training}
+    \paragraph{CNN architecture} The CNN uses the same architecture as the CAE encoding for its convolution layers (feature extraction) and then uses two fully-connected layers (sizes 384 and 10) for decision making, the first having a scaled tanh activation, the second followed by a softmax layer for probabilistic output.
 
-    \paragraph{CNN architecture} The CNN uses the same architecture as the CAE encoding for its convolution layers (feature extraction) and then uses a fully-connected layer with size 384 followed by an activation function (scaled tanh), a second fully-connected layer of size 10 and a softmax layer for classification. 
+    \paragraph{CNN Initialization and Training}
 
-    \paragraph{Weight Initialization}
+    % INITIALIZATION
+    The convolutional layer weights (filters) and biases of the pre-trained networks were initialized with the values obtained from the convolutional autoencoders. The reference CNN's convolution weights were initialized with mean $\mu = 0 $ and standard deviation $\sigma = 0.2$, the biases with the constant value $b =  0.0001$.
 
-    The convolutional layer weights (filters) and biases of the pre-trained networks were initialized with the values obtained from the convolutional autoencoders.
-
-    The reference CNN's convolution weights were initialized with mean $\mu = 0 $ and standard deviation $\sigma = 0.2$, the biases with the constant value $b =  0.0001$.
-
-    The fully-connected layers were initialized randomly for all networks, the weights with a truncated normal distribution with mean $\mu = 0$ and standard deviation $\sigma = 0.001$ and the biases with the constant value $0.0001$.
+    The fully-connected layers were initialized randomly for all networks. \footnote{CNN fully-connected layer weights initialized with a truncated normal distribution ($\mu = 0$, $\sigma = 0.001$), biases with the constant value $0.0001$.}
     This means that for all experiments, some parts of the networks are randomly initialized, all weights for the reference networks and the fully-connected weights for the pre-trained networks. 
 
-    \paragraph{CNN Training}
+    % TRAINING 
     % (TODO: optimizer, step size, convergence criterion, amount of epochs per dataset)
-    For each datset, we split the available training data into training and evaluation set and use the evaluation set to track the training progress and adjust hyperparameters. We keep track of both cross-entropy error and accuracy on the evaluation set and stop training when these values converge. Afterwards, we evaluate the networks accuracy once on the held-out test set and use the obtained value as a result. 
-
-    For the larger datasets \emph{MNIST} and \emph{CIFAR-10}, we conducted several experiments restricting the amount of available training data inspired by \citep{masci11}. The autoencoder used for pre-training was always trained on the whole dataset. 
+    For each datset, we split the available training data into training and evaluation set and use the evaluation set to track the training progress and adjust hyperparameters. We keep track of both cross-entropy error and accuracy on the evaluation set and stop training when these values converge. Afterwards, we evaluate the networks accuracy once on the held-out test set and use the obtained value as a result. We let every experimental setup run 10 times, average the results and conduct a t-test for significante. The test set stays the same over all runs. 
+ 
+    For the larger datasets \emph{MNIST} and \emph{CIFAR-10}, we conduct several experiments restricting the amount of available training data inspired by \citep{masci11}. The autoencoder used for pre-training is always trained on the whole dataset. 
 
     %\begin{itemize}
       %\item Network Architectures
@@ -205,9 +207,9 @@
       %\item 1k/10k/full splits but always full dataset for CAE
     %\end{itemize}
 
-  \subsection{Evaluation}
-    For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
-    (TODO: add better description + significance test)
+  %\subsection{Evaluation}
+  %  For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
+  %  (TODO: add better description + significance test)
 
   \subsection{Extended Cohn-Kanade}
 
