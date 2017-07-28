@@ -52,7 +52,7 @@
   \And
   Russell Hofmann\\
   TU Berlin\\
-  \texttt{mail} \\
+  \texttt{r.hofmann@campus.tu-berlin.de} \\
   \AND
   Sabbir Ahmmed \\
   TU Berlin \\
@@ -100,7 +100,6 @@
   % We demonstrate the use of pre-training on the CK+ dataset where only very few correctly datapoints are available and show that the additional, non-labeled datapoints can be used to obtain a better classification accuracy.
 
 \section{Related Work}
-\section{Related Work}
 \cite{Erhan10} showed that unsupervised pre-training adds robustness to a deep architecture and pre-trained networks give consistently better
 generalization. They also suggested that increasing the depth of an architecture that is not pre-trained increases the probability of finding poor apparent local minima. They observed that pre-trained networks learn qualitatively different features compared to networks without pre-training. Pre-training not only gives a good initial
 marginal distribution but also captures more intricate dependencies between parameters. Another interesting point which they asserted is that unsupervised pre-training exhibits some properties of a regularizer and classical regularization techniques (e.g L1/L2) do not achieve
@@ -119,12 +118,16 @@ and the Toronto Face Dataset (TFD) by training a zero-bias CNN on facial express
 
 \cite{hamester15} proposed a model for face expression recognition based on a variant of the Multi-channel Convolutional Neural Network (MCCNN) earlier introduced by \cite{Barros14} which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel are trained in an unsupervised fashion as a convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) used by \cite{Subramanian12}.
 
-MNIST \citep{lecun1998mnist} is a standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
-The dataset consists of 55000 training, 5000 validation, and 10000 test images.
-
-The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
-The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats...).
-It consists of 45000 training, 5000 validation, and 10000 test images.
+\subsection{Datasets}
+  In previous work \citep{masci2011stacked}, the authors applied the approach of pre-training by a convolutional autoencoder to two standard image classification datasets, MNIST and CIFAR-10.
+  Since one part of our project consists of reproducing these results, we will shortly introduce both these datasets here.
+  \subsubsection{MNIST}
+    MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
+    The dataset consists of 55000 training, 5000 validation, and 10000 test images.
+  \subsubsection{CIFAR-10}
+    The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still and the colors lead to a more complex
+    The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats,...).
+    It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Methods}
 
@@ -225,7 +228,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
   %  For each dataset and training size, we train k pre-trained CNNs and k randomly initialized reference CNNs.
   %  (TODO: add better description + significance test)
 
-  \subsection{Extended Cohn-Kanade}
+  \subsection{Extended Cohn-Kanade Dataset}
 
       \begin{figure}%[h]
         \centering
@@ -248,47 +251,43 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
         \includegraphics[width=0.15\linewidth]{../graphics/ckplus_frames/S052_001_00000015.png}
 
         \caption{CK+ frames from neutral face to emotional face ({\textcopyright}Jeffrey Cohn)}
+        \label{fig:ckplus_frames}
       \end{figure}
 
-      % TODO: Split into paragraphs a bit
-      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion.
-      CK+ was the most interesting dataset during our project, as unnlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
-      As the CK+ dataset is not readily prepared for running those kinds of experiments, we had to put some work into this ourselves.
-      We decided to not take the full images, but used the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
-      In order to train the autoencoder we used all of the frames as unlabelled input, for the CNN we used the last three frames of all sequences, labelled with the target emotion.
-      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images.
-      Before training we randomly shuffled the images and used the same split for all runs.
+      Alltogether the Extended Cohn-Kanade (CK+) dataset \citep{kanade2000comprehensive,lucey2010extended} has 123 subjects and 593 emotion sequences, which are 10-60 frames of short video sequences, from a neutral face to the target emotion, as can be seen in figure \ref{fig:ckplus_frames}
+      CK+ is the most interesting dataset in our project, as unlike the other two datasets, no pre-training experiments have been done on CK+, as far as we know.
 
-      Another specialty for the CK+ dataset was, that we used all frames for the CAE, this includes frames which are neutral or even ambiguous.
-      As this possibly broadens the available information for learning the autoencoder, and is also useful for practical use, we could possibly
-      use a lot of unlabelled images for pre-training. In this case the pretraining makes especially sense, as we can learn features,
-      we could not learn when training only a CNN with labelled images.
+      As the CK+ dataset is not readily prepared for running those kinds of experiments, we have to put some work into this ourselves.
+      We decided to not take the full images, but use the provided facial landmarks, to put the faces into a bounding box and scale them down by factor 5 to a size of 68x65 pixels.
+      In order to train the autoencoder we use all of the frames as unlabelled input, for the CNN we use the last three frames of all sequences, labelled with the target emotion.
+      We split the dataset into training, validation and test set by subject, so that we end up with 696 training, 87 validation and 198 test images for the CNN.
+      Before training we randomly shuffle the images and used the same split for all runs.
 
-      % TODO: explain the ambiguous label problem
-      % TODO: Refer to frames in text
+      Another specialty for the CK+ dataset is, that when we use all frames for the CAE, this includes frames which are neutral or even ambiguous.
+      As this possibly broadens the available information for learning the autoencoder, and is also useful for practical use, we could possibly use a lot of unlabelled images for pre-training.
+      In this case the pretraining makes especially sense, because we can learn features, we could not learn when training only a CNN with labelled images.
+
+  \subsection{Statistical Significance}
+      In order to validate possible resulting accuracy differences, we also want to check their significance.
+      Therefore we run a standard t-test to measure if the accuracies from the randomly initialized CNN are significantly different from the pre-trained one.
+      This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+
 
 \section{Experimental Results}
   % Results and challenges while performing experiments
   % Training process
-  % How long trained
-  % convergence criterion (checked how long they took)
-  % amount of epochs per dataset
-  % evaluated on test set
-  % shrink boxplots, next to each other
-  % FOCUS: CK+ Processing
+  % FOCUS: CK+ Processing & describe experiments exactly
   We conducted experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+) datasets, which vary in their image size, number of images and colour information.
-
   
-  \subsection{Autoencoder Training}
+  \subsection{Autoencoder Reconstruction}
     % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
 
     % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
-
-    \paragraph{CAE: Reconstruction}
+    When training a utilizable convolutional autoencoder (CAE), the most obvious goal is to get good reconstructions of the input images.
+    Even though this does not always necessarily mean that we learned a good representation, it was still our main optimization criteria here.
+    In the next section we will then check, if we actually learned a useful representation by applying it to a classification network.
 
     After 300k training iterations on a dataset, the CAE reconstructs the input images sucesfully, examples can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}. While the reconstructions for the simple \emph{MNIST} dataset are almost perfect, the reconstructed images on the \emph{Cifar} and \emph{CK+} datasets seem like blurred versions of the input images, however the main features are still visible and on \emph{CK+}, the emotions are clearly differentiable. All autoencoders have the same architecture as described in \ref{sec:methods_autoencoder} and use the scaled tanh as activation function. The learned first layer filters show a similar structure to the ones shown in \citep{masci11}\footnote{Example filters can be seen on \emph{Github} \url{https://github.com/gangchill/nip-convnet/tree/master/experiments/paper_reference_experiments/paper_reference_cae/cifar}}. 
-
-    %(TODO: describe a bit)
 
     \begin{figure}% [ht]
       \centering
@@ -341,8 +340,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
       \label{fig:ckplus_reconstructions}
     \end{figure}
 
-    \paragraph{Rectified Linear Units}
-
+    \subsubsection{Rectified Linear Units}
       When switching to a ReLu activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
 
       \begin{figure}[b]
@@ -390,13 +388,14 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
     As described above to validate the pre-training advantage we trained randomly initialized networks and networks which contain the pre-trained feature maps.
 
     We let all networks train till we observed conversion, and then used this empircally obtained number of iterations for all following trainings.
-    During this we did not notice a big trend for overfitting.
-    We let all networks run for at least x (TODO) epochs for all datasets, so 5k iterations for the 1k datasets, 10k iterations for the 10k datasets and 15k iterations for the full datasets of MNIST and CIFAR-10. CK+ has been trained for 2k iterations, this corresponds to 
+    The length of training was at least 30 epochs for all datasets, so 5k iterations for the 1k datasets, 10k iterations for the 10k datasets and 15k iterations for the full datasets of MNIST and CIFAR-10.
+    CK+ has been trained for 2k iterations, this corresponds to more than 350 epochs.
+    During this we checked for overfitting, but did not notice a big trend for it.
+    So apparently our regularization mostly works fine.
 
-    After the final training we measured the classification accuracy on the separate testset, so that we can measure generalization.
-    % compare pre-training
-      % Training process
-      % evaluated on test set
+    After the final training we measure the classification accuracy on the separate testset for both the random-initialized and the pre-trained CNN, so that we can measure generalization and compare the results.
+    As can be seen in figures \ref{fig:mnist_cifar_plot} and \ref{fig:ckplus_plot}, the pre-training accuracy for all datasets is higher than without pre-training.
+    In order to check the intuition and validity of these results, we will now first look at the resulting filters and then calculate the statistical significance.
     \begin{figure}
       \centering
 
@@ -471,17 +470,14 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
           \caption{\textbf{\emph{CIFAR-10} CNN} selection of first layer filters. pre-trained (left), random-init (right)}
           \label{fig:cifar_filters}
 
-      \end{figure}Results
+      \end{figure}
 
 
-
-  \subsubsection{Statistical Significance}
-    In order to check the statistical significance of the achieved pretraining improvements, we conducted a standard t-test.
-    This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+      
+  \subsubsection{Resulting Statistical Significance}
     As can be seen in table \ref{table:significance}, the improvements for all datasets, except the 1k CIFAR-10 subset, are significant.
 
     \begin{table}
-      % TODO: Update values to new rough values, add accuracy improvement
       \caption{Statistical Significance of Pretraining Improvements}
       \label{table:significance}
       \centering
@@ -506,13 +502,11 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
     \subsubsection{Interpretation}
       For both MNIST and CIFAR-10 it can be observed, that the accuracy on a pre-trained CNN is higher than with a randomly initialized CNN, when we use the full or 10k datasets.
-      For the 1k subsets of these two larger datasets, no significant improvement seems to occur. This could be due to overfitting, as we train a complex network on very little data.
+      For the 1k subsets of the CIFAR-10 dataset, no significant improvement seems to occur. This could be due to overfitting, as we train a complex network on very little data.
       For the CK+ dataset we get the biggest improvement through pretraining.
       Even though the standard deviation is quite high, we get a significant jump in the accuracy.
       This could be due to the fact, that for CK+ we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
-      % Should we write this into Conclusion: ?
       This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabbeled images but only a few that can be used for learning classifications.
-
 
 \section{Conclusion}
 
