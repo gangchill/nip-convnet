@@ -215,6 +215,8 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
  
     For the larger datasets \emph{MNIST} and \emph{CIFAR-10}, we conduct several experiments restricting the amount of available training data inspired by \citep{masci2011stacked}. The autoencoder used for pre-training is always trained on the whole dataset. 
 
+    Since we are working with small amounts of training images for complex datasets, we are aware that problems with overfitting might arise. In order to prevent these effects, we use dropout regularization in the dense layers~footnote{using a dropout rate of 0.5 during training time}, monitor the training progress with a seperate validation set and measure the generalization performance on a held-out test set. 
+
     %\begin{itemize}
       %\item Network Architectures
       %\item Weight Transfer
@@ -394,8 +396,13 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
     So apparently our regularization mostly works fine.
 
     After the final training we measure the classification accuracy on the separate testset for both the random-initialized and the pre-trained CNN, so that we can measure generalization and compare the results.
-    As can be seen in figures \ref{fig:mnist_cifar_plot} and \ref{fig:ckplus_plot}, the pre-training accuracy for all datasets is higher than without pre-training.
-    In order to check the intuition and validity of these results, we will now first look at the resulting filters and then calculate the statistical significance.
+    
+    % experimental results:
+    As can be seen in figures \ref{fig:mnist_cifar_plot} and \ref{fig:ckplus_plot}, accuracy values for the pre-trained networks are higher for almost all datasets and configurations. The only exception is the \emph{CIFAR-10} dataset with a training set of 1000 images. When looking at results of the t-test in table \ref{table:significance}, there is a significant difference for almost all dataset configurations, the only outlier being again \emph{CIFAR} 1k. 
+    
+    %Cifar-10 overfitting?
+    Pre-training consistently outperforms random initialization on almost all dataset configurations. Since \emph{CIFAR-10} with its natural images seems the most complex classification task, we assume that in this scenario overfitting might be more of a problem. We suppose that with additional regularization, pre-training could as well be benificial in this context. 
+
     \begin{figure}
       \centering
 
@@ -415,9 +422,7 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
       \label{fig:ckplus_plot}
     \end{figure}
 
-      \paragraph{Filters after Training}
-
-      In addition to the significant improvement in out-of-sample accuracy, we also observe a striking difference between the filters after convergence depending on the network initialization. The pre-trained networks first-layer filters seem to preserve a lot of the structure learned in the autoencoder, a sign that the learned representation seems to be well suited for the classification task. While the randomly-initialized filters change more during training, their final appearence never shows as clearly interpretable low-level structures as can be seen in an example on the emph{CIFAR-10} dataset in figure~\ref{fig:cifar_filters}.  
+    In addition to the significant improvement in out-of-sample accuracy, we also observe a striking difference between the filters after convergence depending on the network initialization. The pre-trained networks first-layer filters seem to preserve a lot of the structure learned in the autoencoder, a sign that the learned representation seems to be well suited for the classification task. While the randomly-initialized filters change more during training, their final appearence never shows as clearly interpretable low-level structures as can be seen in an example on the emph{CIFAR-10} dataset in figure~\ref{fig:cifar_filters}.  
 
       \begin{figure}
           \centering
@@ -472,10 +477,6 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
 
       \end{figure}
 
-
-      
-  \subsubsection{Resulting Statistical Significance}
-    As can be seen in table \ref{table:significance}, the improvements for all datasets, except the 1k CIFAR-10 subset, are significant.
 
     \begin{table}
       \caption{Statistical Significance of Pretraining Improvements}
