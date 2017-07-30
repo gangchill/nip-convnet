@@ -154,7 +154,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
     \paragraph{Architecture}
     The convolutional autoencoder first uses several convolution and pooling layers to transform the input to a high dimensional feature map representation and then reconstructs the input using strided transposed convolutions.
     % (TODO: similar to Zeiler / first GAN layers? + citation). 
-    In our experiments, we use the autoencoder architecture described in \citep{masci2011stacked}. Its encoding part, consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations (see section \ref{par:activation_function}), is described in table \ref{table:encoding_architecture}. All convolutional layer perform a full, non-strided convolution operation and therefore do not change the height/width of the input.
+    In our experiments, we use the autoencoder architecture described in \citep{masci2011stacked}. Its encoding part consists of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations (see section \ref{par:activation_function}). More detailed layer information is given in table \ref{table:encoding_architecture}. All convolutional layer perform a full, non-strided convolution operation, their output feature maps have the same height and width as their input.
 
     \begin{table}[h]
 
@@ -187,14 +187,13 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
     \paragraph{Activation Function}
     \label{par:activation_function}
-    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (TODO: add link). By scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
+    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (\ref{sec:relu_cae}). By scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
 
     \paragraph{Regularization} 
     While autoencoders are typically used for dimensionality reduction, the feature map representation of the convolutional autoencoders we are using is of a much higher dimensionality than the input images. While this feature representation seems well-suited in a CNN, the overcomplete representation becomes problematic in an autoencoder since it gives the autoencoder the possibility to simply learn the identity function. 
     Without any further constraints, a full convolutional layer could easily learn a simple point filter such as $k = \begin{smallmatrix} 0&0&0\\ 0&1&0 \\ 0&0&0 \end{smallmatrix}$ (for grayscale input) that copies the input onto a feature map. While this would later simplify a perfect reconstruction of the input, the CAE does not find any more suitable representation for our data. 
     To prevent this problem, some kind of regularization is needed. 
-
-    Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer (TODO: cite WTA CAE paper). In \citep{masci2011stacked} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this does not seem not to help the emergence of more natural filters in their experiments. 
+    Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer \citep{Makhzani14}. In \citep{masci2011stacked} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this does not seem not to help the emergence of more natural filters in their experiments. 
     % (TODO: describe what is a natural filter for us).
 
     \paragraph{Training} While the authors of \citep{masci2011stacked} use a layer-wise training for convolutional autoencoders, we achieve good results by training the whole auto-encoder at once. 
@@ -348,6 +347,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
     \end{figure}
 
     \subsubsection{Rectified Linear Units}
+      \label{sec:relu_cae}
       When switching to a ReLu activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
 
       \begin{figure}[b]
