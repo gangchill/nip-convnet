@@ -36,7 +36,7 @@
 
 %\bibliographystyle{ksfh_nat}
 
-\title{Pre-Training CNN's Using Convolutional Autoencoders}
+\title{Pre-Training CNNs Using Convolutional Autoencoders}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -93,7 +93,7 @@
   % representation learning: autoencoder
   One possible way to do this uses a convolutional autoencoder, an unsupervised method that allows to train the convolutional layers independently from a classification task to learn a new data representation. 
   % weight transfer
-  The learned weights can then be used as a starting point to initialize a convolutional neural networks convolution layers. 
+  The learned weights can then be used as a starting point to initialize a convolutional neural network's convolution layers. 
   % small datasets: needs to learn both at the same time
   This becomes of special interest when only very few labeled examples are available since additional, unlabeled datapoints can be used for the representation learning task. 
   % reference paper (it worked)
@@ -151,9 +151,9 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
   \label{sec:methods_autoencoder}
 
     \paragraph{Architecture}
-    The convolutional autoencoder first uses several convolution layers and pooling layers to transform the input to a high dimensional feature map representation and then reconstructs the input using strided transposed convolutions 
+    The convolutional autoencoder first uses several convolution and pooling layers to transform the input to a high dimensional feature map representation and then reconstructs the input using strided transposed convolutions.
     % (TODO: similar to Zeiler / first GAN layers? + citation). 
-    In our experiments, we use the autoencoder architecture described \citep{masci2011stacked}. Its encoding part, consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations(\ref{par:activation_function}, is described in table \ref{table:encoding_architecture}. All convolutional layer perform a full, non-strided convolution operation and therefore do not change the height/width of the input. 
+    In our experiments, we use the autoencoder architecture described in \citep{masci2011stacked}. Its encoding part, consisting of 3 times a convolution layer followed by 2x2 non-overlapping max-pooling and a layer of scaled-tanh activations (see section \ref{par:activation_function}), is described in table \ref{table:encoding_architecture}. All convolutional layer perform a full, non-strided convolution operation and therefore do not change the height/width of the input.
 
     \begin{table}[h]
 
@@ -182,11 +182,11 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
     % in general: conv layers have (1,1,1,1) strides and we are performing a full convolution (out hei/wid = in hei(wid))
     %input (batchsize, height, width, numchannels) -> conv1 (5x5 filter) (batchsize, height, width, 100) -> activation function (scaled tanh) (b,h,w,100) -> max pooling (2x2, (1,2,2,1) strides) (b, h/2, w/2, 100) -> conv2 (5x5 filter) (b, h/2, w/2, 150) -> activation function (Scaled tanh) (b, h/2, w/2, 150) -> max  pooling (2x2 filter, (1,2,2,1) strides (b, h/4, w/4, 150) -> conv3 (3x3 filter), (b, h/4, w/4, 200) -> activation function (scaled tanh) (b, h/4, w/4, 200) 
 
-    For the reconstruction, we use une strided transpose convolution layer per convolution / max-pool layer in the encoding layers. The weights of the transpose convolutions are the same as learned in the convolution layers and the 2x2 strides invert the downsampling effect of the max-pooling layers.
+    For the reconstruction, we use one strided transpose convolution layer per convolution / max-pool layer in the encoding layers. The weights of the transpose convolutions are the same as learned in the convolution layers and the 2x2 strides invert the downsampling effect of the max-pooling layers.
 
     \paragraph{Activation Function}
     \label{par:activation_function}
-    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (TODO: add link). With scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
+    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (TODO: add link). By scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
 
     \paragraph{Regularization} 
     While autoencoders are typically used for dimensionality reduction, the feature map representation of the convolutional autoencoders we are using is of a much higher dimensionality than the input images. While this feature representation seems well-suited in a CNN, the overcomplete representation becomes problematic in an autoencoder since it gives the autoencoder the possibility to simply learn the identity function. 
@@ -194,11 +194,11 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
     To prevent this problem, some kind of regularization is needed. 
 
     Several methods can be found in the literature, most of them involving some kind of sparsity constraint for the representation layer (TODO: cite WTA CAE paper). In \citep{masci2011stacked} the authors use max-pooling as an elegant way to enforce the learning of plausible filters without the need for any further regularization. Since the CNN architecture we are going to use later will contain pooling layers anyways, we stick with this technique and choose not to add any noise to our inputs either since this does not seem not to help the emergence of more natural filters in their experiments. 
-    % (TODO: describe what is a natural filter for us). 
+    % (TODO: describe what is a natural filter for us).
 
     \paragraph{Training} While the authors of \citep{masci2011stacked} use a layer-wise training for convolutional autoencoders, we achieve good results by training the whole auto-encoder at once. 
     % (TODO: maybe this made it more difficult / longer to train?).
-    For the \emph{MNIST} and \emph{CIFAR-10} datasets, the autoencoders are trained with simple gradient descent using as learning rate of $lr = 0.5$, for the CKPLUS dataset, we use the adagrad optimizer with the same initial learning rate $lr$.\footnote{CAE convolution filters initialized using a truncated normal distribution ($\mu = 0.001$, $\sigma = 0.05$), all bias values initialized with the constant $0.001$}
+    For the \emph{MNIST} and \emph{CIFAR-10} datasets, the autoencoders are trained with simple gradient descent using as learning rate of $lr = 0.5$, for the \emph{CK+} dataset, we use the adagrad optimizer with the same initial learning rate $lr$.\footnote{CAE convolution filters initialized using a truncated normal distribution ($\mu = 0.001$, $\sigma = 0.05$), all bias values initialized with the constant $0.001$}
 
   \subsection{CNN Pre-Training}
 
@@ -214,10 +214,11 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
 
     % TRAINING 
     % (TODO: optimizer, step size, convergence criterion, amount of epochs per dataset)
-    For each datset, we split the available training data into training and evaluation set and use the evaluation set to track the training progress and adjust hyperparameters. We keep track of both cross-entropy error and accuracy on the evaluation set and stop training when these values converge. Afterwards, we evaluate the networks accuracy once on the held-out test set and use the obtained value as a result. We let every experimental setup run 10 times, average the results and conduct a t-test for significante. The test set stays the same over all runs. 
+    For each dataset, we split the available training data into training and evaluation set and use the evaluation set to track the training progress and adjust hyperparameters. We keep track of both cross-entropy error and accuracy on the evaluation set and stop training when these values converge. Afterwards, we evaluate the networks accuracy once on the held-out test set and use the obtained value as a result. We let every experimental setup run 10 times, average the results and conduct a t-test for significance. The test set stays the same over all runs. 
  
     For the larger datasets \emph{MNIST} and \emph{CIFAR-10}, we conduct several experiments restricting the amount of available training data inspired by \citep{masci2011stacked}. The autoencoder used for pre-training is always trained on the whole dataset. 
 
+    % ~footnote{ ???
     Since we are working with small amounts of training images for complex datasets, we are aware that problems with overfitting might arise. In order to prevent these effects, we use dropout regularization in the dense layers~footnote{using a dropout rate of 0.5 during training time}, monitor the training progress with a seperate validation set and measure the generalization performance on a held-out test set. 
 
     %\begin{itemize}
