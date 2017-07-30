@@ -51,7 +51,7 @@
 \author{
   Maximilian~Kohlbrenner\\
   TU Berlin\\
-  \texttt{mail} \\
+  \texttt{m.kohlbrenner@campus.tu-berlin.de} \\
   \And
   Russell Hofmann\\
   TU Berlin\\
@@ -62,6 +62,7 @@
   \texttt{ahmmed@campus.tu-berlin.de}\\
   \And
   Youssef Kashef \\
+  \texttt{kashefy@ni.tu-berlin.de}
   TU Berlin \\
   %% Address \\
   \texttt{mail}
@@ -78,7 +79,7 @@
 \maketitle
 
 \begin{abstract}
-  We are comparing the effect of pretraining.
+  Despite neural networks being the state of the art in almost all computer vision tasks, their training remains a difficult task. Unsupervised representation learning using a convolutional autoencoder can be used to initialize network weights and has been shown to improve test accuracy after training. We reproduce previous results using this approach and successfully apply it to the difficult ckplus dataset for which labels are extremely sparse but additional unlabeled data is available for unsupervised use.
 \end{abstract}
 
 
@@ -121,16 +122,16 @@ and the Toronto Face Dataset (TFD) by training a zero-bias CNN on facial express
 
 Hamester et al. \citep{hamester15} proposed a model for face expression recognition based on a variant of the Multi-channel Convolutional Neural Network (MCCNN) earlier introduced by \cite{Barros14} which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel are trained in an unsupervised fashion as a convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) used by \citep{Subramanian12}.
 
-\subsection{Datasets}
-  In previous work \citep{masci2011stacked}, the authors applied the approach of pre-training by a convolutional autoencoder to two standard image classification datasets, MNIST and CIFAR-10.
-  Since one part of our project consists of reproducing these results, we will shortly introduce both these datasets here.
-  \paragraph{MNIST}
-    MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
-    The dataset consists of 55000 training, 5000 validation, and 10000 test images.
-  \paragraph{CIFAR-10}
-    The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still made of real images and the colors lead to a more difficult classification challenge.
-    The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats,...).
-    It consists of 45000 training, 5000 validation, and 10000 test images.
+\paragraph{Datasets}
+In previous work \citep{masci2011stacked}, the authors applied the approach of pre-training by a convolutional autoencoder to two standard image classification datasets, MNIST and CIFAR-10.
+Since one part of our project consists of reproducing these results, we will shortly introduce both these datasets here.
+%mnist
+MNIST \citep{lecun1998mnist} is the standard dataset used for image classification. It consists of scanned handwritten digits, which are 28 by 28 pixel grayscale images. As they are digits, the goal is to classify the correct one of 10 classes.
+The dataset consists of 55000 training, 5000 validation, and 10000 test images.
+%cifar
+The CIFAR dataset \citep{krizhevsky2009learning} is made out of natural scenes, which are 32x32 colorized images. The relatively low resolution, while still made of real images and the colors lead to a more difficult classification challenge.
+The CIFAR-10 variant, which we used, is built as a classification dataset with 10 specified labels (cars, cats,...).
+It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Methods}
 
@@ -283,7 +284,7 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
   % Results and challenges while performing experiments
   % Training process
   % FOCUS: CK+ Processing & describe experiments exactly
-  We conduct experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+) datasets, which vary in their image size, number of images and colour information.
+  We conduct experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+), which vary in their image size, number of images and colour information.
   
   \subsection{Autoencoder Reconstruction}
     % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
