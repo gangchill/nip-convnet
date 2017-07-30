@@ -1,0 +1,8 @@
+Introduction
+
+ now: The learned weights can then be used as a starting point to initialize a convolutional neural networks convolution layers.
+ should be:  The learned weights can then be used as a starting point to initialize a convolutional neural network's convolution layers.
+
+ The citations are still not ordered properly. for example first citation shall start with [1] not  [10]
+
+
