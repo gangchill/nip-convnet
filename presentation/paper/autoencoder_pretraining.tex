@@ -287,16 +287,16 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
   % Training process
   % FOCUS: CK+ Processing & describe experiments exactly
   We conduct experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+), which vary in their image size, number of images and colour information.
-  
+
   \subsection{Autoencoder Reconstruction}
     % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
 
     % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
-    When training a utilizable convolutional autoencoder (CAE), the most obvious goal is to get good reconstructions of the input images.
+    When training a utilizable CAE, the most obvious goal is to get good reconstructions of the input images.
     Even though this does not always necessarily mean that we learned a good representation, it is still our main optimization criteria here.
     In the next section we will then check, if we actually learned a useful representation by applying it to a classification network.
 
-    After 300k training iterations on a dataset, the CAE reconstructs the input images sucesfully, examples can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}. While the reconstructions for the simple \emph{MNIST} dataset are almost perfect, the reconstructed images on the \emph{CIFAR-10} and \emph{CK+} datasets seem like blurred versions of the input images, however the main features are still visible and on \emph{CK+}, the emotions are clearly differentiable. All autoencoders have the same architecture as described in \ref{sec:methods_autoencoder} and use the scaled-tanh as activation function. The learned first layer filters show a similar structure to the ones shown in \citep{masci2011stacked}\footnote{Example filters can be seen on \emph{Github} \url{https://github.com/gangchill/nip-convnet/tree/master/experiments/paper_reference_experiments/paper_reference_cae/cifar}}. 
+    After 300k training iterations on a dataset, the CAE reconstructs the input images sucesfully, examples can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}. While the reconstructions for the simple \emph{MNIST} dataset are almost perfect, the reconstructed images on the \emph{CIFAR-10} and \emph{CK+} datasets seem like blurred versions of the input images, however the main features are still visible and on \emph{CK+}, the emotions are clearly differentiable. All autoencoders have the same architecture as described in \ref{sec:methods_autoencoder} and use the scaled-tanh as activation function. The learned first layer filters show a similar structure to the ones shown in \citep{masci2011stacked}\footnote{Example filters can be seen on \emph{Github} \url{https://github.com/gangchill/nip-convnet/tree/master/experiments/paper_reference_experiments/paper_reference_cae/cifar}}.
 
     \begin{figure}% [ht]
       \centering
@@ -316,7 +316,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
       \end{subfigure}
       \begin{subfigure}{0.45\linewidth}
-        
+
       %\includegraphics[width=0.8\linewidth]{../graphics/cifar_reconstructions.png}
       \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/input_00.png}
       \includegraphics[width=0.3\linewidth]{../graphics/reconstructions/cifar/input_01.png}
@@ -330,7 +330,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
       \label{fig:cifar_reconstructions}
 
       \end{subfigure}
-      
+
 
     \end{figure}
 
@@ -379,7 +379,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 					\vspace{0.05\linewidth}
 					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_06.png} \hspace{0.05\linewidth}
 					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_07.png} \hspace{0.05\linewidth}
-					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_08.png} 
+					\includegraphics[width=0.1\linewidth]{../graphics/reconstructions/cifar/relu/relu_filter_08.png}
 
 					%\caption{(CAE:) Structureless first layer filters learned by ReLU autoencoder}
 
@@ -407,10 +407,10 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
     After the final training we measure the classification accuracy on the separate testset for both the randomly-initialized and the pre-trained CNN, so that we can measure generalization and compare the results.
 
     % experimental results:
-    As can be seen in figures \ref{fig:mnist_cifar_plot} and \ref{fig:ckplus_plot}, accuracy values for the pre-trained networks are higher for almost all datasets and configurations. The only exception is the \emph{CIFAR-10} dataset with a training set of 1000 images. When looking at results of the t-test in table \ref{table:significance}, there is a significant difference for almost all dataset configurations, the only outlier being again \emph{CIFAR-10} 1k. 
-    
+    As can be seen in figures \ref{fig:mnist_cifar_plot} and \ref{fig:ckplus_plot}, accuracy values for the pre-trained networks are higher for almost all datasets and configurations. The only exception is the \emph{CIFAR-10} dataset with a training set of 1000 images. When looking at results of the t-test in table \ref{table:significance}, there is a significant difference for almost all dataset configurations, the only outlier being again \emph{CIFAR-10} 1k.
+
     %Cifar-10 overfitting?
-    Pre-training consistently outperforms random initialization on almost all dataset configurations. Since \emph{CIFAR-10} with its natural images seems the most complex classification task, we assume that in this scenario overfitting might be more of a problem. We suppose that with additional regularization, pre-training could as well be benificial in this context. 
+    Pre-training consistently outperforms random initialization on almost all dataset configurations. Since \emph{CIFAR-10} with its natural images seems the most complex classification task, we assume that in this scenario overfitting might be more of a problem. We suppose that with additional regularization, pre-training could as well be benificial in this context.
 
     \begin{figure}
       \centering
@@ -438,7 +438,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
             \begin{subfigure}{.4\linewidth}
               \centering
-              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_01.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_01.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_02.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_03.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_04.png} %\hspace{0.05\linewidth}
@@ -447,7 +447,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_07.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_08.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_09.png}
-              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_10.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_10.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_11.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_12.png} \\
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/pre_trained_13.png} %\hspace{0.05\linewidth}
@@ -460,7 +460,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
             \end{subfigure}
             \begin{subfigure}{.4\linewidth}
               \centering
-              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_01.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_01.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_02.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_03.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_04.png} %\hspace{0.05\linewidth}
@@ -469,7 +469,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_07.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_08.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_09.png}
-              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_10.png} 
+              \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_10.png}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_11.png} %\hspace{0.05\linewidth}
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_12.png} \\
               \includegraphics[width=0.1\linewidth]{../graphics/cifar_filters/random_13.png} %\hspace{0.05\linewidth}
@@ -520,11 +520,11 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Conclusion}
 
-  We reproduced the results of \citep{masci2011stacked} showing that pre-training a CNN using the weights obtained from a convolutional autoencoder consistently boosts the classifiers accuracy by a small margin. 
+  We reproduced the results of \citep{masci2011stacked} showing that pre-training a CNN using the weights obtained from a convolutional autoencoder consistently boosts the classifiers accuracy by a small margin.
 
-  In our experiments with convolutional autoencoders, we came to the conclusion that the use of the mean-squared error is crucial for training success and hypothesize that when using ReLU functions, the use of max-pooling is not sufficient for the emergence of natural filters that would be helpful for pre-training a neural network. 
+  In our experiments with convolutional autoencoders, we came to the conclusion that the use of the mean-squared error is crucial for training success and hypothesize that when using ReLU functions, the use of max-pooling is not sufficient for the emergence of natural filters that would be helpful for pre-training a neural network.
 
-  On the \emph{CK+} dataset we are able to improve the average accuracy of our networks from 70.4\% to 73.6\% clearly demonstrating the use of this technique in a domain where the amount of labeled training data is very limited. 
+  On the \emph{CK+} dataset we are able to improve the average accuracy of our networks from 70.4\% to 73.6\% clearly demonstrating the use of this technique in a domain where the amount of labeled training data is very limited.
 
   %%\paragraph{CAE and Training Results}
   %\begin{itemize}
