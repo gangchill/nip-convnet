@@ -276,21 +276,21 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
   \subsection{Statistical Significance}
       In order to validate possible resulting accuracy differences, we also want to check their significance.
       Therefore we run a standard t-test to measure if the accuracies from the randomly initialized CNN are significantly different from the pre-trained one.
-      This way we calculated the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
+      This way we calculate the probability (p-value) that the improvements could occur, when the pretrained network was not better than the randomly initialized one (Null-hypothesis).
 
 
 \section{Experimental Results}
   % Results and challenges while performing experiments
   % Training process
   % FOCUS: CK+ Processing & describe experiments exactly
-  We conducted experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+) datasets, which vary in their image size, number of images and colour information.
+  We conduct experiments on the three introduced datasets (MNIST, CIFAR-10 and CK+) datasets, which vary in their image size, number of images and colour information.
   
   \subsection{Autoencoder Reconstruction}
     % For the autoencoder training we took each of the three datasets' images, reshaped them into a vector and used these values as input and target output for a convolutional autoencoder. The architecture for the autoencoder was chosen in a way, so that the CNN would give best results.
 
     % For the loss function we decided to use the mean-squared error, as cross-entropy did not give us good results. % Maybe add explanation? Only if enough time
     When training a utilizable convolutional autoencoder (CAE), the most obvious goal is to get good reconstructions of the input images.
-    Even though this does not always necessarily mean that we learned a good representation, it was still our main optimization criteria here.
+    Even though this does not always necessarily mean that we learned a good representation, it is still our main optimization criteria here.
     In the next section we will then check, if we actually learned a useful representation by applying it to a classification network.
 
     After 300k training iterations on a dataset, the CAE reconstructs the input images sucesfully, examples can be seen in figure \ref{fig:mnist_reconstructions}, \ref{fig:cifar_reconstructions} and \ref{fig:ckplus_reconstructions}. While the reconstructions for the simple \emph{MNIST} dataset are almost perfect, the reconstructed images on the \emph{CIFAR-10} and \emph{CK+} datasets seem like blurred versions of the input images, however the main features are still visible and on \emph{CK+}, the emotions are clearly differentiable. All autoencoders have the same architecture as described in \ref{sec:methods_autoencoder} and use the scaled-tanh as activation function. The learned first layer filters show a similar structure to the ones shown in \citep{masci2011stacked}\footnote{Example filters can be seen on \emph{Github} \url{https://github.com/gangchill/nip-convnet/tree/master/experiments/paper_reference_experiments/paper_reference_cae/cifar}}. 
@@ -391,12 +391,12 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
  %   As the MNIST and CIFAR-10 datasets consist of a lot more images than CK+, we decided to follow the approach of the paper and take a 1k and 10k subset for these two. So while we still took all training images for building a decent autoencoder, the CNN could only use some of the images. This is especially interesting to check the hypothesis, that pre-training makes more sense, when you have less training images.
 
   %  To validate our pretraining experiments, in each run we set up a CNN with randomly initialized filters and a CNN which uses the filters trained by the CAE. Both networks have randomly initialized weights for their dense layers.
-    As described above, to validate the pre-training advantage we trained randomly initialized networks and networks which contain the pre-trained feature maps.
+    As described above, to validate the pre-training advantage we train randomly initialized networks and networks which contain the pre-trained feature maps.
 
-    We let all networks train till we observed convergence, and then used this empircally obtained number of iterations for all following trainings.
-    The length of training was at least 30 epochs for all datasets, so 5k iterations for the 1k datasets, 10k iterations for the 10k datasets and 20k iterations for the full datasets of \emph{MNIST} and \emph{CIFAR-10}.
-    \emph{CK+} has been trained for 2k iterations, this corresponds to more than 350 epochs.
-    During this we checked for overfitting, but did not notice a big trend for it.
+    We let all networks train till we observe convergence, and then use this empircally obtained number of iterations for all following trainings.
+    The length of training is at least 30 epochs for all datasets, so 5k iterations for the 1k datasets, 10k iterations for the 10k datasets and 20k iterations for the full datasets of \emph{MNIST} and \emph{CIFAR-10}.
+    \emph{CK+} is trained for 2k iterations, this corresponds to more than 350 epochs.
+    During this we check for overfitting, but did not notice a big trend for it.
     So apparently our regularization mostly works fine.
 
     After the final training we measure the classification accuracy on the separate testset for both the randomly-initialized and the pre-trained CNN, so that we can measure generalization and compare the results.
@@ -426,7 +426,7 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
       \label{fig:ckplus_plot}
     \end{figure}
 
-    In addition to the significant improvement in out-of-sample accuracy, we also observe a striking difference between the filters after convergence depending on the network initialization. The pre-trained network's first-layer filters seem to preserve a lot of the structure learned in the autoencoder, a sign that the learned representation seems to be well suited for the classification task. While the randomly-initialized filters change more during training, their final appearence never shows as clearly interpretable low-level structures as can be seen in an example on the \emph{CIFAR-10} dataset in figure~\ref{fig:cifar_filters}.  
+    In addition to the significant improvement in out-of-sample accuracy, we also observe a striking difference between the filters after convergence depending on the network initialization. The pre-trained network's first-layer filters seem to preserve a lot of the structure learned in the autoencoder, a sign that the learned representation seems to be well suited for the classification task. While the randomly-initialized filters change more during training, their final appearence never shows as clearly interpretable low-level structures as can be seen in an example on the \emph{CIFAR-10} dataset in figure~\ref{fig:cifar_filters}.
 
       \begin{figure}
           \centering
@@ -511,7 +511,7 @@ Hamester et al. \citep{hamester15} proposed a model for face expression recognit
       For the \emph{CK+} dataset we get the biggest improvement through pretraining.
       Even though the standard deviation is quite high, we get a significant jump in the accuracy.
       This could be due to the fact, that for \emph{CK+} we use all, including neutral and ambiguous, frames (5876 images) to train the CAE, so that the pre-trained filters have more material to learn features from.
-      This leads to the conclusion, that pretraining is espcially applicable, when there are much more unlabelled images, but only a few that can be used for learning classifications.
+      This leads to the conclusion, that pretraining is especially applicable, when there are much more unlabelled images, but only a few that can be used for learning classifications.
 
 \section{Conclusion}
 
