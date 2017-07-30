@@ -85,16 +85,16 @@
 
 \section{Introduction}
   % CNN SOTA but difficult to train (local minima)
-  While deep convolutional neural networks have attained state of the art performance in many computer vision tasks, their training still remains a difficult task and results are highly dependend on the model initialization (local minima). 
+  A lot of progress has been made in the field of artificial neural networks in recent years and as a results most computer vision tasks are today best solved using this approach. However, the training of deep neural networks still remains a difficult problem and results are highly dependend on the model initialization (local minima). 
   % classification learns: representation + decision
   During a classification task, a CNN first learns a new data representation using its convolution layers as feature extractors and then uses several fully-connected layers for decision-making. 
   % representation might be more general
-  While the representation after the convolutional layers is optizimed for classification, some learned features might be more general and also useful outside of this specific task. 
-  Instead of directly optimizing for classification, one can therefore as well begin with focussing on the learned representation before starting to work on the classification problem.
+  While the representation after the convolutional layers is usually optizimed for classification, some learned features might be more general and also useful outside of this specific task. 
+  Instead of directly optimizing for a good class prediction, one can therefore start by focussing on the intermediate goal of learning a good data representation before beginning to work on the classification problem.
   % representation learning: autoencoder
-  One possible way to do this uses a convolutional autoencoder, an unsupervised method that allows to train the convolutional layers independently from a classification task to learn a new data representation. 
+  One possible way to do this uses a convolutional autoencoder, an unsupervised method that allows to train the convolutional layers independently from a classification task in order to learn a new data representation. 
   % weight transfer
-  The learned weights can then be used as a starting point to initialize a convolutional neural network's convolution layers. 
+  The weights learned in this first step can then be used as a starting point to initialize a neural network's convolution layers. 
   % small datasets: needs to learn both at the same time
   This becomes of special interest when only very few labeled examples are available since additional, unlabeled datapoints can be used for the representation learning task. 
   % reference paper (it worked)
