@@ -62,10 +62,9 @@
   \texttt{ahmmed@campus.tu-berlin.de}\\
   \And
   Youssef Kashef \\
-  \texttt{kashefy@ni.tu-berlin.de}
   TU Berlin \\
   %% Address \\
-  \texttt{mail}
+  \texttt{kashefy@ni.tu-berlin.de}
   %% \And
   %% Coauthor \\
   %% Affiliation \\
@@ -79,7 +78,7 @@
 \maketitle
 
 \begin{abstract}
-  Despite neural networks being the state of the art in almost all computer vision tasks, their training remains a difficult task. Unsupervised representation learning using a convolutional autoencoder can be used to initialize network weights and has been shown to improve test accuracy after training. We reproduce previous results using this approach and successfully apply it to the difficult ckplus dataset for which labels are extremely sparse but additional unlabeled data is available for unsupervised use.
+  Despite convolutional neural networks being the state of the art in almost all computer vision tasks, their training remains a difficult task. Unsupervised representation learning using a convolutional autoencoder can be used to initialize network weights and has been shown to improve test accuracy after training. We reproduce previous results using this approach and successfully apply it to the difficult \emph{Extended Cohn-Kanade} dataset for which labels are extremely sparse but additional unlabeled data is available for unsupervised use.
 \end{abstract}
 
 
@@ -112,7 +111,7 @@ the same performance as unsupervised pre-training. A point of caution, however, 
 Masci et al. \citep{masci11} introduced the Convolutional Auto-Encoder (CAE), an unsupervised method for hierarchical feature extraction, which learns biologically plausible filters. Masci et. al demonstrated that a CNN can be initialized by a CAE stack. Although CAE’s overcomplete hidden representation makes learning harder than the standard auto-encoder,  interesting and visually nicest filters emerge if a max-pooling layer is used. They experimented with 20 7x7 filters of 4 CAEs of the same topology trained as follows on MNIST dataset- (i) the first one on original digits, (ii) the second one on noisy inputs with 50\% binomial noise added,
 (iii) the third one with an additional max-pooling layer of size 2x2,
 (iv) the fourth one on noisy (30\% binomial noise) inputs with a max-pooling layer of size 2x2.
-When they compared the results, it turned out that interesting and biologically plausible filters emerged only when the CAE had been trained with a max-pooling layer. When the CAE was trained without any additional constraints, it learned trivial solutions such as having only one weight “on” (identity function) and when they trained the CAE with additional noise, it became more localized. They repeated the above experiments on CIFAR10 dataset and found striking impact of a max-pooling layer whereas adding noise had almost no visual effect except on the weight magnitudes, indicating that max-pooling is essential. They also demonstrated that pre-trained CNNs consistently outperform randomly initialized CNN.
+When they compared the results, it turned out that interesting and biologically plausible filters emerged only when the CAE had been trained with a max-pooling layer. When the CAE was trained without any additional constraints, it learned trivial solutions such as having only one weight “on” (identity function) and when they trained the CAE with additional noise, it became more localized. They repeated the above experiments on CIFAR-10 dataset and found striking impact of a max-pooling layer whereas adding noise had almost no visual effect except on the weight magnitudes, indicating that max-pooling is essential. They also demonstrated that pre-trained CNNs consistently outperform randomly initialized CNN.
 
 Makhzani et al. \citep{Makhzani14} explored combining the benefits of convolutional architectures and autoencoders for learning deep representations in an unsupervised manner. They proposed an unsupervised learning algorithm for training CAE with a very strong sparsity constraint on the activity within each feature map. To achieve that they trained a CAE layer by layer on MNIST, CIFAR-10 and NORB datasets, where in each layer sparsity was achieved using a winner-take-all activation function within each feature map.  The sparse convolutional autoencoder was based on a CAE with a ReLU activation function.
 
@@ -120,7 +119,7 @@ Khorrami et al. \citep{Khorrami17} achieved state-of-the-art performance on two 
 benchmarks: the extended Cohn-Kanade (CK+) dataset
 and the Toronto Face Dataset (TFD) by training a zero-bias CNN on facial expression data and by introducing an approach to decipher which portions of the face influence the CNN’s predictions.
 
-Hamester et al. \citep{hamester15} proposed a model for face expression recognition based on a variant of the Multi-channel Convolutional Neural Network (MCCNN) earlier introduced by \cite{Barros14} which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The wights of the channel are trained in an unsupervised fashion as a convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) used by \citep{Subramanian12}.
+Hamester et al. \citep{hamester15} proposed a model for face expression recognition based on a variant of the Multi-channel Convolutional Neural Network (MCCNN) earlier introduced by \cite{Barros14} which does not depend on any hand-crafted or task specific feature extraction but exploits unsupervised learning, using a multiple CNNs based 2-channel architecture, where the CNNs first process information independently and then all streams merge in a fully connected layer, which is used for classification. The weights of the channel are trained in an unsupervised fashion as a convolutional auto-encoder (CAE). They evaluated the model on JAFFE dataset and found that the model is a very viable method for facial expression recognition. They easily reached the state-of-the-art recognition rates with minimal effort and achieved an average of 95.8\% accuracy which was almost 3\% and 8\% higher than the other state-of-the-art methods (Sobel-based filters and McFIS method) used by \citep{Subramanian12}.
 
 \paragraph{Datasets}
 In previous work \citep{masci2011stacked}, the authors applied the approach of pre-training by a convolutional autoencoder to two standard image classification datasets, MNIST and CIFAR-10.
@@ -187,7 +186,8 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
     \paragraph{Activation Function}
     \label{par:activation_function}
-    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (\ref{sec:relu_cae}). By scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training training iterations. 
+
+    Out of 3 tested activation functions (sigmoid, scaled tanh and relu), we use the scaled tanh for our main experiments similar to \citep{masci2011stacked}. We will talk about our ReLU experiments in (\ref{sec:relu_cae}). By scaled tanh we mean the tanh function rescaled and shifted to the [0,1] output range. This corresponds to the function $$scaledtanh(x) = \frac{1}{2}tanh(x) + \frac{1}{2}$$ which has a generally sigmoidal shape but a stronger gradient around $x = 0$. In our experiments, switching the activation function from sigmoid to scaled tanh seemed to give similarly good results after less training iterations. 
 
     \paragraph{Regularization} 
     While autoencoders are typically used for dimensionality reduction, the feature map representation of the convolutional autoencoders we are using is of a much higher dimensionality than the input images. While this feature representation seems well-suited in a CNN, the overcomplete representation becomes problematic in an autoencoder since it gives the autoencoder the possibility to simply learn the identity function. 
@@ -347,8 +347,9 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
     \end{figure}
 
     \subsubsection{Rectified Linear Units}
+
       \label{sec:relu_cae}
-      When switching to a ReLu activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
+      When switching to a ReLU activation function \citep{nair2010rectified} for the CAE, the reconstructions become almost identical to the input image, but the learned first layer filters seem rather random compared to the ones obtained in previous experiments. Since first pre-training results do not show a significant change between pre-trained and randomly initialized ReLU networks, we do not examine this setting more in detail. Example reconstructions and a random selection of first layer filters are shown in figure \ref{fig:relu_cae}.
 
       \begin{figure}[b]
 
@@ -516,7 +517,7 @@ It consists of 45000 training, 5000 validation, and 10000 test images.
 
 \section{Conclusion}
 
-  We reproduced the results of \citep{masci2011stacked} showing that pre-training a CNN using the weights obtained from a convololutional autoencoder consistently boosts the classifiers accuracy by a small margin. 
+  We reproduced the results of \citep{masci2011stacked} showing that pre-training a CNN using the weights obtained from a convolutional autoencoder consistently boosts the classifiers accuracy by a small margin. 
 
   In our experiments with convolutional autoencoders, we came to the conclusion that the use of the mean-squared error is crucial for training success and hypothesize that when using ReLU functions, the use of max-pooling is not sufficient for the emergence of natural filters that would be helpful for pre-training a neural network. 
 
